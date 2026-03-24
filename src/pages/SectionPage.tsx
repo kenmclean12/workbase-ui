@@ -1,11 +1,11 @@
-import Box from '@mui/material/Box'
-import Paper from '@mui/material/Paper'
-import Typography from '@mui/material/Typography'
+import Box from "@mui/material/Box";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 type SectionPageProps = {
-  title: string
-  description?: string
-}
+  title: string;
+  description?: string;
+};
 
 export default function SectionPage({ title, description }: SectionPageProps) {
   return (
@@ -14,8 +14,8 @@ export default function SectionPage({ title, description }: SectionPageProps) {
         {title}
       </Typography>
       <Typography variant="body1" color="text.secondary">
-        {description ?? 'Content goes here.'}
+        {description ?? "Content goes here."}
       </Typography>
     </Box>
-  )
+  );
 }
