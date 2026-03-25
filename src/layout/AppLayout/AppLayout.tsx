@@ -22,7 +22,6 @@ const appLayoutMainStyles = {
 const appLayoutContentStyles = {
   padding: 24,
   flex: 1,
-  backgroundColor: "#f4f7fb",
 };
 
 export default function AppLayout({ children }: AppLayoutProps) {

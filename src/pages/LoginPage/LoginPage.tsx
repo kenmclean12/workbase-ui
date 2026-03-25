@@ -1,5 +1,5 @@
 import { type FormEvent, useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
@@ -13,7 +13,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const { login, token, loading } = useAuthContext();
   const navigate = useNavigate();
-  const location = useLocation();
   const from = "/";
 
   useEffect(() => {

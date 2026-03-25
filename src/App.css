@@ -1,12 +1,5 @@
-/* Global styles */
-:root {
-  --bg: #f4f7fb;
-  --panel: #ffffff;
-  --text: #1f2a37;
-  --muted: #6f7985;
-  --accent: #2b6cb0;
-  --border: #e1e7ee;
-}
+/* Global styles - now handled by MUI theme */
+/* Retained font-family for consistency */
 
 html,
 body,
@@ -25,6 +18,4 @@ body {
     Segoe UI,
     Roboto,
     sans-serif;
-  color: var(--text);
-  background: var(--bg);
 }

@@ -38,15 +38,15 @@ export default function Sidebar() {
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
-          borderRight: "1px solid #e0e0e0",
-          backgroundColor: "#fff",
+          borderRight: "1px solid",
+          backgroundColor: "background.default",
         },
       }}
     >
       <Box
         sx={{
-          padding: 2,
-          borderBottom: "1px solid #e0e0e0",
+          p: 2,
+          borderBottom: "1px solid",
         }}
       >
         <Box
@@ -89,13 +89,16 @@ export default function Sidebar() {
               component={NavLink}
               to={item.path}
               sx={{
-                backgroundColor: location.pathname === item.path ? "#e3f2fd" : "transparent",
+                backgroundColor:
+                  location.pathname === item.path ? "#e3f2fd" : "transparent",
                 color: location.pathname === item.path ? "#1565c0" : "inherit",
                 "& .MuiListItemIcon-root": {
-                  color: location.pathname === item.path ? "#1565c0" : "inherit",
+                  color:
+                    location.pathname === item.path ? "#1565c0" : "inherit",
                 },
                 "&:hover": {
-                  backgroundColor: location.pathname === item.path ? "#e3f2fd" : "#f5f5f5",
+                  backgroundColor:
+                    location.pathname === item.path ? "#e3f2fd" : "#f5f5f5",
                 },
               }}
             >
@@ -108,4 +111,3 @@ export default function Sidebar() {
     </Drawer>
   );
 }
-
