@@ -1,0 +1,48 @@
+.sidebar-drawer {
+  width: 240px;
+  flex-shrink: 0;
+}
+
+.sidebar-drawer .MuiDrawer-paper {
+  width: 240px;
+  box-sizing: border-box;
+  border-right: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.sidebar-brand {
+  padding: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sidebar-brand-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sidebar-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #1976d2;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 700;
+}
+
+.sidebar-title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.sidebar-list-item-button.active {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.sidebar-list-item-button.active .MuiListItemIcon-root {
+  color: #1565c0;
+}

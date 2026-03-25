@@ -32,15 +32,7 @@ export default function TopBar() {
         <Box sx={{ flexGrow: 1 }} />
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Avatar
-            sx={{
-              width: 34,
-              height: 34,
-              bgcolor: "#d9e2eb",
-              color: "#637381",
-              fontWeight: 700,
-            }}
-          >
+          <Avatar sx={{ width: 34, height: 34, bgcolor: "#d9e2eb", color: "#637381", fontWeight: 700 }}>
             U
           </Avatar>
         </Box>

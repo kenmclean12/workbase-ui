@@ -7,7 +7,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 type MenuItem = {
   key: string;
@@ -27,6 +27,8 @@ const menuItems: MenuItem[] = [
 const drawerWidth = 240;
 
 export default function Sidebar() {
+  const location = useLocation();
+
   return (
     <Drawer
       variant="permanent"
@@ -41,8 +43,19 @@ export default function Sidebar() {
         },
       }}
     >
-      <Box sx={{ padding: 2, borderBottom: "1px solid #e0e0e0" }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box
+        sx={{
+          padding: 2,
+          borderBottom: "1px solid #e0e0e0",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
           <Box
             sx={{
               width: 28,
@@ -58,7 +71,13 @@ export default function Sidebar() {
           >
             S
           </Box>
-          <Box component="span" sx={{ fontWeight: 700, fontSize: 18 }}>
+          <Box
+            component="span"
+            sx={{
+              fontWeight: 700,
+              fontSize: 18,
+            }}
+          >
             SaaS Admin
           </Box>
         </Box>
@@ -70,10 +89,13 @@ export default function Sidebar() {
               component={NavLink}
               to={item.path}
               sx={{
-                "&.active": {
-                  backgroundColor: "#e3f2fd",
-                  color: "#1565c0",
-                  "& .MuiListItemIcon-root": { color: "#1565c0" },
+                backgroundColor: location.pathname === item.path ? "#e3f2fd" : "transparent",
+                color: location.pathname === item.path ? "#1565c0" : "inherit",
+                "& .MuiListItemIcon-root": {
+                  color: location.pathname === item.path ? "#1565c0" : "inherit",
+                },
+                "&:hover": {
+                  backgroundColor: location.pathname === item.path ? "#e3f2fd" : "#f5f5f5",
                 },
               }}
             >
@@ -86,3 +108,4 @@ export default function Sidebar() {
     </Drawer>
   );
 }
+
