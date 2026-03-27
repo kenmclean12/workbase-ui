@@ -44,15 +44,16 @@ const menuItems: MenuItem[] = [
 const DRAWER_WIDTH_EXPANDED = 240;
 const DRAWER_WIDTH_COLLAPSED = 72;
 
-export default function Sidebar() {
+type SidebarProps = {
+  open: boolean;
+  onToggle: () => void;
+};
+
+export default function Sidebar({ open, onToggle }: SidebarProps) {
   const location = useLocation();
   const { user } = useAuthContext();
   const { themeMode } = useThemeContext();
-
-  const [open, setOpen] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState<HTMLElement | null>(null);
-
-  const toggleDrawer = () => setOpen((prev) => !prev);
 
   const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -94,6 +95,10 @@ export default function Sidebar() {
     <Drawer
       variant="permanent"
       sx={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        bottom: 0,
         width: drawerWidth,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
@@ -113,7 +118,6 @@ export default function Sidebar() {
         },
       }}
     >
-      {/* Header with logo and toggle button */}
       <Box
         sx={{
           p: 2,
@@ -140,14 +144,12 @@ export default function Sidebar() {
         )}
         <IconButton
           size="small"
-          onClick={toggleDrawer}
+          onClick={onToggle}
           sx={{ ml: open ? 0 : "auto", mr: open ? 0 : "auto" }}
         >
           {open ? <ChevronLeft /> : <MenuIcon />}
         </IconButton>
       </Box>
-
-      {/* Navigation items – grows to fill space */}
       <List sx={{ flexGrow: 1 }}>
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;

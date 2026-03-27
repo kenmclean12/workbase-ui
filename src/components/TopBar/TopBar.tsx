@@ -3,19 +3,11 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import {
-  Home,
-  Business,
-  Work,
-  People,
-  BarChart,
-  Add,
-  PersonAdd,
-} from "@mui/icons-material";
+import { Home, Business, Work, People, BarChart } from "@mui/icons-material";
+import { useTheme } from "@mui/material";
 
 const pageConfig = [
-  { path: "/", label: "Dashboard", icon: <Home /> },
+  { path: "/", label: "Home", icon: <Home /> },
   { path: "/clients", label: "Clients", icon: <Business /> },
   { path: "/jobs", label: "Tasks", icon: <Work /> },
   { path: "/users", label: "Users", icon: <People /> },
@@ -23,6 +15,8 @@ const pageConfig = [
 ];
 
 export default function TopBar() {
+  const theme = useTheme();
+  const isDarkMode = theme.palette.mode === "dark";
   const location = useLocation();
   const currentPage =
     pageConfig.find((item) => item.path === location.pathname) || pageConfig[0];
@@ -39,7 +33,10 @@ export default function TopBar() {
           sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}
         >
           {currentPage.icon}
-          <Typography variant="h6" component="h1" sx={{ fontWeight: 700 }}>
+          <Typography
+            color={isDarkMode ? "white" : "black"}
+            sx={{ fontSize: "20px", fontWeight: 500 }}
+          >
             {currentPage.label}
           </Typography>
         </Box>
