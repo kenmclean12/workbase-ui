@@ -8,6 +8,7 @@ import {
   Menu as MenuIcon,
   ChevronLeft,
   BusinessCenter,
+  Person,
 } from "@mui/icons-material";
 import {
   Box,
@@ -35,6 +36,7 @@ type MenuItem = {
 };
 
 const menuItems: MenuItem[] = [
+  { key: "profile", label: "Profile", path: "/profile", icon: <Person /> },
   { key: "clients", label: "Clients", path: "/clients", icon: <Business /> },
   { key: "jobs", label: "Tasks", path: "/jobs", icon: <Work /> },
   { key: "users", label: "Users", path: "/users", icon: <People /> },

@@ -21,8 +21,7 @@ export default function LoginPage() {
     }
   }, [token, loading, navigate]);
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleSubmit = async () => {
     setError("");
 
     try {
