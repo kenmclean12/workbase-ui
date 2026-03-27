@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {
   createContext,
   useCallback,
@@ -42,16 +42,12 @@ async function decodeResponse<T>(res: Response): Promise<T> {
     const body = await res.text();
     throw new Error(body || res.statusText);
   }
-
   return res.json() as Promise<T>;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(
     localStorage.getItem("accessToken"),
-  );
-  const [refreshToken, setRefreshToken] = useState<string | null>(
-    localStorage.getItem("refreshToken"),
   );
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -61,7 +57,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("accessToken", accessToken);
       localStorage.setItem("refreshToken", newRefreshToken);
       setToken(accessToken);
-      setRefreshToken(newRefreshToken);
     },
     [],
   );
@@ -70,69 +65,102 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setToken(null);
-    setRefreshToken(null);
   }, []);
+
+  const logout = useCallback(() => {
+    clearTokens();
+    setUser(null);
+  }, [clearTokens]);
+
+  const refreshAccessToken = useCallback(async () => {
+    const storedRefresh = localStorage.getItem("refreshToken");
+    if (!storedRefresh) return null;
+
+    const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refreshToken: storedRefresh }),
+    });
+
+    if (!res.ok) {
+      logout();
+      return null;
+    }
+
+    const data = await res.json();
+    storeTokens(data.accessToken, data.refreshToken);
+    return data.accessToken as string;
+  }, [storeTokens, logout]);
 
   const fetchWithAuth = useCallback(
     async (path: string, config: RequestInit = {}) => {
-      const activeToken = localStorage.getItem("accessToken");
-      const headers = {
-        "Content-Type": "application/json",
-        ...(config.headers ?? {}),
-        Authorization: activeToken ? `Bearer ${activeToken}` : "",
-      };
+      const accessToken = localStorage.getItem("accessToken");
 
-      let response = await fetch(`${API_BASE_URL}${path}`, {
-        ...config,
-        headers,
-      });
-
-      if (response.status === 401 && refreshToken) {
-        const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ refreshToken }),
-        });
-
-        if (!refreshResponse.ok) {
-          logout();
-          throw new Error("Unauthorized");
-        }
-
-        const payload = await refreshResponse.json();
-        storeTokens(payload.accessToken, payload.refreshToken);
-
-        response = await fetch(`${API_BASE_URL}${path}`, {
+      const makeRequest = async (t?: string) => {
+        return fetch(`${API_BASE_URL}${path}`, {
           ...config,
           headers: {
-            ...headers,
-            Authorization: `Bearer ${payload.accessToken}`,
+            "Content-Type": "application/json",
+            ...(config.headers ?? {}),
+            ...(t ? { Authorization: `Bearer ${t}` } : {}),
           },
         });
+      };
+
+      let response = await makeRequest(accessToken || undefined);
+
+      if (response.status !== 401) return response;
+
+      const newToken = await refreshAccessToken();
+      if (!newToken) {
+        throw new Error("Unauthorized");
+      }
+
+      response = await makeRequest(newToken);
+
+      if (response.status === 401) {
+        logout();
+        throw new Error("Unauthorized");
       }
 
       return response;
     },
-    [refreshToken, storeTokens],
+    [refreshAccessToken, logout],
   );
 
   const loadUser = useCallback(async () => {
-    if (!token) {
+    const accessToken = localStorage.getItem("accessToken");
+
+    if (!accessToken) {
+      logout();
       setLoading(false);
       return;
     }
+
     setLoading(true);
+
     try {
       const response = await fetchWithAuth("/user/me");
-      const data = await decodeResponse<User>(response);
+
+      if (!response.ok) {
+        logout();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!data) {
+        logout();
+        return;
+      }
+
       setUser(data);
-    } catch (error) {
-      clearTokens();
-      setUser(null);
+    } catch {
+      logout();
     } finally {
       setLoading(false);
     }
-  }, [clearTokens, fetchWithAuth, token]);
+  }, [fetchWithAuth, logout]);
 
   useEffect(() => {
     void loadUser();
@@ -150,12 +178,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         accessToken: string;
         refreshToken: string;
       }>(response);
+
       storeTokens(data.accessToken, data.refreshToken);
-      const userResponse = await fetchWithAuth("/user/me");
-      const userData = await decodeResponse<User>(userResponse);
-      setUser(userData);
+
+      await loadUser();
     },
-    [fetchWithAuth, storeTokens],
+    [storeTokens, loadUser],
   );
 
   const register = useCallback(
@@ -179,11 +207,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     },
     [login],
   );
-
-  const logout = useCallback(() => {
-    clearTokens();
-    setUser(null);
-  }, [clearTokens]);
 
   const value = useMemo(
     () => ({ token, user, loading, login, register, logout, fetchWithAuth }),

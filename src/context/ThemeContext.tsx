@@ -2,11 +2,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
-  ReactNode,
+  type ReactNode,
 } from "react";
+import type { Theme } from "@mui/material/styles";
 import { lightTheme, darkTheme } from "../theme";
 
 type ThemeMode = "light" | "dark";
@@ -14,36 +14,41 @@ type ThemeMode = "light" | "dark";
 type ThemeContextValue = {
   themeMode: ThemeMode;
   toggleTheme: () => void;
-  theme: any; // MUI Theme
+  theme: Theme;
 };
 
-const ThemeContext = createContext<ThemeContextValue | null>(null);
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeMode, setThemeMode] = useState<ThemeMode>("light");
-
-  useEffect(() => {
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
     const saved = localStorage.getItem("themeMode") as ThemeMode | null;
-    if (saved) {
-      setThemeMode(saved);
-    } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-      setThemeMode("dark");
+    if (saved) return saved;
+
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      return "dark";
     }
-  }, []);
+
+    return "light";
+  });
 
   const toggleTheme = useCallback(() => {
-    const newMode: ThemeMode = themeMode === "light" ? "dark" : "light";
-    setThemeMode(newMode);
-    localStorage.setItem("themeMode", newMode);
+    setThemeMode((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      localStorage.setItem("themeMode", next);
+      return next;
+    });
+  }, []);
+
+  const theme = useMemo<Theme>(() => {
+    return themeMode === "light" ? lightTheme : darkTheme;
   }, [themeMode]);
 
-  const theme = useMemo(
-    () => (themeMode === "light" ? lightTheme : darkTheme),
-    [themeMode],
-  );
-
   const value = useMemo(
-    () => ({ themeMode, toggleTheme, theme }),
+    () => ({
+      themeMode,
+      toggleTheme,
+      theme,
+    }),
     [themeMode, toggleTheme, theme],
   );
 
