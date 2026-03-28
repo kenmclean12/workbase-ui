@@ -13,7 +13,6 @@ export default function RegisterPage() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [error, setError] = useState("");
-
   const { register, token, loading } = useAuthContext();
   const navigate = useNavigate();
 

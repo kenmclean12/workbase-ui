@@ -6,8 +6,6 @@ import {
   Avatar,
   Grid,
   Chip,
-  CircularProgress,
-  Alert,
   Table,
   TableBody,
   TableCell,
@@ -17,36 +15,12 @@ import {
   Button,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
-import { useUserFindOne } from "../../../hooks";
+import { testUser } from "../../../testData";
 
 export default function UserDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const userId = id ? parseInt(id, 10) : null;
-  const { data: user, isLoading, error } = useUserFindOne(userId!);
-
-  if (isLoading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error || !user) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Alert severity="error">{error?.message || "User not found"}</Alert>
-        <Button
-          startIcon={<ArrowBack />}
-          onClick={() => navigate("/users")}
-          sx={{ mt: 2 }}
-        >
-          Back to Users
-        </Button>
-      </Box>
-    );
-  }
+  const user = testUser;
 
   return (
     <Box>

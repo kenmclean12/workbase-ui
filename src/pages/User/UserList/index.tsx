@@ -9,31 +9,11 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
-  CircularProgress,
 } from "@mui/material";
-import { useUsersFindAll, type User } from "../../../hooks";
+import { testUsers, type User } from "../../../testData";
 
 export default function UsersList() {
   const navigate = useNavigate();
-  const { data: users, isLoading } = useUsersFindAll();
-
-  if (isLoading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (!users || users.length === 0) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography variant="body1" color="text.secondary">
-          No users found.
-        </Typography>
-      </Box>
-    );
-  }
 
   return (
     <Box component={Paper} elevation={1} sx={{ p: 2 }}>
@@ -41,7 +21,7 @@ export default function UsersList() {
         Users
       </Typography>
       <List disablePadding>
-        {users.map((user: User) => (
+        {testUsers.map((user: User) => (
           <ListItem key={user.id} disablePadding divider>
             <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
               <ListItemAvatar>

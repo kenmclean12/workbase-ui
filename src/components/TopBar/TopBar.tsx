@@ -25,8 +25,13 @@ export default function TopBar() {
     <AppBar
       position="static"
       color="inherit"
-      elevation={1}
-      sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      elevation={0}
+      sx={{
+        height: "66px",
+        borderBottom: "1px solid",
+        borderColor: "divider",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
     >
       <Toolbar>
         <Box
