@@ -1,6 +1,6 @@
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { useThemeContext } from "../../context/ThemeContext";
+import { useThemeContext } from "../../../../context/ThemeContext";
 
 export default function ThemeToggle() {
   const { themeMode, toggleTheme } = useThemeContext();

@@ -26,7 +26,7 @@ import {
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthContext } from "../../context/AuthContext";
 import { useThemeContext } from "../../context/ThemeContext";
-import ProfileMenu, { type ProfileMenuProps } from "../ProfileMenu/ProfileMenu";
+import { ProfileMenu, type ProfileMenuProps } from "./ProfileMenu";
 
 type MenuItem = {
   key: string;
@@ -247,7 +247,6 @@ export default function Sidebar({ open, onToggle }: SidebarProps) {
           )}
         </Box>
       )}
-
       <ProfileMenu {...profileMenuProps} />
     </Drawer>
   );

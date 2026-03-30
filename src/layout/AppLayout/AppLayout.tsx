@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/Sidebar/Sidebar";
 import TopBar from "../../components/TopBar";
 
 type AppLayoutProps = {

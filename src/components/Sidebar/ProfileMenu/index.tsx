@@ -9,8 +9,8 @@ import {
   Box,
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
-import { useAuthContext } from "../../context/AuthContext";
-import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import { useAuthContext } from "../../../context/AuthContext";
+import ThemeToggle from "./ThemeToggle";
 
 export interface ProfileMenuProps {
   anchorEl: HTMLElement | null;
@@ -18,11 +18,7 @@ export interface ProfileMenuProps {
   onClose: () => void;
 }
 
-export default function ProfileMenu({
-  anchorEl,
-  open,
-  onClose,
-}: ProfileMenuProps) {
+export function ProfileMenu({ anchorEl, open, onClose }: ProfileMenuProps) {
   const { user, logout } = useAuthContext();
 
   const safeText = (value: unknown, fallback = "") =>
