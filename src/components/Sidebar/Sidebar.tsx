@@ -49,9 +49,10 @@ const DRAWER_WIDTH_COLLAPSED = 72;
 type SidebarProps = {
   open: boolean;
   onToggle: () => void;
+  disabled?: boolean;
 };
 
-export function Sidebar({ open, onToggle }: SidebarProps) {
+export function Sidebar({ open, onToggle, disabled = false }: SidebarProps) {
   const location = useLocation();
   const { user } = useAuthContext();
   const { themeMode } = useThemeContext();
@@ -147,6 +148,7 @@ export function Sidebar({ open, onToggle }: SidebarProps) {
         <IconButton
           size="small"
           onClick={onToggle}
+          disabled={disabled}
           sx={{ ml: open ? 0 : "auto", mr: open ? 0 : "auto" }}
         >
           {open ? <ChevronLeft /> : <MenuIcon />}

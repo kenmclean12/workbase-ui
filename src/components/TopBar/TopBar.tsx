@@ -28,25 +28,38 @@ export default function TopBar() {
       elevation={0}
       sx={{
         top: 0,
-        height: "66px",
         borderBottom: "1px solid",
         borderColor: "divider",
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
-      <Toolbar>
+      <Toolbar
+        sx={{
+          minHeight: "66px !important",
+          alignItems: "center",
+          px: 2,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <Box
-          sx={{ display: "flex", alignItems: "center", gap: 1, flexGrow: 1 }}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexGrow: 1,
+            minHeight: 0,
+          }}
         >
           {currentPage.icon}
           <Typography
             color={isDarkMode ? "white" : "black"}
-            sx={{ fontSize: "20px", fontWeight: 500 }}
+            sx={{ fontSize: "20px", fontWeight: 500, lineHeight: 1 }}
           >
             {currentPage.label}
           </Typography>
         </Box>
-        <Box sx={{ display: "flex", gap: 1 }}>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <></>
         </Box>
       </Toolbar>
