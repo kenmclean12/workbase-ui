@@ -102,7 +102,7 @@ export default function UsersList() {
         overflow: "hidden",
       }}
     >
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 2 }}>
+      <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
         <TextField
           fullWidth
           value={search}
@@ -111,8 +111,9 @@ export default function UsersList() {
           placeholder="Search by name or email"
           variant="outlined"
           size="small"
+          sx={{ minWidth: 100 }}
         />
-        <FormControl sx={{ minWidth: 160 }} size="small">
+        <FormControl sx={{ minWidth: 60, width: 190 }} size="small">
           <InputLabel id="role-filter-label">Role</InputLabel>
           <Select
             labelId="role-filter-label"
@@ -122,12 +123,13 @@ export default function UsersList() {
           >
             {roleOptions.map((roleOption: Role | "All") => (
               <MenuItem key={roleOption} value={roleOption}>
-                {roleOption.toLowerCase()}
+                {roleOption[0]}
+                {roleOption.toLowerCase().slice(1, roleOption.length)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-        <FormControl sx={{ minWidth: 140 }} size="small">
+        <FormControl sx={{ minWidth: 80, width: 160 }} size="small">
           <InputLabel id="rows-per-page-label">Rows</InputLabel>
           <Select
             labelId="rows-per-page-label"
@@ -189,6 +191,8 @@ export default function UsersList() {
           onChange={handlePageChange}
           color="primary"
           shape="rounded"
+          siblingCount={0}
+          boundaryCount={1}
         />
       </Box>
     </Box>

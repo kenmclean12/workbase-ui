@@ -39,6 +39,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             padding: 3,
             flex: 1,
             minHeight: 0,
+            minWidth: 400,
             overflowY: "auto",
             overflowX: "hidden",
             overscrollBehavior: "none",
