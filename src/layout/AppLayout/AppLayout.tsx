@@ -26,6 +26,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             duration: theme.transitions.duration.enteringScreen,
           }),
           flex: 1,
+          minHeight: 0,
           display: "flex",
           flexDirection: "column",
           height: "100vh",
@@ -37,6 +38,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
           sx={{
             padding: 3,
             flex: 1,
+            minHeight: 0,
             overflowY: "auto",
             overflowX: "hidden",
             overscrollBehavior: "none",

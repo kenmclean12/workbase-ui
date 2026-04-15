@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
 import AppLayout from "./layout/AppLayout";
 import MainPage from "./pages/MainPage";
-import SectionPage from "./pages/SectionPage";
 import LoginPage from "./pages/LoginPage/LoginPage";
 import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import ProtectedRoute from "./packages/ProtectedRoute";
@@ -35,42 +34,10 @@ function ThemedApp() {
                       <Route path="/" element={<MainPage />} />
                       <Route path="/users" element={<UsersList />} />
                       <Route path="/users/:id" element={<UserDetail />} />
-                      <Route
-                        path="/clients"
-                        element={
-                          <SectionPage
-                            title="Clients"
-                            description="Clients content will go here."
-                          />
-                        }
-                      />
-                      <Route
-                        path="/jobs"
-                        element={
-                          <SectionPage
-                            title="Jobs"
-                            description="Jobs content will go here."
-                          />
-                        }
-                      />
-                      <Route
-                        path="/stats"
-                        element={
-                          <SectionPage
-                            title="Stats"
-                            description="Stats content will go here."
-                          />
-                        }
-                      />
-                      <Route
-                        path="*"
-                        element={
-                          <SectionPage
-                            title="Not Found"
-                            description="Route not found."
-                          />
-                        }
-                      />
+                      <Route path="/clients" element={<></>} />
+                      <Route path="/jobs" element={<></>} />
+                      <Route path="/stats" element={<></>} />
+                      <Route path="*" element={<></>} />
                     </Routes>
                   </AppLayout>
                 </ProtectedRoute>

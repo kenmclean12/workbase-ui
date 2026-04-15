@@ -91,7 +91,17 @@ export default function UsersList() {
   };
 
   return (
-    <Box component={Paper} elevation={1} sx={{ p: 2 }}>
+    <Box
+      component={Paper}
+      elevation={1}
+      sx={{
+        p: 2,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        overflow: "hidden",
+      }}
+    >
       <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 2 }}>
         <TextField
           fullWidth
@@ -112,8 +122,7 @@ export default function UsersList() {
           >
             {roleOptions.map((roleOption: Role | "All") => (
               <MenuItem key={roleOption} value={roleOption}>
-                {roleOption[0]}
-                {roleOption.toLowerCase().slice(1, roleOption.length)}
+                {roleOption.toLowerCase()}
               </MenuItem>
             ))}
           </Select>
@@ -137,27 +146,29 @@ export default function UsersList() {
 
       <Divider sx={{ mb: 2 }} />
 
-      <List disablePadding>
-        {paginatedUsers.map((user: User) => (
-          <ListItem key={user.id} disablePadding divider>
-            <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
-              <ListItemAvatar>
-                <Avatar
-                  src={user.avatarUrl || undefined}
-                  alt={`${user.firstName} ${user.lastName}`}
-                >
-                  {user.firstName?.[0]}
-                  {user.lastName?.[0]}
-                </Avatar>
-              </ListItemAvatar>
-              <ListItemText
-                primary={`${user.firstName} ${user.lastName}`}
-                secondary={user.email}
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+      <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+        <List disablePadding>
+          {paginatedUsers.map((user: User) => (
+            <ListItem key={user.id} disablePadding divider>
+              <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
+                <ListItemAvatar>
+                  <Avatar
+                    src={user.avatarUrl || undefined}
+                    alt={`${user.firstName} ${user.lastName}`}
+                  >
+                    {user.firstName?.[0]}
+                    {user.lastName?.[0]}
+                  </Avatar>
+                </ListItemAvatar>
+                <ListItemText
+                  primary={`${user.firstName} ${user.lastName}`}
+                  secondary={user.email}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
 
       <Box
         sx={{
