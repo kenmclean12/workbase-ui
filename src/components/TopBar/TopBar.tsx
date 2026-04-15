@@ -23,10 +23,11 @@ export default function TopBar() {
 
   return (
     <AppBar
-      position="static"
+      position="sticky"
       color="inherit"
       elevation={0}
       sx={{
+        top: 0,
         height: "66px",
         borderBottom: "1px solid",
         borderColor: "divider",

@@ -1,27 +1,21 @@
 import { useState, type ReactNode } from "react";
 import { useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
-import Sidebar from "../../components/Sidebar/Sidebar";
 import TopBar from "../../components/TopBar";
+import { Sidebar } from "../../components/Sidebar/Sidebar";
 
 type AppLayoutProps = {
   children: ReactNode;
 };
 
-const DRAWER_WIDTH_EXPANDED = 240;
-const DRAWER_WIDTH_COLLAPSED = 72;
-
 export default function AppLayout({ children }: AppLayoutProps) {
   const theme = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-
   const toggleDrawer = () => setSidebarOpen((prev) => !prev);
-  const drawerWidth = sidebarOpen
-    ? DRAWER_WIDTH_EXPANDED
-    : DRAWER_WIDTH_COLLAPSED;
+  const drawerWidth = sidebarOpen ? 240 : 72;
 
   return (
-    <Box sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
       <Sidebar open={sidebarOpen} onToggle={toggleDrawer} />
       <Box
         component="main"
@@ -34,6 +28,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
           flex: 1,
           display: "flex",
           flexDirection: "column",
+          height: "100vh",
+          overflow: "hidden",
         }}
       >
         <TopBar />
@@ -41,7 +37,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
           sx={{
             padding: 3,
             flex: 1,
-            overflow: "auto",
+            overflowY: "auto",
+            overflowX: "hidden",
+            overscrollBehavior: "none",
           }}
         >
           {children}

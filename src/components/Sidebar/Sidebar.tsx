@@ -51,7 +51,7 @@ type SidebarProps = {
   onToggle: () => void;
 };
 
-export default function Sidebar({ open, onToggle }: SidebarProps) {
+export function Sidebar({ open, onToggle }: SidebarProps) {
   const location = useLocation();
   const { user } = useAuthContext();
   const { themeMode } = useThemeContext();
