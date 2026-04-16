@@ -7,6 +7,7 @@ import {
   Chip,
   IconButton,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -41,7 +42,7 @@ export default function UserDetail() {
     if (!element) return;
 
     const computeVisibility = () => {
-      setShowRoleChip(element.clientWidth > 420);
+      setShowRoleChip(element.clientWidth > 450);
     };
 
     computeVisibility();
@@ -52,17 +53,17 @@ export default function UserDetail() {
   }, []);
 
   return (
-    <Box sx={{ width: "100%", mx: 0 }}>
-      <Paper elevation={1} sx={{ p: 1.5, mb: 0.75 }}>
+    <Box sx={{ width: "100%", mx: 0, textAlign: "left" }}>
+      <Paper elevation={1} sx={{ p: 1.5, mb: 0.75, textAlign: "left" }}>
         <Box
           ref={headerRef}
           sx={{
             display: "flex",
             alignItems: "center",
-            justifyContent: "space-between",
             gap: 1,
             mb: 1,
-            flexWrap: "wrap",
+            flexWrap: "nowrap",
+            minWidth: 0,
           }}
         >
           <Tooltip title="Back to users">
@@ -78,13 +79,12 @@ export default function UserDetail() {
               gap: 1,
               flex: 1,
               minWidth: 0,
-              minHeight: 0,
             }}
           >
             <Avatar
               src={user.avatarUrl || undefined}
               alt={`${user.firstName} ${user.lastName}`}
-              sx={{ width: 56, height: 56 }}
+              sx={{ width: 56, height: 56, flexShrink: 0 }}
             >
               {user.firstName?.[0]}
               {user.lastName?.[0]}
@@ -95,19 +95,25 @@ export default function UserDetail() {
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "flex-start",
+                textAlign: "left",
                 gap: 0.25,
                 minWidth: 0,
+                flex: 1,
+                overflow: "hidden",
+                width: "100%",
               }}
             >
-              <Box
+              <Stack
                 sx={{
                   display: "flex",
+                  flexDirection: "row",
                   alignItems: "center",
-                  gap: 0.5,
-                  flexWrap: "nowrap",
+                  justifyContent: "flex-start",
+                  gap: 1,
                   minWidth: 0,
-                  flexShrink: 1,
+                  flex: 1,
                   overflow: "hidden",
+                  width: "100%",
                 }}
               >
                 <Typography
@@ -117,10 +123,13 @@ export default function UserDetail() {
                   color="text.primary"
                   sx={{
                     fontWeight: 600,
-                    flexShrink: 1,
                     minWidth: 0,
+                    width: "fit-content",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    display: "block",
+                    border: "1px solid red",
                   }}
                 >
                   {user.firstName} {user.lastName}
@@ -129,21 +138,24 @@ export default function UserDetail() {
                   label={user.role}
                   size="small"
                   sx={{
+                    border: "1px solid red",
                     flexShrink: 0,
                     display: showRoleChip ? "inline-flex" : "none",
                   }}
                 />
-              </Box>
+              </Stack>
               <Typography
                 variant="body2"
                 color="text.secondary"
+                noWrap
                 sx={{
                   overflow: "hidden",
                   textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
                   minWidth: 0,
-                  flexShrink: 1,
-                  maxWidth: "100%",
-                  whiteSpace: "normal",
+                  flex: 1,
+                  width: "100%",
+                  display: "block",
                 }}
               >
                 {user.email}
@@ -155,7 +167,7 @@ export default function UserDetail() {
             variant="outlined"
             size="small"
             disabled
-            startIcon={<Visibility />}
+            endIcon={<Visibility />}
             sx={{ flexShrink: 0 }}
           >
             Reports

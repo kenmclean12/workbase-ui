@@ -77,12 +77,12 @@ export function Sidebar({ open, onToggle, disabled = false }: SidebarProps) {
     : "U";
 
   const avatarContent = user?.avatarUrl ? (
-    <Avatar sx={{ width: 35, height: 35 }} src={user.avatarUrl} />
+    <Avatar sx={{ width: 40, height: 40 }} src={user.avatarUrl} />
   ) : (
     <Avatar
       sx={{
-        width: 35,
-        height: 35,
+        width: 40,
+        height: 40,
         bgcolor: themeMode === "dark" ? "#40444d" : "#d9e2eb",
         color: themeMode === "dark" ? "#d1d5db" : "#637381",
         fontWeight: 700,

@@ -7,10 +7,13 @@ import {
   Avatar,
   Typography,
   Box,
+  FormControlLabel,
+  Switch,
+  Stack,
 } from "@mui/material";
 import Logout from "@mui/icons-material/Logout";
 import { useAuthContext } from "../../../context/AuthContext";
-import ThemeToggle from "./ThemeToggle";
+import { useThemeContext } from "../../../context/ThemeContext";
 
 export interface ProfileMenuProps {
   anchorEl: HTMLElement | null;
@@ -20,6 +23,7 @@ export interface ProfileMenuProps {
 
 export function ProfileMenu({ anchorEl, open, onClose }: ProfileMenuProps) {
   const { user, logout } = useAuthContext();
+  const { themeMode, toggleTheme } = useThemeContext();
 
   const safeText = (value: unknown, fallback = "") =>
     typeof value === "string" ? value : fallback;
@@ -134,7 +138,11 @@ export function ProfileMenu({ anchorEl, open, onClose }: ProfileMenuProps) {
           }}
         >
           <Typography variant="body2">Theme</Typography>
-          <ThemeToggle />
+          <Stack direction="row" alignItems="center">
+            <Typography variant="body2">☀️</Typography>
+            <Switch checked={themeMode === "dark"} onChange={toggleTheme} />
+            <Typography variant="body2">🌙</Typography>
+          </Stack>
         </Box>
       </MenuItem>
 
