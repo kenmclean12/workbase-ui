@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Avatar,
@@ -15,6 +15,7 @@ import {
   Paper,
   Pagination,
   Select,
+  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
@@ -52,6 +53,12 @@ export default function UsersList() {
   const [roleFilter, setRoleFilter] = useState<"All" | Role>("All");
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [page, setPage] = useState<number>(1);
+  const listRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!listRef.current) return;
+    listRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  }, [page]);
 
   const filteredUsers = useMemo(() => {
     return testUsers.filter((user) => {
@@ -72,16 +79,12 @@ export default function UsersList() {
     setPage(1);
   };
 
-  const handleRoleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleRoleChange = (event: SelectChangeEvent<"All" | Role>) => {
     setRoleFilter(event.target.value as "All" | Role);
     setPage(1);
   };
 
-  const handleRowsPerPageChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleRowsPerPageChange = (event: SelectChangeEvent<number>) => {
     setRowsPerPage(Number(event.target.value));
     setPage(1);
   };
@@ -148,7 +151,7 @@ export default function UsersList() {
 
       <Divider sx={{ mb: 2 }} />
 
-      <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+      <Box ref={listRef} sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
         <List disablePadding>
           {paginatedUsers.map((user: User) => (
             <ListItem key={user.id} disablePadding divider>
