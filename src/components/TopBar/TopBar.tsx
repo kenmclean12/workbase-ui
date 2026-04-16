@@ -3,7 +3,14 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Home, Business, Work, People, BarChart, Person } from "@mui/icons-material";
+import {
+  Home,
+  Business,
+  Work,
+  People,
+  BarChart,
+  Person,
+} from "@mui/icons-material";
 import { useTheme } from "@mui/material";
 
 const pageConfig = [
