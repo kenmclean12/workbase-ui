@@ -41,8 +41,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
         sx={{
           marginLeft: `${drawerWidth}px`,
           transition: theme.transitions.create("margin", {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
+            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.standard,
           }),
           flex: 1,
           minHeight: 0,

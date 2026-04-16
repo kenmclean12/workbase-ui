@@ -104,6 +104,11 @@ export function Sidebar({ open, onToggle, disabled = false }: SidebarProps) {
         bottom: 0,
         width: drawerWidth,
         flexShrink: 0,
+        transition: (theme) =>
+          theme.transitions.create("width", {
+            easing: theme.transitions.easing.easeInOut,
+            duration: theme.transitions.duration.standard,
+          }),
         "& .MuiDrawer-paper": {
           width: drawerWidth,
           boxSizing: "border-box",
@@ -112,8 +117,8 @@ export function Sidebar({ open, onToggle, disabled = false }: SidebarProps) {
           backgroundColor: "background.paper",
           transition: (theme) =>
             theme.transitions.create("width", {
-              easing: theme.transitions.easing.sharp,
-              duration: theme.transitions.duration.enteringScreen,
+              easing: theme.transitions.easing.easeInOut,
+              duration: theme.transitions.duration.standard,
             }),
           overflowX: "hidden",
           display: "flex",

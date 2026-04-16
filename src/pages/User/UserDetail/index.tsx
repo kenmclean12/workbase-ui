@@ -1,82 +1,168 @@
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
-  Box,
-  Paper,
-  Typography,
   Avatar,
-  Grid,
+  Box,
+  Button,
   Chip,
+  IconButton,
+  Paper,
   Table,
   TableBody,
   TableCell,
   TableContainer,
   TableHead,
   TableRow,
-  Button,
+  Tooltip,
+  Typography,
 } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
-import { testUser } from "../../../testData";
+import { ArrowBack, Visibility } from "@mui/icons-material";
+import { testUser, testUsers, type User } from "../../../testData";
 
 export default function UserDetail() {
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const user = testUser;
+
+  const resolvedUser: User = useMemo(() => {
+    if (id) {
+      const found = testUsers.find((item) => item.id === Number(id));
+      return found ?? testUser;
+    }
+
+    return testUser;
+  }, [id]);
+
+  const user = resolvedUser;
+  const [showRoleChip, setShowRoleChip] = useState(true);
+  const headerRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const element = headerRef.current;
+    if (!element) return;
+
+    const computeVisibility = () => {
+      setShowRoleChip(element.clientWidth > 420);
+    };
+
+    computeVisibility();
+    const observer = new ResizeObserver(() => computeVisibility());
+    observer.observe(element);
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <Box>
-      <Button
-        startIcon={<ArrowBack />}
-        onClick={() => navigate("/users")}
-        sx={{ mb: 2 }}
-      >
-        Back to Users
-      </Button>
+    <Box sx={{ width: "100%", mx: 0 }}>
+      <Paper elevation={1} sx={{ p: 1.5, mb: 0.75 }}>
+        <Box
+          ref={headerRef}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
+            mb: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          <Tooltip title="Back to users">
+            <IconButton onClick={() => navigate("/users")} size="small">
+              <ArrowBack fontSize="small" />
+            </IconButton>
+          </Tooltip>
 
-      <Paper elevation={1} sx={{ p: 3, mb: 3 }}>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-          <Avatar
-            src={user.avatarUrl || undefined}
-            alt={`${user.firstName} ${user.lastName}`}
-            sx={{ width: 80, height: 80, mr: 2 }}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              flex: 1,
+              minWidth: 0,
+              minHeight: 0,
+            }}
           >
-            {user.firstName?.[0]}
-            {user.lastName?.[0]}
-          </Avatar>
-          <Box>
-            <Typography variant="h4" component="h2">
-              {user.firstName} {user.lastName}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {user.email}
-            </Typography>
-            <Chip label={`Role: ${user.role}`} size="small" sx={{ mt: 1 }} />
+            <Avatar
+              src={user.avatarUrl || undefined}
+              alt={`${user.firstName} ${user.lastName}`}
+              sx={{ width: 56, height: 56 }}
+            >
+              {user.firstName?.[0]}
+              {user.lastName?.[0]}
+            </Avatar>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                gap: 0.25,
+                minWidth: 0,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  flexWrap: "nowrap",
+                  minWidth: 0,
+                  flexShrink: 1,
+                  overflow: "hidden",
+                }}
+              >
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  noWrap
+                  sx={{
+                    fontWeight: 600,
+                    flexShrink: 1,
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {user.firstName} {user.lastName}
+                </Typography>
+                <Chip
+                  label={user.role}
+                  size="small"
+                  sx={{
+                    flexShrink: 0,
+                    display: showRoleChip ? "inline-flex" : "none",
+                  }}
+                />
+              </Box>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  minWidth: 0,
+                  flexShrink: 1,
+                  maxWidth: "100%",
+                  whiteSpace: "normal",
+                }}
+              >
+                {user.email}
+              </Typography>
+            </Box>
           </Box>
+
+          <Button
+            variant="outlined"
+            size="small"
+            disabled
+            startIcon={<Visibility />}
+            sx={{ flexShrink: 0 }}
+          >
+            Reports
+          </Button>
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" color="text.secondary">
-              ID
-            </Typography>
-            <Typography variant="body1">{user.id}</Typography>
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Created At
-            </Typography>
-            <Typography variant="body1">
-              {new Date(user.createdAt).toLocaleDateString()}
-            </Typography>
-          </Grid>
-          <Grid item xs={12}>
-            <Typography variant="subtitle2" color="text.secondary">
-              Avatar URL
-            </Typography>
-            <Typography variant="body1">{user.avatarUrl || "None"}</Typography>
-          </Grid>
-        </Grid>
       </Paper>
-      <Paper elevation={1} sx={{ p: 3 }}>
-        <Typography variant="h5" component="h3" gutterBottom>
+      <Paper elevation={1} sx={{ p: 2, mt: 0 }}>
+        <Typography variant="h6" component="h3" gutterBottom>
           Assigned Jobs
         </Typography>
         <TableContainer>

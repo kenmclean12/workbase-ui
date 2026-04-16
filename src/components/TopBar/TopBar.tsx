@@ -54,7 +54,7 @@ export default function TopBar() {
           {currentPage.icon}
           <Typography
             color={isDarkMode ? "white" : "black"}
-            sx={{ fontSize: "20px", fontWeight: 500, lineHeight: 1 }}
+            sx={{ fontSize: "19px", fontWeight: 500, lineHeight: 1 }}
           >
             {currentPage.label}
           </Typography>
