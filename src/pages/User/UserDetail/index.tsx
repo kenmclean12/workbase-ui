@@ -129,7 +129,6 @@ export default function UserDetail() {
                     textOverflow: "ellipsis",
                     whiteSpace: "nowrap",
                     display: "block",
-                    border: "1px solid red",
                   }}
                 >
                   {user.firstName} {user.lastName}
@@ -138,7 +137,6 @@ export default function UserDetail() {
                   label={user.role}
                   size="small"
                   sx={{
-                    border: "1px solid red",
                     flexShrink: 0,
                     display: showRoleChip ? "inline-flex" : "none",
                   }}
