@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import type { SelectChangeEvent } from "@mui/material";
 import {
   Avatar,
   Box,
@@ -15,7 +16,6 @@ import {
   Paper,
   Pagination,
   Select,
-  SelectChangeEvent,
   Stack,
   TextField,
   Typography,
