@@ -114,6 +114,7 @@ export default function UserDetail() {
                   variant="h6"
                   component="h2"
                   noWrap
+                  color="text.primary"
                   sx={{
                     fontWeight: 600,
                     flexShrink: 1,
