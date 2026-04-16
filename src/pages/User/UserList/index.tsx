@@ -153,10 +153,7 @@ export default function UsersList() {
           {paginatedUsers.map((user: User) => (
             <ListItem key={user.id} disablePadding divider>
               <ListItemButton
-                onClick={() => {
-                  setSelectedUserId(user.id);
-                  navigate(`/users/${user.id}`);
-                }}
+                onClick={() => navigate(`/users/${user.id}`)}
               >
                 <ListItemAvatar>
                   <Avatar
