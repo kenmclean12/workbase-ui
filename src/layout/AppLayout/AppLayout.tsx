@@ -1,8 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
 import { useMediaQuery, useTheme } from "@mui/material";
 import Box from "@mui/material/Box";
-import TopBar from "../../components/TopBar";
-import { Sidebar } from "../../components/Sidebar/Sidebar";
+import { useEffect, useState, type ReactNode } from "react";
+import { Sidebar, TopBar } from "../components";
 
 type AppLayoutProps = {
   children: ReactNode;

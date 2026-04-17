@@ -103,13 +103,6 @@ export default function ClientList() {
       }}
     >
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
-        <Button
-          variant="outlined"
-          onClick={handleFiltersOpen}
-          sx={{ minWidth: 120 }}
-        >
-          Filters
-        </Button>
         <TextField
           fullWidth
           value={search}
@@ -135,6 +128,13 @@ export default function ClientList() {
             ))}
           </Select>
         </FormControl>
+        <Button
+          variant="outlined"
+          onClick={handleFiltersOpen}
+          sx={{ minWidth: 120, height: 40 }}
+        >
+          Filters
+        </Button>
       </Stack>
 
       <Divider sx={{ mb: 2 }} />
@@ -143,7 +143,7 @@ export default function ClientList() {
         {filteredClients.length === 0 ? (
           <Box
             sx={{
-              height: "100%",
+              height: "80%",
               minHeight: 260,
               display: "flex",
               alignItems: "center",

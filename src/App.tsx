@@ -1,18 +1,18 @@
+import { CssBaseline, ThemeProvider as MuiThemeProvider } from "@mui/material";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
-import AppLayout from "./layout/AppLayout";
-import MainPage from "./pages/MainPage";
-import LoginPage from "./pages/LoginPage/LoginPage";
-import RegisterPage from "./pages/RegisterPage/RegisterPage";
-import ProtectedRoute from "./packages/ProtectedRoute";
+import "./App.css";
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider, useThemeContext } from "./context/ThemeContext";
-import "./App.css";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import UsersList from "./pages/User/UserList";
-import UserDetail from "./pages/User/UserDetail";
-import ClientList from "./pages/Client/ClientList";
+import AppLayout from "./layout/AppLayout";
+import ProtectedRoute from "./packages/ProtectedRoute";
+import { LoginPage } from "./pages";
 import ClientDetail from "./pages/Client/ClientDetail";
+import ClientList from "./pages/Client/ClientList";
+import MainPage from "./pages/MainPage";
+import RegisterPage from "./pages/RegisterPage/RegisterPage";
+import UserDetail from "./pages/User/UserDetail";
+import UsersList from "./pages/User/UserList";
 
 const queryClient = new QueryClient();
 

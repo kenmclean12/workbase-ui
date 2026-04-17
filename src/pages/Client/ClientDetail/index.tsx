@@ -16,6 +16,7 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  Badge,
 } from "@mui/material";
 import { ArrowBack } from "@mui/icons-material";
 import { clients } from "../../../testData/client";
@@ -134,12 +135,20 @@ export default function ClientDetail() {
               </Typography>
             </Box>
           </Box>
-
           <Button variant="outlined" size="small" disabled>
-            Actions
+            Contacts (0)
           </Button>
+          <Stack direction="row">
+            <Button variant="outlined" size="small" disabled>
+              Requests
+            </Button>
+            <Badge
+              badgeContent={1}
+              color="error"
+              overlap="circular"
+            />
+          </Stack>
         </Box>
-
         <Divider sx={{ my: 1 }} />
 
         <Stack direction="row" spacing={2} flexWrap="wrap">

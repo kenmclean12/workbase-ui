@@ -1,27 +1,26 @@
+import Logout from "@mui/icons-material/Logout";
 import {
-  Menu,
-  MenuItem,
+  Avatar,
+  Box,
+  Divider,
   ListItemIcon,
   ListItemText,
-  Divider,
-  Avatar,
-  Typography,
-  Box,
-  FormControlLabel,
-  Switch,
+  Menu,
+  MenuItem,
   Stack,
+  Switch,
+  Typography,
 } from "@mui/material";
-import Logout from "@mui/icons-material/Logout";
-import { useAuthContext } from "../../../context/AuthContext";
-import { useThemeContext } from "../../../context/ThemeContext";
+import { useAuthContext } from "../../../../context/AuthContext";
+import { useThemeContext } from "../../../../context/ThemeContext";
 
-export interface ProfileMenuProps {
+export interface Props {
   anchorEl: HTMLElement | null;
   open: boolean;
   onClose: () => void;
 }
 
-export function ProfileMenu({ anchorEl, open, onClose }: ProfileMenuProps) {
+export function ProfileMenu({ anchorEl, open, onClose }: Props) {
   const { user, logout } = useAuthContext();
   const { themeMode, toggleTheme } = useThemeContext();
 
@@ -145,9 +144,7 @@ export function ProfileMenu({ anchorEl, open, onClose }: ProfileMenuProps) {
           </Stack>
         </Box>
       </MenuItem>
-
       <Divider />
-
       <MenuItem onClick={handleLogout}>
         <ListItemIcon>
           <Logout fontSize="small" />

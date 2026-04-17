@@ -139,16 +139,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
+      console.log("Access Token")
       const res = await fetch(`${API_BASE_URL}/user/me`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-
-      if (!res.ok) {
-        logout();
-        return;
-      }
 
       const data = await res.json();
       setUser(data);
