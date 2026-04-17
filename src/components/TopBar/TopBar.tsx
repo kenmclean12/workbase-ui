@@ -10,12 +10,14 @@ import {
   People,
   BarChart,
   Person,
+  RequestPage,
 } from "@mui/icons-material";
 import { useTheme } from "@mui/material";
 
 const pageConfig = [
   { path: "/", label: "Home", icon: <Home /> },
   { path: "/clients", label: "Clients", icon: <Business /> },
+  { path: "/requests", label: "Requests", icon: <RequestPage /> },
   { path: "/jobs", label: "Tasks", icon: <Work /> },
   { path: "/users", label: "Users", icon: <People /> },
   { path: "/profile", label: "Profile", icon: <Person /> },

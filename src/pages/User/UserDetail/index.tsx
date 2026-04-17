@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -18,22 +18,19 @@ import {
   Typography,
 } from "@mui/material";
 import { ArrowBack, Visibility } from "@mui/icons-material";
-import { testUser, testUsers, type User } from "../../../testData";
+import { useUserGetById } from "../../../hooks/user";
+import { useAuthContext } from "../../../context/AuthContext";
 
 export default function UserDetail() {
   const { id } = useParams<{ id?: string }>();
+  const { user: currentUser } = useAuthContext();
+  const location = useLocation();
   const navigate = useNavigate();
-
-  const resolvedUser: User = useMemo(() => {
-    if (id) {
-      const found = testUsers.find((item) => item.id === Number(id));
-      return found ?? testUser;
-    }
-
-    return testUser;
-  }, [id]);
-
-  const user = resolvedUser;
+  const resolvedId = location.pathname.includes("profile")
+    ? currentUser?.id
+    : id;
+  const userId = resolvedId ? Number(resolvedId) : undefined;
+  const { data: user } = useUserGetById(userId);
   const [showRoleChip, setShowRoleChip] = useState(true);
   const headerRef = useRef<HTMLDivElement | null>(null);
 
@@ -66,12 +63,13 @@ export default function UserDetail() {
             minWidth: 0,
           }}
         >
-          <Tooltip title="Back to users">
-            <IconButton onClick={() => navigate("/users")} size="small">
-              <ArrowBack fontSize="small" />
-            </IconButton>
-          </Tooltip>
-
+          {!location.pathname.includes("profile") && (
+            <Tooltip title="Back to users">
+              <IconButton onClick={() => navigate("/users")} size="small">
+                <ArrowBack fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
           <Box
             sx={{
               display: "flex",
@@ -82,12 +80,12 @@ export default function UserDetail() {
             }}
           >
             <Avatar
-              src={user.avatarUrl || undefined}
-              alt={`${user.firstName} ${user.lastName}`}
+              src={user?.avatarUrl || undefined}
+              alt={`${user?.firstName} ${user?.lastName}`}
               sx={{ width: 56, height: 56, flexShrink: 0 }}
             >
-              {user.firstName?.[0]}
-              {user.lastName?.[0]}
+              {user?.firstName?.[0]}
+              {user?.lastName?.[0]}
             </Avatar>
             <Box
               sx={{
@@ -131,10 +129,10 @@ export default function UserDetail() {
                     display: "block",
                   }}
                 >
-                  {user.firstName} {user.lastName}
+                  {user?.firstName} {user?.lastName}
                 </Typography>
                 <Chip
-                  label={user.role}
+                  label={user?.role}
                   size="small"
                   sx={{
                     flexShrink: 0,
@@ -156,7 +154,7 @@ export default function UserDetail() {
                   display: "block",
                 }}
               >
-                {user.email}
+                {user?.email}
               </Typography>
             </Box>
           </Box>
@@ -174,7 +172,7 @@ export default function UserDetail() {
       </Paper>
       <Paper elevation={1} sx={{ p: 2, mt: 0 }}>
         <Typography variant="h6" component="h3" gutterBottom>
-          Assigned Jobs
+          Assigned Jobs (0)
         </Typography>
         <TableContainer>
           <Table>

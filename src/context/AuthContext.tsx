@@ -1,5 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
-
 import {
   createContext,
   useCallback,
@@ -18,6 +16,8 @@ type User = {
   firstName: string;
   lastName: string;
   avatarUrl?: string | null;
+  createdAt?: string;
+  role?: string;
 };
 
 type AuthContextValue = {
@@ -53,9 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState<boolean>(true);
 
   const storeTokens = useCallback(
-    (accessToken: string, newRefreshToken: string) => {
+    (accessToken: string, refreshToken: string) => {
       localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("refreshToken", newRefreshToken);
+      localStorage.setItem("refreshToken", refreshToken);
       setToken(accessToken);
     },
     [],
@@ -70,6 +70,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(() => {
     clearTokens();
     setUser(null);
+    setLoading(false);
   }, [clearTokens]);
 
   const refreshAccessToken = useCallback(async () => {
@@ -90,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const data = await res.json();
     storeTokens(data.accessToken, data.refreshToken);
     return data.accessToken as string;
-  }, [storeTokens, logout]);
+  }, [logout, storeTokens]);
 
   const fetchWithAuth = useCallback(
     async (path: string, config: RequestInit = {}) => {
@@ -112,9 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (response.status !== 401) return response;
 
       const newToken = await refreshAccessToken();
-      if (!newToken) {
-        throw new Error("Unauthorized");
-      }
+      if (!newToken) throw new Error("Unauthorized");
 
       response = await makeRequest(newToken);
 
@@ -125,14 +124,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       return response;
     },
-    [refreshAccessToken, logout],
+    [logout, refreshAccessToken],
   );
 
   const loadUser = useCallback(async () => {
     const accessToken = localStorage.getItem("accessToken");
 
     if (!accessToken) {
-      logout();
+      setUser(null);
       setLoading(false);
       return;
     }
@@ -140,35 +139,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
 
     try {
-      const response = await fetchWithAuth("/user/me");
+      const res = await fetch(`${API_BASE_URL}/user/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-      if (!response.ok) {
+      if (!res.ok) {
         logout();
         return;
       }
 
-      const data = await response.json();
-
-      if (!data) {
-        logout();
-        return;
-      }
-
+      const data = await res.json();
       setUser(data);
     } catch {
       logout();
     } finally {
       setLoading(false);
     }
-  }, [fetchWithAuth, logout]);
+  }, [logout]);
 
   useEffect(() => {
     void loadUser();
-  }, [loadUser]);
+  }, [token, loadUser]);
 
   const login = useCallback(
     async (email: string, password: string) => {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -177,13 +174,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await decodeResponse<{
         accessToken: string;
         refreshToken: string;
-      }>(response);
+      }>(res);
 
       storeTokens(data.accessToken, data.refreshToken);
-
-      await loadUser();
     },
-    [storeTokens, loadUser],
+    [storeTokens],
   );
 
   const register = useCallback(
@@ -193,13 +188,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       firstName: string;
       lastName: string;
     }) => {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
+      if (!res.ok) {
         throw new Error("Registration failed");
       }
 

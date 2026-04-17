@@ -20,20 +20,21 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { testUsers, type User, type Role } from "../../../testData";
+import { useUsersGetAll } from "../../../hooks/user";
+import { Role, type UserResponseDto } from "../../../types/user";
 
 const rowsPerPageOptions = [25, 50, 100] as const;
 const roleOptions: Array<Role | "All"> = [
   "All",
-  "SUPERADMIN",
-  "ADMIN",
-  "STANDARD",
-  "READONLY",
+  Role.SUPERADMIN,
+  Role.ADMIN,
+  Role.STANDARD,
+  Role.READONLY,
 ];
 
 const normalize = (value: string) => value.toLowerCase().replace(/\s+/g, "");
 
-const matchesSearch = (user: User, query: string) => {
+const matchesSearch = (user: UserResponseDto, query: string) => {
   const normalizedQuery = normalize(query);
   if (!normalizedQuery) {
     return true;
@@ -54,6 +55,7 @@ export default function UsersList() {
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [page, setPage] = useState<number>(1);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const { data: users = [] } = useUsersGetAll();
 
   useEffect(() => {
     if (!listRef.current) return;
@@ -61,12 +63,12 @@ export default function UsersList() {
   }, [page]);
 
   const filteredUsers = useMemo(() => {
-    return testUsers.filter((user) => {
+    return users?.filter((user) => {
       const roleMatches =
         roleFilter === "All" ? true : user.role === roleFilter;
       return roleMatches && matchesSearch(user, search);
     });
-  }, [search, roleFilter]);
+  }, [search, roleFilter, users]);
 
   const pageCount = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
   const paginatedUsers = filteredUsers.slice(
@@ -153,7 +155,7 @@ export default function UsersList() {
 
       <Box ref={listRef} sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
         <List disablePadding>
-          {paginatedUsers.map((user: User) => (
+          {paginatedUsers.map((user: UserResponseDto) => (
             <ListItem key={user.id} disablePadding divider>
               <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
                 <ListItemAvatar>

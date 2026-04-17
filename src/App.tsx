@@ -35,6 +35,7 @@ function ThemedApp() {
                       <Route path="/users" element={<UsersList />} />
                       <Route path="/users/:id" element={<UserDetail />} />
                       <Route path="/profile" element={<UserDetail />} />
+                      <Route path="/requests" element={<></>} />
                       <Route path="/clients" element={<></>} />
                       <Route path="/jobs" element={<></>} />
                       <Route path="/stats" element={<></>} />

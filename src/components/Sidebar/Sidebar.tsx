@@ -9,6 +9,7 @@ import {
   ChevronLeft,
   BusinessCenter,
   Person,
+  RequestPage,
 } from "@mui/icons-material";
 import {
   Box,
@@ -37,9 +38,15 @@ type MenuItem = {
 
 const menuItems: MenuItem[] = [
   { key: "profile", label: "Profile", path: "/profile", icon: <Person /> },
-  { key: "clients", label: "Clients", path: "/clients", icon: <Business /> },
-  { key: "jobs", label: "Tasks", path: "/jobs", icon: <Work /> },
   { key: "users", label: "Users", path: "/users", icon: <People /> },
+  { key: "clients", label: "Clients", path: "/clients", icon: <Business /> },
+  {
+    key: "requests",
+    label: "Requests",
+    path: "/requests",
+    icon: <RequestPage />,
+  },
+  { key: "jobs", label: "Tasks", path: "/jobs", icon: <Work /> },
   { key: "stats", label: "Stats", path: "/stats", icon: <BarChart /> },
 ];
 
