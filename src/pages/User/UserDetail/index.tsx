@@ -5,6 +5,7 @@ import {
   Box,
   Button,
   Chip,
+  CircularProgress,
   IconButton,
   Paper,
   Stack,
@@ -30,7 +31,7 @@ export default function UserDetail() {
     ? currentUser?.id
     : id;
   const userId = resolvedId ? Number(resolvedId) : undefined;
-  const { data: user } = useUserGetById(userId);
+  const { data: user, isLoading } = useUserGetById(userId);
   const [showRoleChip, setShowRoleChip] = useState(true);
   const headerRef = useRef<HTMLDivElement | null>(null);
 
@@ -48,6 +49,42 @@ export default function UserDetail() {
 
     return () => observer.disconnect();
   }, []);
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: "80%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2,
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return (
+      <Box
+        sx={{
+          width: "100%",
+          height: "80%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          p: 2,
+        }}
+      >
+        <Typography variant="body1" color="text.secondary">
+          No user found.
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ width: "100%", mx: 0, textAlign: "left" }}>

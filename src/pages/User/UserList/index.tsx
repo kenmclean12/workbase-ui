@@ -4,6 +4,7 @@ import type { SelectChangeEvent } from "@mui/material";
 import {
   Avatar,
   Box,
+  CircularProgress,
   Divider,
   FormControl,
   InputLabel,
@@ -55,7 +56,7 @@ export default function UsersList() {
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [page, setPage] = useState<number>(1);
   const listRef = useRef<HTMLDivElement | null>(null);
-  const { data: users = [] } = useUsersGetAll();
+  const { data: users = [], isLoading } = useUsersGetAll();
 
   useEffect(() => {
     if (!listRef.current) return;
@@ -154,52 +155,83 @@ export default function UsersList() {
       <Divider sx={{ mb: 2 }} />
 
       <Box ref={listRef} sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-        <List disablePadding>
-          {paginatedUsers.map((user: UserResponseDto) => (
-            <ListItem key={user.id} disablePadding divider>
-              <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
-                <ListItemAvatar>
-                  <Avatar
-                    src={user.avatarUrl || undefined}
-                    alt={`${user.firstName} ${user.lastName}`}
-                  >
-                    {user.firstName?.[0]}
-                    {user.lastName?.[0]}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={`${user.firstName} ${user.lastName}`}
-                  secondary={user.email}
-                />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+        {isLoading ? (
+          <Box
+            sx={{
+              height: "80%",
+              minHeight: 260,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : filteredUsers.length === 0 ? (
+          <Box
+            sx={{
+              height: "80%",
+              minHeight: 260,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 2,
+            }}
+          >
+            <Typography variant="body1" color="text.secondary">
+              No users found.
+            </Typography>
+          </Box>
+        ) : (
+          <List disablePadding>
+            {paginatedUsers.map((user: UserResponseDto) => (
+              <ListItem key={user.id} disablePadding divider>
+                <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
+                  <ListItemAvatar>
+                    <Avatar
+                      src={user.avatarUrl || undefined}
+                      alt={`${user.firstName} ${user.lastName}`}
+                    >
+                      {user.firstName?.[0]}
+                      {user.lastName?.[0]}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`${user.firstName} ${user.lastName}`}
+                    secondary={user.email}
+                  />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+        )}
       </Box>
 
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          mt: 2,
-          flexWrap: "wrap",
-          gap: 1,
-        }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          Showing {paginatedUsers.length} of {filteredUsers.length} users
-        </Typography>
-        <Pagination
-          count={pageCount}
-          page={page}
-          onChange={handlePageChange}
-          color="primary"
-          shape="rounded"
-          siblingCount={0}
-          boundaryCount={1}
-        />
-      </Box>
+      {!isLoading && filteredUsers.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            mt: 2,
+            flexWrap: "wrap",
+            gap: 1,
+          }}
+        >
+          <Typography variant="body2" color="text.secondary">
+            Showing {paginatedUsers.length} of {filteredUsers.length} users
+          </Typography>
+          <Pagination
+            count={pageCount}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            shape="rounded"
+            siblingCount={0}
+            boundaryCount={1}
+          />
+        </Box>
+      )}
     </Box>
   );
 }
