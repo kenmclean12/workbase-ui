@@ -1,10 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { SelectChangeEvent } from "@mui/material";
 import {
   Avatar,
   Box,
-  CircularProgress,
   Divider,
   FormControl,
   InputLabel,
@@ -16,69 +15,62 @@ import {
   MenuItem,
   Paper,
   Pagination,
+  Popover,
   Select,
   Stack,
   TextField,
+  Button,
   Typography,
 } from "@mui/material";
-import { useUsersGetAll } from "../../../hooks/user";
-import { Role, type UserResponseDto } from "../../../types/user";
+import { clients, type Client } from "../../../testData/client";
 
 const rowsPerPageOptions = [25, 50, 100] as const;
-const roleOptions: Array<Role | "All"> = [
-  "All",
-  Role.SUPERADMIN,
-  Role.ADMIN,
-  Role.STANDARD,
-  Role.READONLY,
-];
 
 const normalize = (value: string) => value.toLowerCase().replace(/\s+/g, "");
 
-const matchesSearch = (user: UserResponseDto, query: string) => {
+const matchesSearch = (client: Client, query: string) => {
   const normalizedQuery = normalize(query);
   if (!normalizedQuery) {
     return true;
   }
 
-  const nameValue = normalize(`${user.firstName}${user.lastName}`);
-  if (nameValue.includes(normalizedQuery)) {
-    return true;
-  }
-
-  return user.email.toLowerCase().includes(normalizedQuery);
+  return normalize(client.name).includes(normalizedQuery);
 };
 
-export default function UsersList() {
+export default function ClientList() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const [roleFilter, setRoleFilter] = useState<"All" | Role>("All");
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [page, setPage] = useState<number>(1);
+  const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
-  const { data: users = [], isLoading } = useUsersGetAll();
 
   useEffect(() => {
     if (!listRef.current) return;
     listRef.current.scrollTo({ top: 0, behavior: "smooth" });
   }, [page]);
 
-  const filteredUsers = useMemo(() => {
-    return users?.filter((user) => {
-      const roleMatches =
-        roleFilter === "All" ? true : user.role === roleFilter;
-      return roleMatches && matchesSearch(user, search);
-    });
-  }, [search, roleFilter, users]);
+  const openFilters = Boolean(filterAnchor);
+  const handleFiltersOpen = (event: MouseEvent<HTMLElement>) => {
+    setFilterAnchor(event.currentTarget);
+  };
+  const handleFiltersClose = () => setFilterAnchor(null);
 
-  const pageCount = Math.max(1, Math.ceil(filteredUsers.length / rowsPerPage));
-  const paginatedUsers = filteredUsers.slice(
+  const filteredClients = useMemo(() => {
+    return clients.filter((client) => matchesSearch(client, search));
+  }, [search]);
+
+  const pageCount = Math.max(
+    1,
+    Math.ceil(filteredClients.length / rowsPerPage),
+  );
+  const paginatedClients = filteredClients.slice(
     (page - 1) * rowsPerPage,
     page * rowsPerPage,
   );
 
-  const handleRoleChange = (event: SelectChangeEvent<"All" | Role>) => {
-    setRoleFilter(event.target.value as "All" | Role);
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
     setPage(1);
   };
 
@@ -104,35 +96,23 @@ export default function UsersList() {
       }}
     >
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>
+        <Button
+          variant="outlined"
+          onClick={handleFiltersOpen}
+          sx={{ minWidth: 120 }}
+        >
+          Filters
+        </Button>
         <TextField
           fullWidth
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
-          label="Search users"
-          placeholder="Search by name or email"
+          onChange={handleSearchChange}
+          label="Search clients"
+          placeholder="Search by client name"
           variant="outlined"
           size="small"
           sx={{ minWidth: 100 }}
         />
-        <FormControl sx={{ minWidth: 60, width: 190 }} size="small">
-          <InputLabel id="role-filter-label">Role</InputLabel>
-          <Select
-            labelId="role-filter-label"
-            value={roleFilter}
-            label="Role"
-            onChange={handleRoleChange}
-          >
-            {roleOptions.map((roleOption: Role | "All") => (
-              <MenuItem key={roleOption} value={roleOption}>
-                {roleOption[0]}
-                {roleOption.toLowerCase().slice(1, roleOption.length)}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
         <FormControl sx={{ minWidth: 80, width: 160 }} size="small">
           <InputLabel id="rows-per-page-label">Rows</InputLabel>
           <Select
@@ -153,22 +133,10 @@ export default function UsersList() {
       <Divider sx={{ mb: 2 }} />
 
       <Box ref={listRef} sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-        {isLoading ? (
+        {filteredClients.length === 0 ? (
           <Box
             sx={{
-              height: "80%",
-              minHeight: 260,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        ) : filteredUsers.length === 0 ? (
-          <Box
-            sx={{
-              height: "80%",
+              height: "100%",
               minHeight: 260,
               display: "flex",
               alignItems: "center",
@@ -177,26 +145,29 @@ export default function UsersList() {
             }}
           >
             <Typography variant="body1" color="text.secondary">
-              No users found.
+              No clients found.
             </Typography>
           </Box>
         ) : (
           <List disablePadding>
-            {paginatedUsers.map((user: UserResponseDto) => (
-              <ListItem key={user.id} disablePadding divider>
-                <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
+            {paginatedClients.map((client) => (
+              <ListItem key={client.id} disablePadding divider>
+                <ListItemButton
+                  onClick={() => navigate(`/clients/${client.id}`)}
+                >
                   <ListItemAvatar>
-                    <Avatar
-                      src={user.avatarUrl || undefined}
-                      alt={`${user.firstName} ${user.lastName}`}
-                    >
-                      {user.firstName?.[0]}
-                      {user.lastName?.[0]}
+                    <Avatar src={undefined} alt={client.name}>
+                      {client.name?.[0]}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
-                    primary={`${user.firstName} ${user.lastName}`}
-                    secondary={user.email}
+                    primary={client.name}
+                    secondary={
+                      client.email ??
+                      client.phone ??
+                      client.website ??
+                      "No contact info"
+                    }
                   />
                 </ListItemButton>
               </ListItem>
@@ -205,7 +176,7 @@ export default function UsersList() {
         )}
       </Box>
 
-      {!isLoading && filteredUsers.length > 0 && (
+      {filteredClients.length > 0 && (
         <Box
           sx={{
             display: "flex",
@@ -217,7 +188,8 @@ export default function UsersList() {
           }}
         >
           <Typography variant="body2" color="text.secondary">
-            Showing {paginatedUsers.length} of {filteredUsers.length} users
+            Showing {paginatedClients.length} of {filteredClients.length}{" "}
+            clients
           </Typography>
           <Pagination
             count={pageCount}
@@ -230,6 +202,21 @@ export default function UsersList() {
           />
         </Box>
       )}
+
+      <Popover
+        open={openFilters}
+        anchorEl={filterAnchor}
+        onClose={handleFiltersClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+      >
+        <Box sx={{ p: 2, minWidth: 220 }}>
+          <Typography variant="subtitle1">Filters</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            No filters available yet.
+          </Typography>
+        </Box>
+      </Popover>
     </Box>
   );
 }

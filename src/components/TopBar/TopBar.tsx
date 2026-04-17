@@ -15,13 +15,13 @@ import {
 import { useTheme } from "@mui/material";
 
 const pageConfig = [
-  { path: "/", label: "Home", icon: <Home /> },
   { path: "/clients", label: "Clients", icon: <Business /> },
   { path: "/requests", label: "Requests", icon: <RequestPage /> },
   { path: "/jobs", label: "Tasks", icon: <Work /> },
-  { path: "/users", label: "Users", icon: <People /> },
+  { path: "users", label: "Users", icon: <People /> },
   { path: "/profile", label: "Profile", icon: <Person /> },
   { path: "/stats", label: "Stats", icon: <BarChart /> },
+  { path: "/", label: "Home", icon: <Home /> },
 ];
 
 export default function TopBar() {
@@ -29,7 +29,8 @@ export default function TopBar() {
   const isDarkMode = theme.palette.mode === "dark";
   const location = useLocation();
   const currentPage =
-    pageConfig.find((item) => item.path === location.pathname) || pageConfig[0];
+    pageConfig.find((item) => location.pathname.includes(item.path)) ||
+    pageConfig[0];
 
   return (
     <AppBar

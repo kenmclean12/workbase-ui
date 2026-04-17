@@ -11,6 +11,8 @@ import "./App.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import UsersList from "./pages/User/UserList";
 import UserDetail from "./pages/User/UserDetail";
+import ClientList from "./pages/Client/ClientList";
+import ClientDetail from "./pages/Client/ClientDetail";
 
 const queryClient = new QueryClient();
 
@@ -36,7 +38,8 @@ function ThemedApp() {
                       <Route path="/users/:id" element={<UserDetail />} />
                       <Route path="/profile" element={<UserDetail />} />
                       <Route path="/requests" element={<></>} />
-                      <Route path="/clients" element={<></>} />
+                      <Route path="/clients" element={<ClientList />} />
+                      <Route path="/clients/:id" element={<ClientDetail />} />
                       <Route path="/jobs" element={<></>} />
                       <Route path="/stats" element={<></>} />
                       <Route path="*" element={<></>} />
