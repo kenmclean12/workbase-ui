@@ -27,7 +27,7 @@ export function LoginPage() {
   return (
     <Box sx={styles.root}>
       <Paper sx={styles.paper} elevation={3}>
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" mb={0.5} gutterBottom>
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={styles.form}>
