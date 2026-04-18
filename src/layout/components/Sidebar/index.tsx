@@ -24,8 +24,7 @@ import {
 } from "@mui/material";
 import { useState, type ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuthContext } from "../../../context/AuthContext";
-import { useThemeContext } from "../../../context/ThemeContext";
+import { useAuthContext, useThemeContext } from "../../../context";
 import { ProfileMenu } from "./ProfileMenu";
 import { styles } from "./styles";
 

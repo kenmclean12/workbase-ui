@@ -1,7 +1,7 @@
 import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext";
+import { useAuthContext } from "../../context";
 import { styles } from "./styles";
 
 export function LoginPage() {

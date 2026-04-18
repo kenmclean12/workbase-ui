@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { ArrowBack, Visibility } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -18,9 +17,10 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { ArrowBack, Visibility } from "@mui/icons-material";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useAuthContext } from "../../../context";
 import { useUserGetById } from "../../../hooks/user";
-import { useAuthContext } from "../../../context/AuthContext";
 
 export default function UserDetail() {
   const { id } = useParams<{ id?: string }>();

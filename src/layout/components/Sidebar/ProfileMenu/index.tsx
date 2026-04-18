@@ -11,8 +11,7 @@ import {
   Switch,
   Typography,
 } from "@mui/material";
-import { useAuthContext } from "../../../../context/AuthContext";
-import { useThemeContext } from "../../../../context/ThemeContext";
+import { useAuthContext, useThemeContext } from "../../../../context";
 
 export interface Props {
   anchorEl: HTMLElement | null;
@@ -124,9 +123,7 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
           </Box>
         </Box>
       </Box>
-
       <Divider />
-
       <MenuItem onClick={onClose}>
         <Box
           sx={{
