@@ -24,7 +24,7 @@ import { useUsersGetAll } from "../../../hooks";
 import { Role, type UserResponseDto } from "../../../types/user";
 import { styles } from "./styles";
 
-export default function UsersList() {
+export function UsersList() {
   const navigate = useNavigate();
   const listRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState("");

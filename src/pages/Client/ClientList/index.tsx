@@ -1,16 +1,8 @@
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type MouseEvent,
-  type ChangeEvent,
-} from "react";
-import { useNavigate } from "react-router-dom";
 import type { SelectChangeEvent } from "@mui/material";
 import {
   Avatar,
   Box,
+  Button,
   Divider,
   FormControl,
   InputLabel,
@@ -20,31 +12,26 @@ import {
   ListItemButton,
   ListItemText,
   MenuItem,
-  Paper,
   Pagination,
+  Paper,
   Popover,
   Select,
   Stack,
   TextField,
-  Button,
   Typography,
 } from "@mui/material";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type MouseEvent,
+} from "react";
+import { useNavigate } from "react-router-dom";
 import { clients, type Client } from "../../../testData/client";
 
-const rowsPerPageOptions = [25, 50, 100] as const;
-
-const normalize = (value: string) => value.toLowerCase().replace(/\s+/g, "");
-
-const matchesSearch = (client: Client, query: string) => {
-  const normalizedQuery = normalize(query);
-  if (!normalizedQuery) {
-    return true;
-  }
-
-  return normalize(client.name).includes(normalizedQuery);
-};
-
-export default function ClientList() {
+export function ClientList() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
@@ -182,7 +169,6 @@ export default function ClientList() {
           </List>
         )}
       </Box>
-
       {filteredClients.length > 0 && (
         <Box
           sx={{
@@ -209,7 +195,6 @@ export default function ClientList() {
           />
         </Box>
       )}
-
       <Popover
         open={openFilters}
         anchorEl={filterAnchor}
@@ -227,3 +212,16 @@ export default function ClientList() {
     </Box>
   );
 }
+
+const rowsPerPageOptions = [25, 50, 100] as const;
+
+const normalize = (value: string) => value.toLowerCase().replace(/\s+/g, "");
+
+const matchesSearch = (client: Client, query: string) => {
+  const normalizedQuery = normalize(query);
+  if (!normalizedQuery) {
+    return true;
+  }
+
+  return normalize(client.name).includes(normalizedQuery);
+};

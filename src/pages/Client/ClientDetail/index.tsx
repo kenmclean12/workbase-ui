@@ -1,7 +1,7 @@
-import { useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { ArrowBack } from "@mui/icons-material";
 import {
   Avatar,
+  Badge,
   Box,
   Button,
   Divider,
@@ -16,12 +16,12 @@ import {
   TableRow,
   Tooltip,
   Typography,
-  Badge,
 } from "@mui/material";
-import { ArrowBack } from "@mui/icons-material";
+import { useMemo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { clients } from "../../../testData/client";
 
-export default function ClientDetail() {
+export function ClientDetail() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const clientId = id ? Number(id) : undefined;
@@ -142,11 +142,7 @@ export default function ClientDetail() {
             <Button variant="outlined" size="small" disabled>
               Requests
             </Button>
-            <Badge
-              badgeContent={1}
-              color="error"
-              overlap="circular"
-            />
+            <Badge badgeContent={1} color="error" overlap="circular" />
           </Stack>
         </Box>
         <Divider sx={{ my: 1 }} />

@@ -6,11 +6,15 @@ import { ThemeProvider, useThemeContext } from "./context";
 import { AuthProvider } from "./context/AuthContext";
 import AppLayout from "./layout";
 import ProtectedRoute from "./packages/ProtectedRoute";
-import { LoginPage, MainPage, RegisterPage } from "./pages";
-import ClientDetail from "./pages/Client/ClientDetail";
-import ClientList from "./pages/Client/ClientList";
-import UserDetail from "./pages/User/UserDetail";
-import UsersList from "./pages/User/UserList";
+import {
+  ClientDetail,
+  ClientList,
+  LoginPage,
+  MainPage,
+  RegisterPage,
+  UserDetail,
+  UsersList,
+} from "./pages";
 
 const queryClient = new QueryClient();
 

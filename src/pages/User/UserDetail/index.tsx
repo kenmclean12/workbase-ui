@@ -23,7 +23,7 @@ import { useAuthContext } from "../../../context";
 import { useUserGetById } from "../../../hooks";
 import { styles } from "./styles";
 
-export default function UserDetail() {
+export function UserDetail() {
   const { id } = useParams<{ id?: string }>();
   const { user: currentUser } = useAuthContext();
   const location = useLocation();
@@ -90,10 +90,14 @@ export default function UserDetail() {
             </Avatar>
             <Box sx={styles.infoContainer}>
               <Stack sx={styles.nameRow}>
-                <Typography sx={styles.nameText} variant="h6" component="h2">
+                <Typography
+                  sx={styles.nameText}
+                  color="text.primary"
+                  variant="h6"
+                  component="h2"
+                >
                   {user.firstName} {user.lastName}
                 </Typography>
-
                 <Chip
                   label={user.role}
                   size="small"
