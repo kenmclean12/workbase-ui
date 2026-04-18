@@ -20,7 +20,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../../../context";
-import { useUserGetById } from "../../../hooks/user";
+import { useUserGetById } from "../../../hooks";
 
 export default function UserDetail() {
   const { id } = useParams<{ id?: string }>();

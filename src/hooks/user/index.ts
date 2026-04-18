@@ -1,12 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { enqueueSnackbar } from "notistack";
-import { useAuthContext } from "../context";
+import { useAuthContext } from "../../context";
 import type {
   PasswordResetDto,
   UserCreateDto,
   UserResponseDto,
   UserUpdateDto,
-} from "../types/user";
+} from "../../types/user";
 
 const BASE_URL = "/user";
 
