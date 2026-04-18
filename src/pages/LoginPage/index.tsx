@@ -5,10 +5,12 @@ import { useAuthContext } from "../../context";
 import { styles } from "./styles";
 
 export function LoginPage() {
-  const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const { login, token, loading } = useAuthContext();
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (token && !loading) {
@@ -18,7 +20,7 @@ export function LoginPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
+    await login(form.email, form.password);
     navigate("/");
   };
 
@@ -31,15 +33,19 @@ export function LoginPage() {
         <Box component="form" onSubmit={handleSubmit} sx={styles.form}>
           <TextField
             label="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={form.email}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, email: e.target.value }))
+            }
             type="email"
             required
           />
           <TextField
             label="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={form.password}
+            onChange={(e) =>
+              setForm((prev) => ({ ...prev, password: e.target.value }))
+            }
             type="password"
             required
           />

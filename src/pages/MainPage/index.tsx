@@ -1,5 +1,5 @@
 import Box from "@mui/material/Box";
 
-export default function MainPage() {
+export function MainPage() {
   return <Box>Main</Box>;
 }

@@ -4,13 +4,11 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { ThemeProvider, useThemeContext } from "./context";
 import { AuthProvider } from "./context/AuthContext";
-import AppLayout from "./layout/AppLayout";
+import AppLayout from "./layout";
 import ProtectedRoute from "./packages/ProtectedRoute";
-import { LoginPage } from "./pages";
+import { LoginPage, MainPage, RegisterPage } from "./pages";
 import ClientDetail from "./pages/Client/ClientDetail";
 import ClientList from "./pages/Client/ClientList";
-import MainPage from "./pages/MainPage";
-import RegisterPage from "./pages/RegisterPage/RegisterPage";
 import UserDetail from "./pages/User/UserDetail";
 import UsersList from "./pages/User/UserList";
 

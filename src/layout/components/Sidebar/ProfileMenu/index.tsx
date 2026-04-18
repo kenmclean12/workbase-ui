@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useAuthContext, useThemeContext } from "../../../../context";
+import { styles } from "./styles";
 
 export interface Props {
   anchorEl: HTMLElement | null;
@@ -23,118 +24,57 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
   const { user, logout } = useAuthContext();
   const { themeMode, toggleTheme } = useThemeContext();
 
-  const safeText = (value: unknown, fallback = "") =>
-    typeof value === "string" ? value : fallback;
-
-  const safeInitial = (value: unknown) =>
-    typeof value === "string" && value.length > 0 ? value[0] : "";
-
-  const safeName = () => {
-    const first = safeText(user?.firstName);
-    const last = safeText(user?.lastName);
-    return `${first} ${last}`.trim() || "User";
-  };
-
-  const safeEmail = () => {
-    const email = safeText(user?.email);
-    return email || "user@example.com";
-  };
-
   const handleLogout = () => {
     logout();
     onClose();
   };
-
-  const initials = user
-    ? `${safeInitial(user.firstName)}${safeInitial(user.lastName)}`.toUpperCase()
-    : "U";
 
   return (
     <Menu
       anchorEl={anchorEl}
       open={open}
       onClose={onClose}
-      anchorOrigin={{
-        vertical: "bottom",
-        horizontal: "right",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      PaperProps={{
-        sx: {
-          mt: 1.5,
-          width: 240,
-          "& .MuiMenuItem-root": {
-            py: 1,
-            "&:hover": {
-              backgroundColor: "rgba(0,0,0,0.04)",
-            },
-          },
-        },
-      }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      transformOrigin={{ vertical: "top", horizontal: "right" }}
+      PaperProps={{ sx: styles.menuPaper }}
     >
-      <Box sx={{ px: 2, py: 1.5 }}>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+      <Box sx={styles.header}>
+        <Box sx={styles.userRow}>
           {user?.avatarUrl ? (
-            <Avatar src={user.avatarUrl} sx={{ width: 40, height: 40 }} />
+            <Avatar src={user.avatarUrl} sx={styles.avatar} />
           ) : (
             <Avatar
               sx={{
-                width: 40,
-                height: 40,
+                ...styles.avatar,
                 bgcolor: (theme) =>
                   theme.palette.mode === "dark" ? "#40444d" : "#d9e2eb",
                 color: (theme) =>
                   theme.palette.mode === "dark" ? "#d1d5db" : "#637381",
-                fontWeight: 700,
               }}
             >
-              {initials}
+              {`${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`.toUpperCase() ||
+                "U"}
             </Avatar>
           )}
-          <Box sx={{ minWidth: 0 }}>
-            <Typography
-              variant="subtitle2"
-              fontWeight={600}
-              sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: 140,
-              }}
-            >
-              {safeName()}
+          <Box sx={styles.textContainer}>
+            <Typography variant="subtitle2" fontWeight={600} sx={styles.name}>
+              {user?.firstName ?? ""} {user?.lastName ?? ""}
             </Typography>
             <Typography
               variant="caption"
               color="text.secondary"
-              sx={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: 140,
-                display: "block",
-              }}
+              sx={styles.email}
             >
-              {safeEmail()}
+              {user?.email ?? ""}
             </Typography>
           </Box>
         </Box>
       </Box>
       <Divider />
       <MenuItem onClick={onClose}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
+        <Box sx={styles.themeRow}>
           <Typography variant="body2">Theme</Typography>
-          <Stack direction="row" alignItems="center">
+          <Stack direction="row" alignItems="center" spacing={1}>
             <Typography variant="body2">☀️</Typography>
             <Switch checked={themeMode === "dark"} onChange={toggleTheme} />
             <Typography variant="body2">🌙</Typography>
@@ -144,7 +84,7 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
       <Divider />
       <MenuItem onClick={handleLogout}>
         <ListItemIcon>
-          <Logout fontSize="small" />
+          <Logout sx={styles.logoutIcon} />
         </ListItemIcon>
         <ListItemText>Logout</ListItemText>
       </MenuItem>
