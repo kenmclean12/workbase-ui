@@ -4,7 +4,6 @@ import {
   Badge,
   Box,
   Button,
-  Divider,
   IconButton,
   Paper,
   Stack,
@@ -128,10 +127,7 @@ export function ClientDetail() {
                   display: "block",
                 }}
               >
-                {client.email ??
-                  client.phone ??
-                  client.website ??
-                  "No contact info"}
+                {client.email ?? "No contact info"}
               </Typography>
             </Box>
           </Box>
@@ -145,9 +141,8 @@ export function ClientDetail() {
             <Badge badgeContent={1} color="error" overlap="circular" />
           </Stack>
         </Box>
-        <Divider sx={{ my: 1 }} />
-
-        <Stack direction="row" spacing={2} flexWrap="wrap">
+        {/* <Divider sx={{ my: 1 }} /> */}
+        {/* <Stack direction="row" spacing={2} flexWrap="wrap">
           <Box sx={{ minWidth: 240, flex: 1 }}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
               Client Information
@@ -180,62 +175,33 @@ export function ClientDetail() {
               <Typography variant="body2">No address available.</Typography>
             )}
           </Box>
-        </Stack>
+        </Stack> */}
       </Paper>
-
-      <Box sx={{ display: "grid", gap: 2 }}>
-        <Paper elevation={1} sx={{ p: 2 }}>
-          <Typography variant="h6" component="h3" gutterBottom>
-            Active Requests (0)
-          </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Request ID</TableCell>
-                  <TableCell>Description</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    <Typography variant="body2" color="text.secondary">
-                      No active requests at the moment.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-
-        <Paper elevation={1} sx={{ p: 2 }}>
-          <Typography variant="h6" component="h3" gutterBottom>
-            Active Jobs (0)
-          </Typography>
-          <TableContainer>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Job ID</TableCell>
-                  <TableCell>Title</TableCell>
-                  <TableCell>Status</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                <TableRow>
-                  <TableCell colSpan={3} align="center">
-                    <Typography variant="body2" color="text.secondary">
-                      No active jobs at the moment.
-                    </Typography>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
-      </Box>
+      <Paper elevation={1} sx={{ flex: 1, p: 2 }}>
+        <Typography variant="h6" component="h3" gutterBottom>
+          Active Jobs (0)
+        </Typography>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Job ID</TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Status</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell colSpan={3} align="center">
+                  <Typography variant="body2" color="text.secondary">
+                    No active jobs at the moment.
+                  </Typography>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Paper>
     </Box>
   );
 }

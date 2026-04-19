@@ -156,12 +156,7 @@ export function ClientList() {
                   </ListItemAvatar>
                   <ListItemText
                     primary={client.name}
-                    secondary={
-                      client.email ??
-                      client.phone ??
-                      client.website ??
-                      "No contact info"
-                    }
+                    secondary={client.email ?? ""}
                   />
                 </ListItemButton>
               </ListItem>

@@ -31,9 +31,9 @@ export function UserDetail() {
   const headerRef = useRef<HTMLDivElement | null>(null);
   const [showRoleChip, setShowRoleChip] = useState(true);
   const resolvedId = location.pathname.includes("profile")
-    ? currentUser?.id
-    : id;
-  const { data: user, isLoading } = useUserGetById(Number(resolvedId));
+    ? Number(currentUser?.id)
+    : Number(id);
+  const { data: user, isLoading } = useUserGetById(resolvedId);
 
   useEffect(() => {
     const element = headerRef.current;
