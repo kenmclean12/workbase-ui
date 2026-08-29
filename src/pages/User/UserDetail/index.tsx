@@ -85,7 +85,15 @@ export function UserDetail() {
   }
 
   return (
-    <Box sx={styles.root}>
+    <Box
+      sx={{
+        ...styles.root,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
+      }}
+    >
       <Paper elevation={1} sx={styles.headerPaper}>
         <Box ref={headerRef} sx={styles.headerRow}>
           {!location.pathname.includes("profile") && (
@@ -130,14 +138,24 @@ export function UserDetail() {
           </Box>
         </Box>
       </Paper>
-      <Paper elevation={1} sx={{ ...styles.contentPaper, p: 2 }}>
+      <Paper
+        elevation={1}
+        sx={{
+          ...styles.contentPaper,
+          p: 1.5,
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         <Typography variant="h6" component="h3" gutterBottom>
           Assigned Requests
         </Typography>
         <Stack
           direction={{ xs: "column", md: "row" }}
-          spacing={2}
-          sx={{ alignItems: "stretch" }}
+          spacing={1.5}
+          sx={{ alignItems: "stretch", flex: 1, minHeight: 0, height: "100%" }}
         >
           {[RequestStatus.IN_PROGRESS, RequestStatus.DONE].map((status) => (
             <Box
@@ -155,7 +173,7 @@ export function UserDetail() {
                 flexDirection: "column",
               }}
             >
-              <Box sx={{ p: 2, pb: 1.5 }}>
+              <Box sx={{ p: 1.5, pb: 1 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Typography variant="subtitle1" fontWeight={700}>
                     {REQUEST_STATUS_META[status].label}
@@ -167,17 +185,19 @@ export function UserDetail() {
                       backgroundColor: REQUEST_STATUS_META[status].color,
                       color: "#fff",
                       fontWeight: 700,
+                      border: "none",
+                      height: 22,
                     }}
                   />
                 </Stack>
               </Box>
               <Box
                 sx={{
-                  p: 2,
-                  pt: 0,
+                  p: 1.5,
+                  pt: 0.75,
                   display: "flex",
                   flexDirection: "column",
-                  gap: 1.5,
+                  gap: 1,
                   flex: 1,
                   minHeight: 0,
                   overflowY: "auto",
@@ -210,6 +230,14 @@ export function UserDetail() {
                       .map((part) => part[0]?.toUpperCase() ?? "")
                       .join("") || "C";
                     const descriptionText = request.description?.trim() ?? "";
+                    const createdAt = request.createdAt ? new Date(request.createdAt) : null;
+                    const createdDateLabel = createdAt && !Number.isNaN(createdAt.getTime())
+                      ? new Intl.DateTimeFormat("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        }).format(createdAt)
+                      : "Unknown date";
                     const priorityMeta = REQUEST_PRIORITY_META[request.priority] ?? REQUEST_PRIORITY_META[1];
 
                     return (
@@ -218,14 +246,14 @@ export function UserDetail() {
                         onClick={() => setSelectedRequest(request)}
                         sx={(theme) => ({
                           border: `1px solid ${theme.palette.divider}`,
-                          borderRadius: 2,
-                          p: 1.5,
+                          borderRadius: 1.5,
+                          p: 1.25,
                           backgroundColor:
                             theme.palette.mode === "dark"
                               ? "rgba(15, 23, 42, 0.9)"
                               : "rgba(255, 255, 255, 0.96)",
                           cursor: "pointer",
-                          minHeight: 128,
+                          minHeight: 150,
                           boxShadow: "0 1px 2px rgba(15, 23, 42, 0.08)",
                           transition:
                             "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
@@ -240,21 +268,23 @@ export function UserDetail() {
                         })}
                       >
                         <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, alignItems: "flex-start" }}>
-                          <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: 1, minWidth: 0 }}>
-                            <Avatar
-                              sx={{
-                                width: 26,
-                                height: 26,
-                                fontSize: "0.72rem",
-                                fontWeight: 700,
-                                bgcolor: "primary.main",
-                                color: "#fff",
-                                flexShrink: 0,
-                              }}
-                            >
-                              {clientInitials}
-                            </Avatar>
-                            <Stack spacing={0.8} sx={{ textAlign: "left", flex: 1, minWidth: 0 }}>
+                          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.8, flex: 1, minWidth: 0 }}>
+                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
+                              <Avatar
+                                sx={{
+                                  width: 26,
+                                  height: 26,
+                                  fontSize: "0.72rem",
+                                  fontWeight: 700,
+                                  bgcolor: "transparent",
+                                  color: "primary.main",
+                                  border: "1px solid",
+                                  borderColor: "primary.main",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                {clientInitials}
+                              </Avatar>
                               <Typography
                                 variant="subtitle2"
                                 sx={{
@@ -265,61 +295,99 @@ export function UserDetail() {
                                   textOverflow: "ellipsis",
                                   whiteSpace: "nowrap",
                                   textAlign: "left",
+                                  minWidth: 0,
                                 }}
                               >
                                 {clientName}
                               </Typography>
+                            </Box>
 
-                              {displayTitle && (
-                                <Typography
-                                  variant="body2"
-                                  sx={{
-                                    fontWeight: 600,
-                                    color: "text.primary",
-                                    lineHeight: 1.5,
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                    textAlign: "left",
-                                  }}
-                                >
-                                  {displayTitle}
-                                </Typography>
-                              )}
+                            {displayTitle && (
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontWeight: 600,
+                                  color: "text.primary",
+                                  lineHeight: 1.5,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  textAlign: "left",
+                                }}
+                              >
+                                {displayTitle}
+                              </Typography>
+                            )}
 
-                              {descriptionText && (
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                  sx={{
-                                    display: "-webkit-box",
-                                    lineHeight: 1.5,
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "normal",
-                                    WebkitLineClamp: 2,
-                                    WebkitBoxOrient: "vertical",
-                                    wordBreak: "break-word",
-                                    overflowWrap: "anywhere",
-                                    textAlign: "left",
-                                  }}
-                                >
-                                  {descriptionText}
-                                </Typography>
-                              )}
-                            </Stack>
+                            {descriptionText && (
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                sx={{
+                                  display: "-webkit-box",
+                                  lineHeight: 1.5,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "normal",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  wordBreak: "break-word",
+                                  overflowWrap: "anywhere",
+                                  textAlign: "left",
+                                }}
+                              >
+                                {descriptionText}
+                              </Typography>
+                            )}
+
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                alignItems: "center",
+                                mt: "auto",
+                                pt: 0.25,
+                                pb: 0.25,
+                                mb: 0.25,
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.disabled"
+                                sx={{
+                                  display: "block",
+                                  textAlign: "left",
+                                  fontWeight: 600,
+                                  letterSpacing: "0.02em",
+                                  lineHeight: 1.2,
+                                }}
+                              >
+                                Created {createdDateLabel}
+                              </Typography>
+                            </Box>
                           </Box>
                           <Chip
-                            label={priorityMeta.label}
+                            icon={<priorityMeta.icon />}
+                            label=""
                             size="small"
+                            aria-label={priorityMeta.label}
                             sx={{
-                              backgroundColor: priorityMeta.color,
-                              color: priorityMeta.textColor,
+                              border: `1px solid ${priorityMeta.color}`,
+                              color: priorityMeta.color,
+                              backgroundColor: "transparent",
                               fontWeight: 700,
                               borderRadius: 999,
                               height: 24,
-                              fontSize: "0.68rem",
-                              px: 0.8,
+                              minWidth: 24,
+                              width: 24,
+                              px: 0,
+                              ".MuiChip-icon": {
+                                margin: 0,
+                                color: priorityMeta.color,
+                              },
+                              ".MuiChip-label": {
+                                display: "none",
+                              },
                               flexShrink: 0,
                             }}
                           />

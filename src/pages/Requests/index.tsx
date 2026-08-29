@@ -74,7 +74,7 @@ export function RequestsPage() {
               height: "100%",
             }}
           >
-            <Box sx={{ p: 2, pb: 1.5 }}>
+            <Box sx={{ p: 1.5, pb: 1 }}>
               <Stack direction="row" justifyContent="space-between" alignItems="center">
                 <Typography variant="subtitle1" fontWeight={700}>
                   {column.label}
@@ -86,6 +86,8 @@ export function RequestsPage() {
                     backgroundColor: REQUEST_STATUS_META[column.key].color,
                     color: "#fff",
                     fontWeight: 700,
+                    border: "none",
+                    height: 22,
                   }}
                 />
               </Stack>
@@ -93,13 +95,14 @@ export function RequestsPage() {
             <Divider />
             <Box
               sx={{
-                p: 2,
+                p: 1.5,
+                pt: 0.75,
                 flex: 1,
                 minHeight: 0,
                 overflowY: "auto",
                 display: "flex",
                 flexDirection: "column",
-                gap: 1.5,
+                gap: 1,
               }}
             >
               {(groupedRequests[column.key] ?? []).length === 0 ? (
@@ -129,6 +132,14 @@ export function RequestsPage() {
                     .map((part) => part[0]?.toUpperCase() ?? "")
                     .join("") || "C";
                   const descriptionText = request.description?.trim() ?? "";
+                  const createdAt = request.createdAt ? new Date(request.createdAt) : null;
+                  const createdDateLabel = createdAt && !Number.isNaN(createdAt.getTime())
+                    ? new Intl.DateTimeFormat("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      }).format(createdAt)
+                    : "Unknown date";
                   const priorityMeta = REQUEST_PRIORITY_META[request.priority] ?? REQUEST_PRIORITY_META[1];
 
                   return (
@@ -136,9 +147,9 @@ export function RequestsPage() {
                       key={request.id}
                       variant="outlined"
                       sx={(theme) => ({
-                        borderRadius: 2,
+                        borderRadius: 1.5,
                         cursor: "pointer",
-                        minHeight: 128,
+                        minHeight: 150,
                         height: "100%",
                         display: "flex",
                         flexDirection: "column",
@@ -162,8 +173,16 @@ export function RequestsPage() {
                       })}
                       onClick={() => setSelectedRequest(request)}
                     >
-                      <CardContent sx={{ p: 1.5, pb: "18px !important", flex: 1, minWidth: 0 }}>
-                        <Stack spacing={0.8} sx={{ height: "100%", textAlign: "left" }}>
+                      <CardContent sx={{ p: 1.25, pb: "14px !important", flex: 1, minWidth: 0 }}>
+                        <Stack
+                          spacing={0.6}
+                          sx={{
+                            height: "100%",
+                            textAlign: "left",
+                            display: "flex",
+                            flexDirection: "column",
+                          }}
+                        >
                           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 1 }}>
                             <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0, flex: 1 }}>
                               <Avatar
@@ -172,8 +191,10 @@ export function RequestsPage() {
                                   height: 26,
                                   fontSize: "0.72rem",
                                   fontWeight: 700,
-                                  bgcolor: "primary.main",
-                                  color: "#fff",
+                                  bgcolor: "transparent",
+                                  color: "primary.main",
+                                  border: "1px solid",
+                                  borderColor: "primary.main",
                                   flexShrink: 0,
                                 }}
                               >
@@ -196,16 +217,27 @@ export function RequestsPage() {
                               </Typography>
                             </Box>
                             <Chip
-                              label={priorityMeta.label}
+                              icon={<priorityMeta.icon />}
+                              label=""
                               size="small"
+                              aria-label={priorityMeta.label}
                               sx={{
-                                backgroundColor: priorityMeta.color,
-                                color: priorityMeta.textColor,
+                                border: `1px solid ${priorityMeta.color}`,
+                                color: priorityMeta.color,
+                                backgroundColor: "transparent",
                                 fontWeight: 700,
                                 borderRadius: 999,
                                 height: 24,
-                                fontSize: "0.68rem",
-                                px: 0.8,
+                                minWidth: 24,
+                                width: 24,
+                                px: 0,
+                                ".MuiChip-icon": {
+                                  margin: 0,
+                                  color: priorityMeta.color,
+                                },
+                                ".MuiChip-label": {
+                                  display: "none",
+                                },
                                 flexShrink: 0,
                               }}
                             />
@@ -250,6 +282,32 @@ export function RequestsPage() {
                               {descriptionText}
                             </Typography>
                           )}
+
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "flex-start",
+                              alignItems: "center",
+                              mt: "auto",
+                              pt: 0.25,
+                              pb: 0.25,
+                              mb: 0.25,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              color="text.disabled"
+                              sx={{
+                                display: "block",
+                                textAlign: "left",
+                                fontWeight: 600,
+                                letterSpacing: "0.02em",
+                                lineHeight: 1.2,
+                              }}
+                            >
+                              Created {createdDateLabel}
+                            </Typography>
+                          </Box>
                         </Stack>
                       </CardContent>
                     </Card>

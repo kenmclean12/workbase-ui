@@ -99,9 +99,10 @@ export function RequestDetailDialog({
             label={REQUEST_STATUS_META[request.status].label}
             size="small"
             sx={{
-              backgroundColor: REQUEST_STATUS_META[request.status].color,
-              color: "#fff",
+              border: `1px solid ${REQUEST_STATUS_META[request.status].color}`,
+              color: REQUEST_STATUS_META[request.status].color,
               fontWeight: 700,
+              backgroundColor: "transparent",
             }}
           />
         </Stack>

@@ -1,3 +1,9 @@
+import {
+  ArrowDownward,
+  ArrowRightAlt,
+  ArrowUpward,
+  WarningAmber,
+} from "@mui/icons-material";
 import type { ClientResponseDto } from "./client";
 
 export const RequestStatus = {
@@ -44,10 +50,35 @@ export const REQUEST_STATUS_META: Record<
 
 export const REQUEST_PRIORITY_META: Record<
   RequestPriority,
-  { label: string; color: string; textColor: string }
+  {
+    label: string;
+    color: string;
+    textColor: string;
+    icon: typeof ArrowDownward;
+  }
 > = {
-  [RequestPriority.LOW]: { label: "Low", color: "#22c55e", textColor: "#ffffff" },
-  [RequestPriority.MEDIUM]: { label: "Medium", color: "#f59e0b", textColor: "#111827" },
-  [RequestPriority.HIGH]: { label: "High", color: "#ef4444", textColor: "#ffffff" },
-  [RequestPriority.CRITICAL]: { label: "Critical", color: "#7c3aed", textColor: "#ffffff" },
+  [RequestPriority.LOW]: {
+    label: "Low",
+    color: "#22c55e",
+    textColor: "#ffffff",
+    icon: ArrowDownward,
+  },
+  [RequestPriority.MEDIUM]: {
+    label: "Medium",
+    color: "#f59e0b",
+    textColor: "#111827",
+    icon: ArrowRightAlt,
+  },
+  [RequestPriority.HIGH]: {
+    label: "High",
+    color: "#ef4444",
+    textColor: "#ffffff",
+    icon: ArrowUpward,
+  },
+  [RequestPriority.CRITICAL]: {
+    label: "Critical",
+    color: "#7c3aed",
+    textColor: "#ffffff",
+    icon: WarningAmber,
+  },
 };
