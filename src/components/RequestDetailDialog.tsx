@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Chip,
@@ -14,31 +15,21 @@ import {
   MenuItem,
   Select,
   Stack,
+  Tab,
+  Tabs,
   TextField,
   Typography,
 } from "@mui/material";
 import { useEffect, useMemo, useState } from "react";
 import { useAuthContext } from "../context";
+import { useUsersGetAll } from "../hooks";
 import { useRequestHistory, useRequestUpdate } from "../hooks/request";
 import {
+  REQUEST_PRIORITY_META,
   REQUEST_STATUS_META,
-  RequestPriority,
   RequestStatus,
   type RequestResponseDto,
 } from "../types/request";
-
-const statusOptions = [
-  RequestStatus.UNASSIGNED,
-  RequestStatus.IN_PROGRESS,
-  RequestStatus.DONE,
-] as const;
-
-const priorityOptions = [
-  RequestPriority.LOW,
-  RequestPriority.MEDIUM,
-  RequestPriority.HIGH,
-  RequestPriority.CRITICAL,
-] as const;
 
 export function RequestDetailDialog({
   request,
@@ -50,13 +41,17 @@ export function RequestDetailDialog({
   onClose: () => void;
 }) {
   const { user } = useAuthContext();
+  const { data: users = [] } = useUsersGetAll();
   const { data: history = [], isLoading: isHistoryLoading } = useRequestHistory(
     request?.id,
   );
   const [status, setStatus] = useState<RequestStatus>(RequestStatus.UNASSIGNED);
-  const [priority, setPriority] = useState<RequestPriority>(RequestPriority.LOW);
+  const [assignedToUserId, setAssignedToUserId] = useState<number | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [activeTab, setActiveTab] = useState(0);
+
+  const isUnassigned = request?.status === RequestStatus.UNASSIGNED;
 
   const updateRequest = useRequestUpdate(request?.id, {
     onSuccess: () => onClose(),
@@ -65,7 +60,7 @@ export function RequestDetailDialog({
   useEffect(() => {
     if (!request) return;
     setStatus(request.status);
-    setPriority(request.priority);
+    setAssignedToUserId(request.assignedToUserId ?? null);
     setTitle(request.title);
     setDescription(request.description);
   }, [request]);
@@ -78,125 +73,273 @@ export function RequestDetailDialog({
   if (!request) return null;
 
   const saveChanges = () => {
-    if (!user?.id) return;
+    const actingUserId = user?.id ?? users[0]?.id;
+    if (!actingUserId) return;
 
-    updateRequest.mutate({
-      title,
-      description,
-      status,
-      priority,
-      assignedToUserId: request.assignedToUserId,
-      actionUserId: user.id,
-    });
+    const effectiveStatus =
+      status === RequestStatus.UNASSIGNED && assignedToUserId !== null
+        ? RequestStatus.IN_PROGRESS
+        : status;
+
+    updateRequest.mutate(
+      {
+        title: isUnassigned ? request.title : title,
+        description: isUnassigned ? request.description : description,
+        status: effectiveStatus,
+        priority: request.priority,
+        assignedToUserId: assignedToUserId,
+        actionUserId: actingUserId,
+      },
+      { onSuccess: () => onClose() },
+    );
   };
+
+  const notesCount = historyEntries.length;
+  const clientName = request.client?.name ?? "Client";
+  const clientInitials = clientName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "C";
+  const priorityMeta =
+    REQUEST_PRIORITY_META[request.priority] ?? REQUEST_PRIORITY_META[1];
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
-          <Typography variant="h6">#{request.id} {request.title}</Typography>
-          <Chip
-            label={REQUEST_STATUS_META[request.status].label}
-            size="small"
-            sx={{
-              border: `1px solid ${REQUEST_STATUS_META[request.status].color}`,
-              color: REQUEST_STATUS_META[request.status].color,
-              fontWeight: 700,
-              backgroundColor: "transparent",
-            }}
-          />
+          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+                px: 1.25,
+                py: 0.5,
+                borderRadius: 1,
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "rgba(148, 163, 184, 0.04)",
+              }}
+            >
+              <Avatar
+                sx={{
+                  width: 28,
+                  height: 28,
+                  fontSize: "0.75rem",
+                  fontWeight: 700,
+                  bgcolor: "transparent",
+                  color: "primary.main",
+                  border: "1px solid",
+                  borderColor: "primary.main",
+                }}
+              >
+                {clientInitials}
+              </Avatar>
+              <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
+                {clientName}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                flex: 1,
+                minWidth: 0,
+                px: 1.5,
+                py: 0.75,
+                borderRadius: 1,
+                border: "1px solid",
+                borderColor: "divider",
+                bgcolor: "rgba(148, 163, 184, 0.03)",
+              }}
+            >
+              <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
+                {request.title}
+              </Typography>
+            </Box>
+          </Stack>
+
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Chip
+              icon={<priorityMeta.icon />}
+              label=""
+              size="small"
+              aria-label={priorityMeta.label}
+              sx={{
+                border: `1px solid ${priorityMeta.color}`,
+                color: priorityMeta.color,
+                backgroundColor: "transparent",
+                width: 24,
+                minWidth: 24,
+                height: 24,
+                px: 0,
+                ".MuiChip-icon": {
+                  margin: 0,
+                  color: priorityMeta.color,
+                },
+                ".MuiChip-label": {
+                  display: "none",
+                },
+              }}
+            />
+            <Chip
+              label={REQUEST_STATUS_META[request.status].label}
+              size="small"
+              sx={{
+                border: `1px solid ${REQUEST_STATUS_META[request.status].color}`,
+                color: REQUEST_STATUS_META[request.status].color,
+                fontWeight: 700,
+                backgroundColor: "transparent",
+              }}
+            />
+          </Stack>
         </Stack>
       </DialogTitle>
       <DialogContent dividers>
-        <Stack spacing={3}>
-          <Stack spacing={2}>
-            <TextField
-              label="Title"
-              value={title}
-              onChange={(event) => setTitle(event.target.value)}
-              fullWidth
-            />
-            <TextField
-              label="Description"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              multiline
-              minRows={4}
-              fullWidth
-            />
-            <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-              <FormControl fullWidth>
-                <InputLabel id="request-status-label">Status</InputLabel>
-                <Select
-                  labelId="request-status-label"
-                  value={status}
-                  label="Status"
-                  onChange={(event) => setStatus(event.target.value as RequestStatus)}
-                >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {REQUEST_STATUS_META[option].label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl fullWidth>
-                <InputLabel id="request-priority-label">Priority</InputLabel>
-                <Select
-                  labelId="request-priority-label"
-                  value={priority}
-                  label="Priority"
-                  onChange={(event) =>
-                    setPriority(event.target.value as RequestPriority)
-                  }
-                >
-                  {priorityOptions.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Stack>
-          </Stack>
+        <Stack spacing={2}>
+          <Tabs
+            value={activeTab}
+            onChange={(_, newValue) => setActiveTab(newValue)}
+            aria-label="request details tabs"
+          >
+            <Tab label="Details" />
+            <Tab label={`Notes (${notesCount})`} />
+            <Tab label="History" />
+          </Tabs>
 
-          <Box>
-            <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
-              History
-            </Typography>
-            <Divider sx={{ mb: 1.5 }} />
-            {isHistoryLoading ? (
-              <Typography variant="body2" color="text.secondary">
-                Loading history...
-              </Typography>
-            ) : historyEntries.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                No history for this request yet.
-              </Typography>
-            ) : (
-              <List disablePadding>
-                {historyEntries.map((entry) => (
-                  <ListItem
-                    key={entry.id}
-                    disableGutters
-                    sx={{ display: "block", py: 0.75 }}
-                  >
-                    <Stack direction="row" justifyContent="space-between" spacing={2}>
-                      <Typography variant="body2" fontWeight={600}>
-                        User #{entry.userId}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">
-                        {new Date(entry.createdAt).toLocaleString()}
-                      </Typography>
-                    </Stack>
-                    <Typography variant="body2" color="text.secondary">
-                      {entry.action}
+          {activeTab === 0 ? (
+            <Stack spacing={2}>
+              <Stack spacing={2}>
+                {!isUnassigned && (
+                  <TextField
+                    label="Title"
+                    value={title}
+                    onChange={(event) => setTitle(event.target.value)}
+                    fullWidth
+                  />
+                )}
+
+                {isUnassigned ? (
+                  <Box sx={{ height: 200, maxHeight: 200, overflowY: 'auto', p: 1.5, borderRadius: 1, border: "1px solid", borderColor: "divider", bgcolor: "rgba(148, 163, 184, 0.04)" }}>
+                    <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
+                      Description
                     </Typography>
-                  </ListItem>
-                ))}
-              </List>
-            )}
-          </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "pre-wrap" }}>
+                      {request.description || "No description provided."}
+                    </Typography>
+                  </Box>
+                ) : (
+                  <TextField
+                    label="Description"
+                    value={description}
+                    onChange={(event) => setDescription(event.target.value)}
+                    multiline
+                    minRows={8}
+                    maxRows={12}
+                    fullWidth
+                    sx={{
+                      "& .MuiInputBase-root": {
+                        height: 260,
+                        maxHeight: 260,
+                        overflowY: "auto",
+                      },
+                    }}
+                  />
+                )}
+
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                  <FormControl fullWidth>
+                    <InputLabel id="request-assignee-label">Assigned to</InputLabel>
+                    <Select
+                      labelId="request-assignee-label"
+                      value={assignedToUserId ?? ""}
+                      label="Assigned to"
+                      onChange={(event) => {
+                        const nextValue = event.target.value as number | string | null;
+                        setAssignedToUserId(
+                          nextValue === "" || nextValue === null || nextValue === undefined
+                            ? null
+                            : Number(nextValue),
+                        );
+                      }}
+                    >
+                      <MenuItem value="">Unassigned</MenuItem>
+                      {users.map((userOption) => (
+                        <MenuItem key={userOption.id} value={userOption.id}>
+                          {userOption.firstName} {userOption.lastName}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Stack>
+              </Stack>
+            </Stack>
+          ) : activeTab === 1 ? (
+            <Box sx={{ p: 1.5, borderRadius: 1, border: "1px solid", borderColor: "divider" }}>
+              {notesCount === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No notes for this request yet.
+                </Typography>
+              ) : (
+                <List disablePadding>
+                  {historyEntries.map((entry) => (
+                    <ListItem key={entry.id} disableGutters sx={{ display: "block", py: 0.75 }}>
+                      <Stack direction="row" justifyContent="space-between" spacing={2}>
+                        <Typography variant="body2" fontWeight={600}>
+                          Note
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </Typography>
+                      </Stack>
+                      <Typography variant="body2" color="text.secondary">
+                        {entry.action}
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          ) : (
+            <Box>
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                History
+              </Typography>
+              <Divider sx={{ mb: 1.5 }} />
+              {isHistoryLoading ? (
+                <Typography variant="body2" color="text.secondary">
+                  Loading history...
+                </Typography>
+              ) : historyEntries.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  No history for this request yet.
+                </Typography>
+              ) : (
+                <List disablePadding>
+                  {historyEntries.map((entry) => (
+                    <ListItem
+                      key={entry.id}
+                      disableGutters
+                      sx={{ display: "block", py: 0.75 }}
+                    >
+                      <Stack direction="row" justifyContent="space-between" spacing={2}>
+                        <Typography variant="body2" fontWeight={600}>
+                          User #{entry.userId}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </Typography>
+                      </Stack>
+                      <Typography variant="body2" color="text.secondary">
+                        {entry.action}
+                      </Typography>
+                    </ListItem>
+                  ))}
+                </List>
+              )}
+            </Box>
+          )}
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2 }}>

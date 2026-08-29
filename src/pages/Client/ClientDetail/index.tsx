@@ -9,18 +9,15 @@ import {
   Paper,
   Stack,
   Tooltip,
+  Divider,
   Typography,
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
+import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
 import { useClientGetById, useRequestsGetByClient } from "../../../hooks";
-import {
-  REQUEST_PRIORITY_META,
-  REQUEST_STATUS_META,
-  RequestStatus,
-  type RequestResponseDto,
-} from "../../../types/request";
+import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
 
 export function ClientDetail() {
   const { id } = useParams<{ id?: string }>();
@@ -165,8 +162,8 @@ export function ClientDetail() {
             <Badge badgeContent={requests.length} color="error" overlap="circular" />
           </Stack>
         </Box>
-        {/* <Divider sx={{ my: 1 }} /> */}
-        {/* <Stack direction="row" spacing={2} flexWrap="wrap">
+        <Divider sx={{ my: 1 }} />
+        <Stack direction="row" spacing={2} flexWrap="wrap">
           <Box sx={{ minWidth: 240, flex: 1 }}>
             <Typography variant="subtitle2" color="text.secondary" gutterBottom>
               Client Information
@@ -199,7 +196,8 @@ export function ClientDetail() {
               <Typography variant="body2">No address available.</Typography>
             )}
           </Box>
-        </Stack> */}
+        </Stack>
+        <Divider sx={{ my: 1 }} />
       </Paper>
       <Paper
         elevation={1}
@@ -280,184 +278,13 @@ export function ClientDetail() {
                     No {REQUEST_STATUS_META[status].label.toLowerCase()} requests
                   </Box>
                 ) : (
-                  (groupedRequests[status] ?? []).map((request) => {
-                    const displayTitle = request.title
-                      .replace(/^request\s*/i, "")
-                      .replace(/^#?\s*\d+\s*[-:.)]?\s*/i, "")
-                      .trim();
-                    const clientName = request.client?.name ?? "Client";
-                    const clientInitials = clientName
-                      .split(/\s+/)
-                      .filter(Boolean)
-                      .slice(0, 2)
-                      .map((part) => part[0]?.toUpperCase() ?? "")
-                      .join("") || "C";
-                    const descriptionText = request.description?.trim() ?? "";
-                    const createdAt = request.createdAt ? new Date(request.createdAt) : null;
-                    const createdDateLabel = createdAt && !Number.isNaN(createdAt.getTime())
-                      ? new Intl.DateTimeFormat("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        }).format(createdAt)
-                      : "Unknown date";
-                    const priorityMeta = REQUEST_PRIORITY_META[request.priority] ?? REQUEST_PRIORITY_META[1];
-
-                    return (
-                      <Box
-                        key={request.id}
-                        onClick={() => setSelectedRequest(request)}
-                        sx={(theme) => ({
-                          border: `1px solid ${theme.palette.divider}`,
-                          borderRadius: 1.5,
-                          p: 1.25,
-                          backgroundColor:
-                            theme.palette.mode === "dark"
-                              ? "rgba(15, 23, 42, 0.9)"
-                              : "rgba(255, 255, 255, 0.96)",
-                          cursor: "pointer",
-                          minHeight: 150,
-                          boxShadow: "0 1px 2px rgba(15, 23, 42, 0.08)",
-                          transition:
-                            "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
-                          "&:hover": {
-                            boxShadow:
-                              theme.palette.mode === "dark"
-                                ? "0 8px 20px rgba(15, 23, 42, 0.4)"
-                                : "0 8px 18px rgba(15, 23, 42, 0.12)",
-                            borderColor: theme.palette.primary.main,
-                            transform: "translateY(-2px)",
-                          },
-                        })}
-                      >
-                        <Box sx={{ display: "flex", justifyContent: "space-between", gap: 1, alignItems: "flex-start" }}>
-                          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.8, flex: 1, minWidth: 0 }}>
-                            <Box sx={{ display: "flex", alignItems: "center", gap: 1, minWidth: 0 }}>
-                              <Avatar
-                                sx={{
-                                  width: 26,
-                                  height: 26,
-                                  fontSize: "0.72rem",
-                                  fontWeight: 700,
-                                  bgcolor: "transparent",
-                                  color: "primary.main",
-                                  border: "1px solid",
-                                  borderColor: "primary.main",
-                                  flexShrink: 0,
-                                }}
-                              >
-                                {clientInitials}
-                              </Avatar>
-                              <Typography
-                                variant="subtitle2"
-                                sx={{
-                                  fontWeight: 700,
-                                  color: "text.primary",
-                                  lineHeight: 1.35,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  textAlign: "left",
-                                  minWidth: 0,
-                                }}
-                              >
-                                {clientName}
-                              </Typography>
-                            </Box>
-
-                            {displayTitle && (
-                              <Typography
-                                variant="body2"
-                                sx={{
-                                  fontWeight: 600,
-                                  color: "text.primary",
-                                  lineHeight: 1.5,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  textAlign: "left",
-                                }}
-                              >
-                                {displayTitle}
-                              </Typography>
-                            )}
-
-                            {descriptionText && (
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                sx={{
-                                  display: "-webkit-box",
-                                  lineHeight: 1.5,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "normal",
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: "vertical",
-                                  wordBreak: "break-word",
-                                  overflowWrap: "anywhere",
-                                  textAlign: "left",
-                                }}
-                              >
-                                {descriptionText}
-                              </Typography>
-                            )}
-
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                                mt: "auto",
-                                pt: 0.25,
-                                pb: 0.25,
-                                mb: 0.25,
-                              }}
-                            >
-                              <Typography
-                                variant="caption"
-                                color="text.disabled"
-                                sx={{
-                                  display: "block",
-                                  textAlign: "left",
-                                  fontWeight: 600,
-                                  letterSpacing: "0.02em",
-                                  lineHeight: 1.2,
-                                }}
-                              >
-                                Created {createdDateLabel}
-                              </Typography>
-                            </Box>
-                          </Box>
-                          <Chip
-                            icon={<priorityMeta.icon />}
-                            label=""
-                            size="small"
-                            aria-label={priorityMeta.label}
-                            sx={{
-                              border: `1px solid ${priorityMeta.color}`,
-                              color: priorityMeta.color,
-                              backgroundColor: "transparent",
-                              fontWeight: 700,
-                              borderRadius: 999,
-                              height: 24,
-                              minWidth: 24,
-                              width: 24,
-                              px: 0,
-                              ".MuiChip-icon": {
-                                margin: 0,
-                                color: priorityMeta.color,
-                              },
-                              ".MuiChip-label": {
-                                display: "none",
-                              },
-                              flexShrink: 0,
-                            }}
-                          />
-                        </Box>
-                      </Box>
-                    );
-                  })
+                  (groupedRequests[status] ?? []).map((request) => (
+                    <RequestKanbanCard
+                      key={request.id}
+                      request={request}
+                      onClick={() => setSelectedRequest(request)}
+                    />
+                  ))
                 )}
               </Box>
             </Box>
