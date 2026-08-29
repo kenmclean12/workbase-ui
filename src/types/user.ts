@@ -1,9 +1,11 @@
-export enum Role {
-  SUPERADMIN = "SUPERADMIN",
-  ADMIN = "ADMIN",
-  STANDARD = "STANDARD",
-  READONLY = "READONLY",
-}
+export const Role = {
+  SUPERADMIN: "SUPERADMIN",
+  ADMIN: "ADMIN",
+  STANDARD: "STANDARD",
+  READONLY: "READONLY",
+} as const;
+
+export type Role = (typeof Role)[keyof typeof Role];
 
 export interface PasswordResetDto {
   oldPassword: string;

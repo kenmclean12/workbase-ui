@@ -1,5 +1,4 @@
 import {
-  BarChart,
   Business,
   BusinessCenter,
   ChevronLeft,
@@ -7,7 +6,6 @@ import {
   People,
   Person,
   RequestPage,
-  Work,
 } from "@mui/icons-material";
 import {
   Avatar,
@@ -155,6 +153,4 @@ const menuItems: MenuItem[] = [
     path: "/requests",
     icon: <RequestPage />,
   },
-  { key: "jobs", label: "Tasks", path: "/jobs", icon: <Work /> },
-  { key: "stats", label: "Stats", path: "/stats", icon: <BarChart /> },
 ];

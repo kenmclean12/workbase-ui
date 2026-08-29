@@ -16,19 +16,15 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { clients } from "../../../testData/client";
+import { useClientGetById, useRequestsGetByClient } from "../../../hooks";
 
 export function ClientDetail() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const clientId = id ? Number(id) : undefined;
-
-  const client = useMemo(
-    () => clients.find((item) => item.id === clientId),
-    [clientId],
-  );
+  const { data: client } = useClientGetById(clientId);
+  const { data: requests = [] } = useRequestsGetByClient(clientId);
 
   if (!client) {
     return (
@@ -138,7 +134,7 @@ export function ClientDetail() {
             <Button variant="outlined" size="small" disabled>
               Requests
             </Button>
-            <Badge badgeContent={1} color="error" overlap="circular" />
+            <Badge badgeContent={requests.length} color="error" overlap="circular" />
           </Stack>
         </Box>
         {/* <Divider sx={{ my: 1 }} /> */}

@@ -5,13 +5,13 @@ import "./App.css";
 import { ThemeProvider, useThemeContext } from "./context";
 import { AuthProvider } from "./context/AuthContext";
 import AppLayout from "./layout";
-import ProtectedRoute from "./packages/ProtectedRoute";
 import {
   ClientDetail,
   ClientList,
   LoginPage,
   MainPage,
   RegisterPage,
+  RequestsPage,
   UserDetail,
   UsersList,
 } from "./pages";
@@ -32,14 +32,14 @@ function ThemedApp() {
             <Route
               path="/*"
               element={
-                <ProtectedRoute>
+                // <ProtectedRoute>
                   <AppLayout>
                     <Routes>
                       <Route path="/" element={<MainPage />} />
                       <Route path="/users" element={<UsersList />} />
                       <Route path="/users/:id" element={<UserDetail />} />
                       <Route path="/profile" element={<UserDetail />} />
-                      <Route path="/requests" element={<></>} />
+                      <Route path="/requests" element={<RequestsPage />} />
                       <Route path="/clients" element={<ClientList />} />
                       <Route path="/clients/:id" element={<ClientDetail />} />
                       <Route path="/jobs" element={<></>} />
@@ -47,7 +47,7 @@ function ThemedApp() {
                       <Route path="*" element={<></>} />
                     </Routes>
                   </AppLayout>
-                </ProtectedRoute>
+                // </ProtectedRoute>
               }
             />
           </Routes>

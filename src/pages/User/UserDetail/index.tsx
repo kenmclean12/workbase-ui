@@ -20,7 +20,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAuthContext } from "../../../context";
-import { useUserGetById } from "../../../hooks";
+import { useUsersGetAll } from "../../../hooks";
 import { styles } from "./styles";
 
 export function UserDetail() {
@@ -33,7 +33,9 @@ export function UserDetail() {
   const resolvedId = location.pathname.includes("profile")
     ? Number(currentUser?.id)
     : Number(id);
-  const { data: user, isLoading } = useUserGetById(resolvedId);
+  const { data: users = [] } = useUsersGetAll();
+  const user = users.find((item) => item.id === resolvedId) ?? currentUser ?? null;
+  const isLoading = false;
 
   useEffect(() => {
     const element = headerRef.current;

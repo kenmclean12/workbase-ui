@@ -29,7 +29,8 @@ import {
   type MouseEvent,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { clients, type Client } from "../../../testData/client";
+import { useClientsGetAll } from "../../../hooks";
+import type { ClientResponseDto } from "../../../types/client";
 
 export function ClientList() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export function ClientList() {
   const [page, setPage] = useState<number>(1);
   const [filterAnchor, setFilterAnchor] = useState<HTMLElement | null>(null);
   const listRef = useRef<HTMLDivElement | null>(null);
+  const { data: clients = [], isLoading } = useClientsGetAll();
 
   useEffect(() => {
     if (!listRef.current) return;
@@ -52,7 +54,7 @@ export function ClientList() {
 
   const filteredClients = useMemo(() => {
     return clients.filter((client) => matchesSearch(client, search));
-  }, [search]);
+  }, [clients, search]);
 
   const pageCount = Math.max(
     1,
@@ -127,7 +129,22 @@ export function ClientList() {
       <Divider sx={{ mb: 2 }} />
 
       <Box ref={listRef} sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
-        {filteredClients.length === 0 ? (
+        {isLoading ? (
+          <Box
+            sx={{
+              height: "80%",
+              minHeight: 260,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              p: 2,
+            }}
+          >
+            <Typography variant="body1" color="text.secondary">
+              Loading clients...
+            </Typography>
+          </Box>
+        ) : filteredClients.length === 0 ? (
           <Box
             sx={{
               height: "80%",
@@ -212,7 +229,7 @@ const rowsPerPageOptions = [25, 50, 100] as const;
 
 const normalize = (value: string) => value.toLowerCase().replace(/\s+/g, "");
 
-const matchesSearch = (client: Client, query: string) => {
+const matchesSearch = (client: ClientResponseDto, query: string) => {
   const normalizedQuery = normalize(query);
   if (!normalizedQuery) {
     return true;
