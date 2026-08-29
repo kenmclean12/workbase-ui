@@ -92,10 +92,6 @@ export const styles = {
     display: "block",
   },
 
-  reportsButton: {
-    flexShrink: 0,
-  },
-
   contentPaper: {
     p: 2,
     mt: 0,

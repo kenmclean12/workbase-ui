@@ -1,3 +1,5 @@
+import type { ClientResponseDto } from "./client";
+
 export const RequestStatus = {
   UNASSIGNED: 1,
   IN_PROGRESS: 2,
@@ -19,6 +21,7 @@ export type RequestPriority =
 export type RequestResponseDto = {
   id: number;
   clientId: number;
+  client: ClientResponseDto | null;
   createdByUserId: number;
   assignedToUserId: number | null;
   title: string;
@@ -37,4 +40,14 @@ export const REQUEST_STATUS_META: Record<
   [RequestStatus.UNASSIGNED]: { label: "Unassigned", color: "#9ca3af" },
   [RequestStatus.IN_PROGRESS]: { label: "In Progress", color: "#3b82f6" },
   [RequestStatus.DONE]: { label: "Done", color: "#22c55e" },
+};
+
+export const REQUEST_PRIORITY_META: Record<
+  RequestPriority,
+  { label: string; color: string; textColor: string }
+> = {
+  [RequestPriority.LOW]: { label: "Low", color: "#22c55e", textColor: "#ffffff" },
+  [RequestPriority.MEDIUM]: { label: "Medium", color: "#f59e0b", textColor: "#111827" },
+  [RequestPriority.HIGH]: { label: "High", color: "#ef4444", textColor: "#ffffff" },
+  [RequestPriority.CRITICAL]: { label: "Critical", color: "#7c3aed", textColor: "#ffffff" },
 };

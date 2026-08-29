@@ -23,6 +23,7 @@ import {
 import { useState, type ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthContext, useThemeContext } from "../../../context";
+import { useUsersGetAll } from "../../../hooks";
 import { ProfileMenu } from "./ProfileMenu";
 import { styles } from "./styles";
 
@@ -35,8 +36,10 @@ type Props = {
 export function Sidebar({ open, onToggle, disabled = false }: Props) {
   const location = useLocation();
   const { user } = useAuthContext();
+  const { data: users = [] } = useUsersGetAll();
   const { themeMode } = useThemeContext();
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const displayUser = user ?? users[0] ?? null;
 
   return (
     <Drawer variant="permanent" sx={styles.drawer(open ? 240 : 72)}>
@@ -80,14 +83,14 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
           );
         })}
       </List>
-      {user && (
+      {displayUser && (
         <Box sx={styles.footer(open)}>
           <IconButton
             size="small"
             onClick={(event) => setAnchorEl(event.currentTarget)}
           >
-            {user?.avatarUrl ? (
-              <Avatar sx={{ width: 40, height: 40 }} src={user.avatarUrl} />
+            {displayUser?.avatarUrl ? (
+              <Avatar sx={{ width: 40, height: 40 }} src={displayUser.avatarUrl} />
             ) : (
               <Avatar
                 sx={{
@@ -98,9 +101,10 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
                   fontWeight: 700,
                 }}
               >
-                {(user
-                  ? `${user.firstName?.[0] ?? ""}${user.lastName?.[0] ?? ""}`
-                  : "U"
+                {(
+                  displayUser
+                    ? `${displayUser.firstName?.[0] ?? ""}${displayUser.lastName?.[0] ?? ""}`
+                    : "U"
                 ).toUpperCase()}
               </Avatar>
             )}
@@ -113,7 +117,7 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
                 noWrap
                 sx={styles.userName}
               >
-                {user.firstName} {user.lastName}
+                {displayUser.firstName} {displayUser.lastName}
               </Typography>
               <Typography
                 variant="caption"
@@ -121,7 +125,7 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
                 noWrap
                 sx={styles.userEmail}
               >
-                {user.email}
+                {displayUser.email}
               </Typography>
             </Box>
           )}

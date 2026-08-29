@@ -12,6 +12,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useAuthContext, useThemeContext } from "../../../../context";
+import { useUsersGetAll } from "../../../../hooks";
 import { styles } from "./styles";
 
 export interface Props {
@@ -22,7 +23,9 @@ export interface Props {
 
 export function ProfileMenu({ anchorEl, open, onClose }: Props) {
   const { user, logout } = useAuthContext();
+  const { data: users = [] } = useUsersGetAll();
   const { themeMode, toggleTheme } = useThemeContext();
+  const displayUser = user ?? users[0] ?? null;
 
   const handleLogout = () => {
     logout();
@@ -40,8 +43,8 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
     >
       <Box sx={styles.header}>
         <Box sx={styles.userRow}>
-          {user?.avatarUrl ? (
-            <Avatar src={user.avatarUrl} sx={styles.avatar} />
+          {displayUser?.avatarUrl ? (
+            <Avatar src={displayUser.avatarUrl} sx={styles.avatar} />
           ) : (
             <Avatar
               sx={{
@@ -52,20 +55,20 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
                   theme.palette.mode === "dark" ? "#d1d5db" : "#637381",
               }}
             >
-              {`${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`.toUpperCase() ||
+              {`${displayUser?.firstName?.[0] ?? ""}${displayUser?.lastName?.[0] ?? ""}`.toUpperCase() ||
                 "U"}
             </Avatar>
           )}
           <Box sx={styles.textContainer}>
             <Typography variant="subtitle2" fontWeight={600} sx={styles.name}>
-              {user?.firstName ?? ""} {user?.lastName ?? ""}
+              {displayUser?.firstName ?? ""} {displayUser?.lastName ?? ""}
             </Typography>
             <Typography
               variant="caption"
               color="text.secondary"
               sx={styles.email}
             >
-              {user?.email ?? ""}
+              {displayUser?.email ?? ""}
             </Typography>
           </Box>
         </Box>
