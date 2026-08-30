@@ -50,52 +50,29 @@ export function RequestDetailDialog({
   const [status, setStatus] = useState<RequestStatus>(RequestStatus.UNASSIGNED);
   const [assignedToUserId, setAssignedToUserId] = useState<number | null>(null);
   const [assigneeSearch, setAssigneeSearch] = useState("");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
   const [activeTab, setActiveTab] = useState(0);
 
-  const isUnassigned = request?.status === RequestStatus.UNASSIGNED;
-
-  const updateRequest = useRequestUpdate(request?.id, {
-    onSuccess: () => onClose(),
-  });
+  const updateRequest = useRequestUpdate(request?.id);
 
   useEffect(() => {
     if (!request) return;
     setStatus(request.status);
     setAssignedToUserId(request.assignedToUserId ?? null);
-    setTitle(request.title);
-    setDescription(request.description);
   }, [request]);
 
-  const historyEntries = useMemo(
-    () => [...history].sort((a, b) => b.createdAt.localeCompare(a.createdAt)),
-    [history],
-  );
+  const historyEntries = useMemo(() => {
+    const safeHistory = Array.isArray(history) ? history : [];
+
+    return safeHistory
+      .filter((entry): entry is typeof entry => !!entry)
+      .sort((a, b) => {
+        const aTime = new Date(a.createdAt ?? 0).getTime();
+        const bTime = new Date(b.createdAt ?? 0).getTime();
+        return bTime - aTime;
+      });
+  }, [history]);
 
   if (!request) return null;
-
-  const saveChanges = () => {
-    const actingUserId = user?.id ?? users[0]?.id;
-    if (!actingUserId) return;
-
-    const effectiveStatus =
-      status === RequestStatus.UNASSIGNED && assignedToUserId !== null
-        ? RequestStatus.IN_PROGRESS
-        : status;
-
-    updateRequest.mutate(
-      {
-        title: isUnassigned ? request.title : title,
-        description: isUnassigned ? request.description : description,
-        status: effectiveStatus,
-        priority: request.priority,
-        assignedToUserId: assignedToUserId,
-        actionUserId: actingUserId,
-      },
-      { onSuccess: () => onClose() },
-    );
-  };
 
   const notesCount = historyEntries.length;
   const clientName = request.client?.name ?? "Client";
@@ -131,7 +108,20 @@ export function RequestDetailDialog({
     REQUEST_PRIORITY_META[request.priority] ?? REQUEST_PRIORITY_META[1];
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{
+        sx: {
+          height: "auto",
+          maxHeight: "78vh",
+          display: "flex",
+          flexDirection: "column",
+        },
+      }}
+    >
       <DialogTitle>
         <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between">
           <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
@@ -235,7 +225,7 @@ export function RequestDetailDialog({
           </Stack>
         </Stack>
       </DialogTitle>
-      <DialogContent dividers>
+      <DialogContent dividers sx={{ overflowY: "auto", flex: 1 }}>
         <Stack spacing={2}>
           <Tabs
             value={activeTab}
@@ -336,12 +326,31 @@ export function RequestDetailDialog({
                       value={assignedToUserId ?? ""}
                       onChange={(event) => {
                         const nextValue = event.target.value as number | string | null;
-                        setAssignedToUserId(
+                        const nextAssignedToUserId =
                           nextValue === "" || nextValue === null || nextValue === undefined
                             ? null
-                            : Number(nextValue),
-                        );
+                            : Number(nextValue);
+
+                        const actingUserId = user?.id ?? users[0]?.id;
+                        if (!actingUserId) return;
+
+                        const nextStatus =
+                          nextAssignedToUserId !== null
+                            ? RequestStatus.IN_PROGRESS
+                            : status;
+
+                        setAssignedToUserId(nextAssignedToUserId);
+                        setStatus(nextStatus);
                         setAssigneeSearch("");
+
+                        updateRequest.mutate({
+                          title: request.title,
+                          description: request.description,
+                          status: nextStatus,
+                          priority: request.priority,
+                          assignedToUserId: nextAssignedToUserId,
+                          actionUserId: actingUserId,
+                        });
                       }}
                       MenuProps={{
                         PaperProps: {
@@ -527,11 +536,33 @@ export function RequestDetailDialog({
                   </Box>
                 </Stack>
 
-                <Box sx={{ height: 200, maxHeight: 200, overflowY: "auto", p: 1.5, borderRadius: 1, border: "1px solid", borderColor: "divider", bgcolor: "rgba(148, 163, 184, 0.04)" }}>
+                <Box
+                  sx={{
+                    flex: 1,
+                    minHeight: 220,
+                    maxHeight: "100%",
+                    overflowY: "auto",
+                    p: 1.5,
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "rgba(148, 163, 184, 0.04)",
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 0.5 }}>
                     Description
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ whiteSpace: "pre-wrap" }}>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      whiteSpace: "pre-wrap",
+                      flex: 1,
+                      minHeight: 0,
+                    }}
+                  >
                     {request.description || "No description provided."}
                   </Typography>
                 </Box>
@@ -555,17 +586,53 @@ export function RequestDetailDialog({
                 <List disablePadding>
                   {historyEntries.map((entry) => (
                     <ListItem key={entry.id} disableGutters sx={{ display: "block", py: 0.75 }}>
-                      <Stack direction="row" justifyContent="space-between" spacing={2}>
-                        <Typography variant="body2" fontWeight={600}>
-                          Note
-                        </Typography>
+                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center">
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+                          <Avatar
+                            sx={{
+                              width: 28,
+                              height: 28,
+                              fontSize: "0.72rem",
+                              bgcolor: "#2563eb !important",
+                              color: "#fff !important",
+                            }}
+                          >
+                            {(entry.user?.firstName?.[0] ?? "U") + (entry.user?.lastName?.[0] ?? "")}
+                          </Avatar>
+                          <Box sx={{ minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
+                            <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap">
+                              <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                                {entry.user ? `${entry.user.firstName} ${entry.user.lastName}` : `User #${entry.userId}`}
+                              </Typography>
+                              {entry.user ? (
+                                <Chip
+                                  label={getUserRoleLabel(entry.user.role)}
+                                  size="small"
+                                  sx={{
+                                    height: 18,
+                                    fontSize: "0.6rem",
+                                    fontWeight: 700,
+                                    borderRadius: 999,
+                                    backgroundColor: "rgba(59, 130, 246, 0.12)",
+                                    color: "primary.main",
+                                  }}
+                                />
+                              ) : null}
+                            </Stack>
+                            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+                              {entry.action}
+                            </Typography>
+                          </Box>
+                        </Stack>
                         <Typography variant="caption" color="text.secondary">
                           {new Date(entry.createdAt).toLocaleString()}
                         </Typography>
                       </Stack>
-                      <Typography variant="body2" color="text.secondary">
-                        {entry.action}
-                      </Typography>
+                      {entry.details ? (
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                          {entry.details}
+                        </Typography>
+                      ) : null}
                     </ListItem>
                   ))}
                 </List>
@@ -601,17 +668,53 @@ export function RequestDetailDialog({
                       disableGutters
                       sx={{ display: "block", py: 0.75 }}
                     >
-                      <Stack direction="row" justifyContent="space-between" spacing={2}>
-                        <Typography variant="body2" fontWeight={600}>
-                          User #{entry.userId}
-                        </Typography>
+                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center">
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+                          <Avatar
+                            sx={{
+                              width: 28,
+                              height: 28,
+                              fontSize: "0.72rem",
+                              bgcolor: "#2563eb !important",
+                              color: "#fff !important",
+                            }}
+                          >
+                            {(entry.user?.firstName?.[0] ?? "U") + (entry.user?.lastName?.[0] ?? "")}
+                          </Avatar>
+                          <Box sx={{ minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
+                            <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap">
+                              <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                                {entry.user ? `${entry.user.firstName} ${entry.user.lastName}` : `User #${entry.userId}`}
+                              </Typography>
+                              {entry.user ? (
+                                <Chip
+                                  label={getUserRoleLabel(entry.user.role)}
+                                  size="small"
+                                  sx={{
+                                    height: 18,
+                                    fontSize: "0.6rem",
+                                    fontWeight: 700,
+                                    borderRadius: 999,
+                                    backgroundColor: "rgba(59, 130, 246, 0.12)",
+                                    color: "primary.main",
+                                  }}
+                                />
+                              ) : null}
+                            </Stack>
+                            <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1.2 }}>
+                              {entry.action}
+                            </Typography>
+                          </Box>
+                        </Stack>
                         <Typography variant="caption" color="text.secondary">
                           {new Date(entry.createdAt).toLocaleString()}
                         </Typography>
                       </Stack>
-                      <Typography variant="body2" color="text.secondary">
-                        {entry.action}
-                      </Typography>
+                      {entry.details ? (
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 0.5 }}>
+                          {entry.details}
+                        </Typography>
+                      ) : null}
                     </ListItem>
                   ))}
                 </List>
@@ -620,23 +723,10 @@ export function RequestDetailDialog({
           )}
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, justifyContent: activeTab === 0 ? "space-between" : "flex-end" }}>
-        {activeTab === 0 ? (
-          <>
-            <Button onClick={onClose} variant="outlined">
-              Close
-            </Button>
-            <Button
-              variant="contained"
-              onClick={saveChanges}
-              disabled={updateRequest.isPending}
-            >
-              {updateRequest.isPending ? "Saving..." : "Save changes"}
-            </Button>
-          </>
-        ) : (
-          <Button onClick={onClose}>Close</Button>
-        )}
+      <DialogActions sx={{ px: 3, py: 2, justifyContent: "flex-end" }}>
+        <Button onClick={onClose} variant="outlined" disabled={updateRequest.isPending}>
+          {updateRequest.isPending ? "Updating..." : "Close"}
+        </Button>
       </DialogActions>
     </Dialog>
   );

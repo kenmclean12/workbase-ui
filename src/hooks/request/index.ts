@@ -5,6 +5,7 @@ import {
   type RequestResponseDto,
   type RequestStatus,
 } from "../../types/request";
+import type { UserResponseDto } from "../../types/user";
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5223";
 
@@ -23,6 +24,7 @@ export type RequestHistoryEntryDto = {
   id: number;
   requestId: number;
   userId: number;
+  user?: UserResponseDto | null;
   action: string;
   createdAt: string;
   details?: string | null;
@@ -63,7 +65,10 @@ export function useRequestsGetByUser(
 export function useRequestHistory(requestId?: number, options?: { enabled?: boolean }) {
   return useQuery<RequestHistoryEntryDto[]>({
     queryKey: ["request-history", requestId],
-    queryFn: () => request<RequestHistoryEntryDto[]>(`/request-history/request/${requestId}`),
+    queryFn: async () => {
+      const payload = await request<unknown>(`/request-history/request/${requestId}`);
+      return Array.isArray(payload) ? (payload as RequestHistoryEntryDto[]) : [];
+    },
     enabled: !!requestId,
     ...options,
   });
