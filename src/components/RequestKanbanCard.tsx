@@ -47,8 +47,8 @@ export function RequestKanbanCard({ request, onClick }: RequestKanbanCardProps) 
         flexDirection: "column",
         backgroundColor:
           theme.palette.mode === "dark"
-            ? "rgba(15, 23, 42, 0.9)"
-            : "rgba(255, 255, 255, 0.96)",
+            ? "#0f172a"
+            : "rgba(191, 219, 254, 0.28)",
         border: `1px solid ${theme.palette.divider}`,
         boxShadow: "0 1px 2px rgba(15, 23, 42, 0.08)",
         transition:

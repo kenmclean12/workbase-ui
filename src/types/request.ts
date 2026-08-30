@@ -5,6 +5,7 @@ import {
   WarningAmber,
 } from "@mui/icons-material";
 import type { ClientResponseDto } from "./client";
+import type { UserResponseDto } from "./user";
 
 export const RequestStatus = {
   UNASSIGNED: 1,
@@ -29,6 +30,7 @@ export type RequestResponseDto = {
   clientId: number;
   client: ClientResponseDto | null;
   createdByUserId: number;
+  createdByUser: UserResponseDto;
   assignedToUserId: number | null;
   title: string;
   description: string;
