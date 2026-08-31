@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuthContext } from "../../context";
 import {
-  type RequestPriority,
+  type RequestNoteResponseDto,
   type RequestResponseDto,
   type RequestStatus,
 } from "../../types/request";
@@ -84,18 +84,15 @@ export function useRequestUpdate(
   return useMutation({
     mutationFn: (dto: {
       actionUserId: number;
-      title?: string;
-      description?: string;
       status?: RequestStatus;
-      priority?: RequestPriority;
       assignedToUserId?: number | null;
     }) => {
-      const { actionUserId, ...payload } = dto;
-      const query = new URLSearchParams({ actionUserId: String(actionUserId) });
-
-      return fetchWithAuth(`/request/${requestId}?${query.toString()}`, {
+      return fetchWithAuth(`/request/${requestId}`, {
         method: "PATCH",
-        body: JSON.stringify(payload),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto),
       }).then(async (res) => {
         const text = await res.text();
         if (!res.ok) {
@@ -108,6 +105,108 @@ export function useRequestUpdate(
     onSuccess: async (_, __) => {
       await qc.invalidateQueries({ queryKey: ["requests"] });
       await qc.invalidateQueries({ queryKey: ["request-history"] });
+      options?.onSuccess?.();
+    },
+  });
+}
+
+export function useRequestNotesGetByRequest(
+  requestId?: number,
+  options?: { enabled?: boolean },
+) {
+  return useQuery<RequestNoteResponseDto[]>({
+    queryKey: ["request-notes", requestId],
+    queryFn: () => request<RequestNoteResponseDto[]>(`/request-note/request/${requestId}`),
+    enabled: !!requestId,
+    ...options,
+  });
+}
+
+export function useRequestNoteCreate(
+  options?: { onSuccess?: () => void },
+) {
+  const qc = useQueryClient();
+  const { fetchWithAuth } = useAuthContext();
+
+  return useMutation({
+    mutationFn: (dto: {
+      requestId: number;
+      createdByUserId: number;
+      content: string;
+    }) =>
+      fetchWithAuth(`/request-note/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(dto),
+      }).then(async (res) => {
+        const text = await res.text();
+        if (!res.ok) {
+          throw new Error(text || "Request note create failed");
+        }
+
+        return text ? (JSON.parse(text) as RequestNoteResponseDto) : null;
+      }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["request-notes"] });
+      options?.onSuccess?.();
+    },
+  });
+}
+
+export function useRequestNoteUpdate(
+  options?: { onSuccess?: () => void },
+) {
+  const qc = useQueryClient();
+  const { fetchWithAuth } = useAuthContext();
+
+  return useMutation({
+    mutationFn: (dto: {
+      id: number;
+      content: string;
+    }) =>
+      fetchWithAuth(`/request-note/${dto.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: dto.content }),
+      }).then(async (res) => {
+        const text = await res.text();
+        if (!res.ok) {
+          throw new Error(text || "Request note update failed");
+        }
+
+        return text ? (JSON.parse(text) as RequestNoteResponseDto) : null;
+      }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["request-notes"] });
+      options?.onSuccess?.();
+    },
+  });
+}
+
+export function useRequestNoteDelete(
+  options?: { onSuccess?: () => void },
+) {
+  const qc = useQueryClient();
+  const { fetchWithAuth } = useAuthContext();
+
+  return useMutation({
+    mutationFn: (noteId: number) =>
+      fetchWithAuth(`/request-note/${noteId}`, {
+        method: "DELETE",
+      }).then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text || "Request note delete failed");
+        }
+
+        return true;
+      }),
+    onSuccess: async () => {
+      await qc.invalidateQueries({ queryKey: ["request-notes"] });
       options?.onSuccess?.();
     },
   });

@@ -45,6 +45,21 @@ export function useUsersGetAll(options?: { enabled?: boolean }) {
   });
 }
 
+export function useUsersGetByClient(
+  clientId?: number,
+  options?: { enabled?: boolean },
+) {
+  const { fetchWithAuth } = useAuthContext();
+
+  return useQuery<UserResponseDto[]>({
+    queryKey: ["users", "client", clientId],
+    queryFn: () =>
+      request<UserResponseDto[]>(fetchWithAuth, `${BASE_URL}/client/${clientId}`),
+    enabled: !!clientId,
+    ...options,
+  });
+}
+
 export function useAssignableUsersGetAll(options?: { enabled?: boolean }) {
   const { fetchWithAuth } = useAuthContext();
 

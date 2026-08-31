@@ -7,7 +7,9 @@ export const styles = {
     overflow: "hidden",
   },
   filters: {
+    mt: 1.5,
     mb: 2,
+    gap: 1.5,
   },
   searchField: {
     minWidth: 100,

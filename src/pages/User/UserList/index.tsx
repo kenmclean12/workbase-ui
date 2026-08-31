@@ -1,15 +1,14 @@
 import {
   Avatar,
   Box,
+  Button,
+  Card,
+  CardContent,
+  Chip,
   CircularProgress,
   Divider,
   FormControl,
   InputLabel,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
   MenuItem,
   Pagination,
   Paper,
@@ -19,19 +18,37 @@ import {
   Typography,
 } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUsersGetAll } from "../../../hooks";
-import { Role, type UserResponseDto } from "../../../types/user";
+import { useNavigate, useParams } from "react-router-dom";
+import { useUsersGetAll, useUsersGetByClient } from "../../../hooks";
+import { Role, getUserRoleLabel, type UserResponseDto } from "../../../types/user";
 import { styles } from "./styles";
 
-export function UsersList() {
+export function UsersList({
+  clientId: clientIdProp,
+  onClose,
+}: {
+  clientId?: number;
+  onClose?: () => void;
+}) {
   const navigate = useNavigate();
+  const { id } = useParams<{ id?: string }>();
+  const routeClientId = id ? Number(id) : undefined;
+  const clientId = clientIdProp ?? routeClientId;
   const listRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"All" | Role>("All");
   const [rowsPerPage, setRowsPerPage] = useState<number>(25);
   const [page, setPage] = useState<number>(1);
-  const { data: users = [], isLoading } = useUsersGetAll();
+
+  const { data: allUsers = [], isLoading: isAllUsersLoading } = useUsersGetAll({
+    enabled: !clientId,
+  });
+  const { data: clientUsers = [], isLoading: isClientUsersLoading } = useUsersGetByClient(clientId, {
+    enabled: !!clientId,
+  });
+
+  const users = clientId ? clientUsers : allUsers;
+  const isLoading = clientId ? isClientUsersLoading : isAllUsersLoading;
 
   useEffect(() => {
     if (!listRef.current) return;
@@ -52,8 +69,24 @@ export function UsersList() {
     page * rowsPerPage,
   );
 
+  const paperSx = {
+    ...styles.root,
+    height: "100%",
+    borderRadius: onClose ? 0 : 0,
+  } as const;
+
   return (
-    <Box component={Paper} elevation={1} sx={styles.root}>
+    <Paper elevation={1} sx={paperSx}>
+      {onClose ? (
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: "divider" }}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>
+            {clientId ? "Client Users" : "Users"}
+          </Typography>
+          <Button variant="outlined" onClick={onClose}>
+            Close
+          </Button>
+        </Stack>
+      ) : null}
       <Stack direction="row" spacing={2} sx={styles.filters}>
         <TextField
           fullWidth
@@ -80,8 +113,7 @@ export function UsersList() {
           >
             {roleOptions.map((roleOption) => (
               <MenuItem key={roleOption} value={roleOption}>
-                {roleOption[0]}
-                {roleOption.toLowerCase().slice(1)}
+                {roleOption === "All" ? "All" : roleOption}
               </MenuItem>
             ))}
           </Select>
@@ -114,31 +146,89 @@ export function UsersList() {
         ) : filteredUsers.length === 0 ? (
           <Box sx={styles.emptyContainer}>
             <Typography variant="body1" color="text.secondary">
-              No users found.
+              {clientId ? "No users found for this client." : "No users found."}
             </Typography>
           </Box>
         ) : (
-          <List disablePadding>
+          <Stack spacing={1.5}>
             {paginatedUsers.map((user) => (
-              <ListItem key={user.id} disablePadding divider>
-                <ListItemButton onClick={() => navigate(`/users/${user.id}`)}>
-                  <ListItemAvatar>
-                    <Avatar
-                      src={user.avatarUrl || undefined}
-                      alt={`${user.firstName} ${user.lastName}`}
-                    >
-                      {user.firstName?.[0]}
-                      {user.lastName?.[0]}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={`${user.firstName} ${user.lastName}`}
-                    secondary={user.email}
-                  />
-                </ListItemButton>
-              </ListItem>
+              <Card
+                key={user.id}
+                variant="outlined"
+                sx={{
+                  borderRadius: 2,
+                  borderColor: "divider",
+                  background: "rgba(148, 163, 184, 0.02)",
+                  transition: "all 0.2s ease",
+                  "&:hover": {
+                    boxShadow: 1,
+                    borderColor: "primary.light",
+                    background: "rgba(59, 130, 246, 0.02)",
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 2, "&:last-child": { pb: 2 } }}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
+                      <Avatar
+                        src={user.avatarUrl || undefined}
+                        alt={`${user.firstName} ${user.lastName}`}
+                        sx={{
+                          width: 52,
+                          height: 52,
+                          fontSize: "1rem",
+                          fontWeight: 700,
+                          bgcolor: "#2563eb",
+                          color: "#fff",
+                          border: "1px solid rgba(37, 99, 235, 0.25)",
+                        }}
+                      >
+                        {user.firstName?.[0] ?? ""}
+                        {user.lastName?.[0] ?? ""}
+                      </Avatar>
+
+                      <Box sx={{ minWidth: 0, flex: 1 }}>
+                        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" sx={{ mb: 0.5 }}>
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              fontWeight: 700,
+                              lineHeight: 1.2,
+                              cursor: "pointer",
+                            }}
+                            onClick={() => navigate(`/users/${user.id}`)}
+                          >
+                            {`${user.firstName} ${user.lastName}`}
+                          </Typography>
+                          <Chip
+                            label={getUserRoleLabel(user.role)}
+                            size="small"
+                            sx={{
+                              height: 22,
+                              fontWeight: 600,
+                              backgroundColor: "rgba(59, 130, 246, 0.12)",
+                              color: "primary.main",
+                            }}
+                          />
+                        </Stack>
+
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.25 }}>
+                          <Typography variant="body2" color="text.secondary">Email:</Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {user.email}
+                          </Typography>
+                        </Stack>
+
+                        <Typography variant="caption" color="text.secondary">
+                          Joined {new Date(user.createdAt).toLocaleDateString()}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </Card>
             ))}
-          </List>
+          </Stack>
         )}
       </Box>
       {!isLoading && filteredUsers.length > 0 && (
@@ -157,7 +247,7 @@ export function UsersList() {
           />
         </Box>
       )}
-    </Box>
+    </Paper>
   );
 }
 

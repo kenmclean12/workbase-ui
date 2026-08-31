@@ -1,10 +1,10 @@
 import { ArrowBack } from "@mui/icons-material";
 import {
   Avatar,
-  Badge,
   Box,
   Button,
   Chip,
+  Dialog,
   IconButton,
   Paper,
   Stack,
@@ -16,6 +16,7 @@ import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
+import { UsersList } from "../..//User/UserList";
 import { useClientGetById, useRequestsGetByClient } from "../../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
 
@@ -26,6 +27,7 @@ export function ClientDetail() {
   const { data: client } = useClientGetById(clientId);
   const { data: requests = [] } = useRequestsGetByClient(clientId);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
+  const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
 
   const groupedRequests = useMemo(() => {
     return {
@@ -152,15 +154,13 @@ export function ClientDetail() {
               </Typography>
             </Box>
           </Box>
-          <Button variant="outlined" size="small" disabled>
-            Contacts (0)
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setIsUsersModalOpen(true)}
+          >
+            Users
           </Button>
-          <Stack direction="row">
-            <Button variant="outlined" size="small" disabled>
-              Requests
-            </Button>
-            <Badge badgeContent={requests.length} color="error" overlap="circular" />
-          </Stack>
         </Box>
         <Divider sx={{ my: 1 }} />
         <Stack direction="row" spacing={2} flexWrap="wrap">
@@ -199,6 +199,26 @@ export function ClientDetail() {
         </Stack>
         <Divider sx={{ my: 1 }} />
       </Paper>
+      <Dialog
+        open={isUsersModalOpen}
+        onClose={() => setIsUsersModalOpen(false)}
+        fullWidth
+        maxWidth="lg"
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            maxHeight: "82vh",
+            height: "auto",
+            overflow: "hidden",
+          },
+        }}
+      >
+        <UsersList
+          clientId={client.id}
+          onClose={() => setIsUsersModalOpen(false)}
+        />
+      </Dialog>
+
       <Paper
         elevation={1}
         sx={{

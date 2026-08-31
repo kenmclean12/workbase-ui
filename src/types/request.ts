@@ -41,6 +41,16 @@ export type RequestResponseDto = {
   updatedAt: string | null;
 };
 
+export type RequestNoteResponseDto = {
+  id: number;
+  requestId: number;
+  createdByUserId: number;
+  createdByUser: UserResponseDto;
+  content: string;
+  createdAt: string;
+  updatedAt: string | null;
+};
+
 export const REQUEST_STATUS_META: Record<
   RequestStatus,
   { label: string; color: string }

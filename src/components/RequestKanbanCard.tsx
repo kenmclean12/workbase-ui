@@ -1,20 +1,16 @@
 import { Avatar, Box, Card, CardContent, Chip, Stack, Typography } from "@mui/material";
 import {
   REQUEST_PRIORITY_META,
-  type RequestResponseDto,
+  type RequestResponseDto
 } from "../types/request";
 
-export type RequestKanbanCardProps = {
+interface Props {
   request: RequestResponseDto;
   onClick?: () => void;
 };
 
-export function RequestKanbanCard({ request, onClick }: RequestKanbanCardProps) {
-  const displayTitle = (request.title || "Untitled request")
-    .replace(/^\s*(?:#\s*)?(?:request\s+)?\d+\s*[:\-–—.]?\s*/i, "")
-    .replace(/^\s*request\s*[:\-–—.]?\s*/i, "")
-    .trim() || "Untitled request";
-
+export function RequestKanbanCard({ request, onClick }: Props) {
+  const displayTitle = (request.title || "Untitled request");
   const clientName = request.client?.name ?? "Client";
   const clientInitials = clientName
     .split(/\s+/)
@@ -48,9 +44,15 @@ export function RequestKanbanCard({ request, onClick }: RequestKanbanCardProps) 
         backgroundColor:
           theme.palette.mode === "dark"
             ? "#0f172a"
-            : "rgba(191, 219, 254, 0.28)",
-        border: `1px solid ${theme.palette.divider}`,
-        boxShadow: "0 1px 2px rgba(15, 23, 42, 0.08)",
+            : "#f8fafc",
+        border:
+          theme.palette.mode === "dark"
+            ? `1px solid ${theme.palette.divider}`
+            : "1px solid rgba(148, 163, 184, 0.35)",
+        boxShadow:
+          theme.palette.mode === "dark"
+            ? "0 1px 2px rgba(15, 23, 42, 0.08)"
+            : "0 4px 12px rgba(148, 163, 184, 0.12)",
         transition:
           "transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease",
         transform: "translateY(0)",
