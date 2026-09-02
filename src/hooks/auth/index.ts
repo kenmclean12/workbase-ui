@@ -9,6 +9,7 @@ export type User = {
   avatarUrl?: string | null;
   createdAt?: string;
   role?: string;
+  clientId?: number | null;
 };
 
 export type LoginResponse = {

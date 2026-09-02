@@ -20,7 +20,8 @@ import {
 } from "@mui/material";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { IS_CLIENT_USER, TEMPORARY_CLIENT_ID } from "../../../config/appMode";
+import { IS_CLIENT_USER } from "../../../config/appMode";
+import { useAuthContext } from "../../../context";
 import { useUsersGetAll, useUsersGetByClient } from "../../../hooks";
 import { Role, type UserResponseDto } from "../../../types/user";
 import { styles } from "./styles";
@@ -29,9 +30,10 @@ export function UsersList({ clientId: clientIdProp }: {
   clientId?: number;
 }) {
   const navigate = useNavigate();
+  const { user: currentUser } = useAuthContext();
   const { id } = useParams<{ id?: string }>();
   const routeClientId = id ? Number(id) : undefined;
-  const clientId = clientIdProp ?? routeClientId ?? (IS_CLIENT_USER ? TEMPORARY_CLIENT_ID : undefined);
+  const clientId = clientIdProp ?? routeClientId ?? (IS_CLIENT_USER ? currentUser?.clientId ?? undefined : undefined);
   const listRef = useRef<HTMLDivElement | null>(null);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<"All" | Role>("All");

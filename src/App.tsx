@@ -44,9 +44,6 @@ function ThemedApp() {
                       <Route path="/requests" element={<RequestsPage />} />
                       <Route path="/clients" element={<ClientList />} />
                       <Route path="/clients/:id" element={<ClientDetail />} />
-                      <Route path="/jobs" element={<></>} />
-                      <Route path="/stats" element={<></>} />
-                      <Route path="*" element={<></>} />
                     </Routes>
                   </AppLayout>
                 // </ProtectedRoute>

@@ -1,9 +1,10 @@
 import { Box, Chip, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
-import { IS_CLIENT_USER, TEMPORARY_CLIENT_ID } from "../../config/appMode";
+import { IS_CLIENT_USER } from "../../config/appMode";
 import { RequestDetailDialog } from "../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../components/RequestKanbanCard";
-import { useRequestsGetAll, useRequestsGetByClient } from "../../hooks/request";
+import { useAuthContext } from "../../context";
+import { useRequestsGetAll, useRequestsGetByClient } from "../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../types/request";
 
 const columns = [
@@ -13,15 +14,19 @@ const columns = [
 ] as const;
 
 export function RequestsPage() {
+  const { user: currentUser } = useAuthContext();
+  const clientId = IS_CLIENT_USER ? currentUser?.clientId ?? undefined : undefined;
   const { data: allRequests = [], isLoading: isAllRequestsLoading } = useRequestsGetAll({
     enabled: !IS_CLIENT_USER,
   });
   const { data: clientRequests = [], isLoading: isClientRequestsLoading } = useRequestsGetByClient(
-    IS_CLIENT_USER ? TEMPORARY_CLIENT_ID : undefined,
-    { enabled: IS_CLIENT_USER },
+    clientId,
+    { enabled: IS_CLIENT_USER && !!clientId },
   );
   const requests = IS_CLIENT_USER ? clientRequests : allRequests;
-  const isLoading = IS_CLIENT_USER ? isClientRequestsLoading : isAllRequestsLoading;
+  const isLoading = IS_CLIENT_USER
+    ? !clientId || isClientRequestsLoading
+    : isAllRequestsLoading;
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
 
   const groupedRequests = useMemo(

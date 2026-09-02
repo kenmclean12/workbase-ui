@@ -10,6 +10,7 @@ import {
 } from "@mui/icons-material";
 import { AppBar, Box, Button, Toolbar, Typography, useTheme } from "@mui/material";
 import { useLocation } from "react-router-dom";
+import { IS_CLIENT_USER } from "../../../config/appMode";
 import { styles } from "./styles";
 
 const pageConfig = [
@@ -47,7 +48,7 @@ export function TopBar() {
         </Box>
 
         <Box sx={styles.right}>
-          {location.pathname.startsWith("/requests") ? (
+          {IS_CLIENT_USER && location.pathname.startsWith("/requests") ? (
             <Button variant="contained" size="small" startIcon={<Add />} onClick={() => undefined}>
               Create
             </Button>
