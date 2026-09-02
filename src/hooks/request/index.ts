@@ -25,6 +25,7 @@ async function request<T>(url: string, config?: RequestInit): Promise<T> {
 export type RequestHistoryEntryDto = {
   id: number;
   requestId: number;
+  request?: RequestResponseDto | null;
   userId: number;
   user?: UserResponseDto | null;
   action: string;
@@ -102,6 +103,18 @@ export function useRequestHistory(requestId?: number, options?: { enabled?: bool
       return Array.isArray(payload) ? (payload as RequestHistoryEntryDto[]) : [];
     },
     enabled: !!requestId,
+    ...options,
+  });
+}
+
+export function useUserActivity(userId?: number, options?: { enabled?: boolean }) {
+  return useQuery<RequestHistoryEntryDto[]>({
+    queryKey: ["request-history", "user", userId],
+    queryFn: async () => {
+      const payload = await request<unknown>(`/request-history/user/${userId}`);
+      return Array.isArray(payload) ? (payload as RequestHistoryEntryDto[]) : [];
+    },
+    enabled: !!userId,
     ...options,
   });
 }

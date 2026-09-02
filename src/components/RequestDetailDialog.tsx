@@ -142,6 +142,12 @@ export function RequestDetailDialog({
     setNoteDraft("");
   };
 
+  const handleClose = () => {
+    setActiveTab(0);
+    closeNoteEditor();
+    onClose();
+  };
+
   const openNoteEditor = (
     event: MouseEvent<HTMLElement> | null,
     existingNote?: RequestNoteResponseDto | null,
@@ -235,7 +241,7 @@ export function RequestDetailDialog({
   return (
     <Dialog
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       maxWidth="lg"
       fullWidth
       PaperProps={{
@@ -1061,7 +1067,7 @@ export function RequestDetailDialog({
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, py: 2, justifyContent: "flex-end" }}>
-        <Button onClick={onClose} variant="outlined" disabled={updateRequest.isPending}>
+        <Button onClick={handleClose} variant="outlined" disabled={updateRequest.isPending}>
           {updateRequest.isPending ? "Updating..." : "Close"}
         </Button>
       </DialogActions>

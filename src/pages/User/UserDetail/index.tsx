@@ -2,9 +2,14 @@ import { ArrowBack } from "@mui/icons-material";
 import {
   Avatar,
   Box,
+  Button,
+  ButtonGroup,
   Chip,
   CircularProgress,
+  Divider,
   IconButton,
+  List,
+  ListItem,
   Paper,
   Stack,
   Tooltip,
@@ -15,7 +20,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
 import { useAuthContext } from "../../../context";
-import { useRequestsGetByUser, useUserGetById, useUsersGetAll } from "../../../hooks";
+import { useRequestsGetByUser, useUserActivity, useUserGetById, useUsersGetAll } from "../../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
 import { getUserRoleLabel } from "../../../types/user";
 import { styles } from "./styles";
@@ -27,6 +32,7 @@ export function UserDetail() {
   const navigate = useNavigate();
   const headerRef = useRef<HTMLDivElement | null>(null);
   const [showRoleChip, setShowRoleChip] = useState(true);
+  const [showActivity, setShowActivity] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
   const routeUserId = id ? Number(id) : undefined;
   const { data: users = [], isLoading: isUsersLoading } = useUsersGetAll({
@@ -39,8 +45,13 @@ export function UserDetail() {
   const { data: userById, isLoading: isUserLoading } = useUserGetById(routeUserId, {
     enabled: !!routeUserId,
   });
-  const { data: assignedRequests = [] } = useRequestsGetByUser(resolvedId || undefined);
   const user = routeUserId ? userById ?? null : currentUser ?? users[0] ?? null;
+  const targetUserId = user?.id ?? resolvedId;
+  const { data: assignedRequests = [] } = useRequestsGetByUser(targetUserId || undefined);
+  const { data: activityEntries = [], isLoading: isActivityLoading } = useUserActivity(
+    targetUserId || undefined,
+    { enabled: showActivity },
+  );
   const isLoading = routeUserId ? isUserLoading : isUsersLoading && !currentUser;
 
   const groupedRequests = useMemo(() => {
@@ -139,8 +150,145 @@ export function UserDetail() {
               </Typography>
             </Box>
           </Box>
+          <ButtonGroup size="small" variant="outlined" sx={{ flexShrink: 0, ml: "auto" }}>
+            <Button
+              variant={!showActivity ? "contained" : "outlined"}
+              onClick={() => setShowActivity(false)}
+            >
+              Requests
+            </Button>
+            <Button
+              variant={showActivity ? "contained" : "outlined"}
+              onClick={() => setShowActivity(true)}
+            >
+              Activity
+            </Button>
+          </ButtonGroup>
         </Box>
       </Paper>
+      {showActivity ? (
+        <Paper
+          elevation={1}
+          sx={{
+            ...styles.contentPaper,
+            p: 1.5,
+            flex: 1,
+            minHeight: 0,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Typography variant="h6" component="h3" sx={{ mb: 1 }}>
+            User Activity
+          </Typography>
+          <Divider sx={{ mb: 1.5 }} />
+          <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+            {isActivityLoading ? (
+              <Box sx={styles.loadingContainer}>
+                <CircularProgress />
+              </Box>
+            ) : activityEntries.length === 0 ? (
+              <Box sx={{ py: 5, textAlign: "center" }}>
+                <Typography color="text.secondary">No activity found.</Typography>
+              </Box>
+            ) : (
+              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+                {activityEntries.map((entry) => {
+                  const request = entry.request;
+                  const clientName = request?.client?.name ?? "Client unavailable";
+                  const clientInitials = clientName
+                    .split(/\s+/)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((part) => part[0]?.toUpperCase() ?? "")
+                    .join("") || "C";
+                  return (
+                    <ListItem
+                      key={entry.id}
+                      disableGutters
+                      sx={{
+                        display: "block",
+                        px: 1.5,
+                        py: 1.25,
+                        border: "1px solid",
+                        borderColor: "divider",
+                        borderRadius: 1,
+                        backgroundColor: "rgba(15, 23, 42, 0.02)",
+                        cursor: request ? "pointer" : "default",
+                        transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                        ...(request
+                          ? {
+                              "&:hover": {
+                                borderColor: "primary.main",
+                                boxShadow: 1,
+                              },
+                            }
+                          : {}),
+                      }}
+                      onClick={() => request && setSelectedRequest(request)}
+                    >
+                      <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, mb: 1 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
+                          Client
+                        </Typography>
+                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ minWidth: 0 }}>
+                          <Avatar
+                            sx={{
+                              width: 24,
+                              height: 24,
+                              fontSize: "0.65rem",
+                              bgcolor: "transparent",
+                              color: "primary.main",
+                              border: "1px solid",
+                              borderColor: "primary.main",
+                            }}
+                          >
+                            {clientInitials}
+                          </Avatar>
+                          <Typography variant="body2" color="text.secondary" noWrap>
+                            {clientName}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center">
+                        <Box sx={{ minWidth: 0 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
+                            Action
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                            {entry.action}
+                          </Typography>
+                        </Box>
+                        <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+                          {new Date(entry.createdAt).toLocaleString()}
+                        </Typography>
+                      </Stack>
+                      <Box sx={{ mt: 1, minWidth: 0 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
+                          Request
+                        </Typography>
+                        <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
+                          {request?.title ?? `Request #${entry.requestId}`}
+                        </Typography>
+                      </Box>
+                      {entry.details ? (
+                        <Box sx={{ mt: 0.75 }}>
+                          <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
+                            Details
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {entry.details}
+                          </Typography>
+                        </Box>
+                      ) : null}
+                    </ListItem>
+                  );
+                })}
+              </List>
+            )}
+          </Box>
+        </Paper>
+      ) : (
       <Paper
         elevation={1}
         sx={{
@@ -233,6 +381,7 @@ export function UserDetail() {
           ))}
         </Stack>
       </Paper>
+      )}
       <RequestDetailDialog
         request={selectedRequest}
         open={Boolean(selectedRequest)}
