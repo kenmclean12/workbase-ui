@@ -227,16 +227,13 @@ export function UserDetail() {
                       }}
                       onClick={() => request && setSelectedRequest(request)}
                     >
-                      <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, mb: 1 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>
-                          Client
-                        </Typography>
-                        <Stack direction="row" spacing={0.75} alignItems="center" sx={{ minWidth: 0 }}>
+                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ minWidth: 0, mb: 1.25 }}>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
                           <Avatar
                             sx={{
-                              width: 24,
-                              height: 24,
-                              fontSize: "0.65rem",
+                              width: 32,
+                              height: 32,
+                              fontSize: "0.72rem",
                               bgcolor: "transparent",
                               color: "primary.main",
                               border: "1px solid",
@@ -245,42 +242,108 @@ export function UserDetail() {
                           >
                             {clientInitials}
                           </Avatar>
-                          <Typography variant="body2" color="text.secondary" noWrap>
-                            {clientName}
-                          </Typography>
+                          <Box sx={{ minWidth: 0 }}>
+                            <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
+                              {clientName}
+                            </Typography>
+                          </Box>
                         </Stack>
-                      </Stack>
-                      <Box sx={{ mt: 1, minWidth: 0 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
-                          Request
-                        </Typography>
-                        <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
-                          {request?.title ?? `Request #${entry.requestId}`}
-                        </Typography>
-                      </Box>
-                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ mt: 1 }}>
-                        <Box sx={{ minWidth: 0 }}>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
-                            Action
-                          </Typography>
-                          <Typography variant="body2" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
-                            {entry.action}
-                          </Typography>
-                        </Box>
                         <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
                           {new Date(entry.createdAt).toLocaleString()}
                         </Typography>
                       </Stack>
-                      {entry.details ? (
-                        <Box sx={{ mt: 0.75 }}>
-                          <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
-                            Details
+                      <Box
+                        sx={(theme) => ({
+                          p: 1.25,
+                          borderRadius: 1.5,
+                          border: "1px solid",
+                          borderColor:
+                            theme.palette.mode === "dark"
+                              ? "rgba(255, 255, 255, 0.16)"
+                              : "divider",
+                          backgroundColor:
+                            theme.palette.mode === "dark"
+                              ? "#111827"
+                              : "rgba(148, 163, 184, 0.06)",
+                          minWidth: 0,
+                        })}
+                      >
+                        <Typography
+                          variant="caption"
+                          sx={(theme) => ({
+                            display: "block",
+                            mb: 0.35,
+                            lineHeight: 1.2,
+                            color:
+                              theme.palette.mode === "dark"
+                                ? "rgba(255, 255, 255, 0.7)"
+                                : "text.secondary",
+                          })}
+                        >
+                          Request
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={(theme) => ({
+                            color: theme.palette.mode === "dark" ? "#fff" : "text.primary",
+                          })}
+                          noWrap
+                        >
+                          {request?.title ?? `Request #${entry.requestId}`}
+                        </Typography>
+                      </Box>
+                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mt: 1 }}>
+                        <Box
+                          sx={(theme) => ({
+                            flex: 1,
+                            minWidth: 0,
+                            px: 1.25,
+                            py: 1,
+                            borderRadius: 1,
+                            backgroundColor:
+                              theme.palette.mode === "dark"
+                                ? "#111827"
+                                : "rgba(148, 163, 184, 0.06)",
+                            border:
+                              theme.palette.mode === "dark"
+                                ? "1px solid rgba(255, 255, 255, 0.16)"
+                                : "none",
+                          })}
+                        >
+                          <Typography
+                            variant="caption"
+                            sx={(theme) => ({
+                              display: "block",
+                              lineHeight: 1.2,
+                              color:
+                                theme.palette.mode === "dark"
+                                  ? "rgba(255, 255, 255, 0.7)"
+                                  : "text.secondary",
+                            })}
+                          >
+                            Action
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {entry.details}
+                          <Typography
+                            variant="body2"
+                            sx={(theme) => ({
+                              color: theme.palette.mode === "dark" ? "#fff" : "text.primary",
+                            })}
+                            noWrap
+                          >
+                            {entry.action}
                           </Typography>
                         </Box>
-                      ) : null}
+                        {entry.details ? (
+                          <Box sx={{ flex: 2, minWidth: 0, px: 1.25, py: 1, borderRadius: 1, backgroundColor: "rgba(148, 163, 184, 0.08)" }}>
+                            <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
+                              Details
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
+                              {entry.details}
+                            </Typography>
+                          </Box>
+                        ) : null}
+                      </Stack>
                     </ListItem>
                   );
                 })}

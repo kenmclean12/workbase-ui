@@ -2,6 +2,7 @@ import { ArrowBack } from "@mui/icons-material";
 import {
   Avatar,
   Box,
+  Button,
   Chip,
   IconButton,
   Paper,
@@ -26,6 +27,7 @@ export function ClientDetail() {
   const { data: client } = useClientGetById(clientId);
   const { data: requests = [] } = useRequestsGetByClient(clientId);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
+  const [showClientDetails, setShowClientDetails] = useState(false);
 
   const groupedRequests = useMemo(() => {
     return {
@@ -72,7 +74,19 @@ export function ClientDetail() {
         minHeight: 0,
       }}
     >
-      <Paper elevation={1} sx={{ p: 1.5, pb: 2.25, textAlign: "left" }}>
+      <Paper
+        elevation={1}
+        sx={{
+          p: 1.5,
+          pb: 2.25,
+          mb: 0,
+          borderTopLeftRadius: "12px",
+          borderTopRightRadius: "12px",
+          borderBottomLeftRadius: 0,
+          borderBottomRightRadius: 0,
+          textAlign: "left",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -154,8 +168,17 @@ export function ClientDetail() {
               </Typography>
             </Box>
           </Box>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setShowClientDetails((current) => !current)}
+            sx={{ flexShrink: 0, ml: "auto" }}
+          >
+            {showClientDetails ? "Hide Client Details" : "View Client Details"}
+          </Button>
         </Box>
-        <Divider sx={{ my: 1 }} />
+        {showClientDetails ? <Divider sx={{ my: 1 }} /> : null}
+        {showClientDetails ? (
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
           <Box
             sx={{
@@ -172,26 +195,20 @@ export function ClientDetail() {
             <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
               Client Information
             </Typography>
-            <Stack spacing={0.75}>
-              <Typography variant="body2">
-                <Box component="span" sx={{ color: "text.secondary", fontWeight: 600, mr: 1 }}>
-                  Email
-                </Box>
-                {client.email ?? "—"}
-              </Typography>
-              <Typography variant="body2">
-                <Box component="span" sx={{ color: "text.secondary", fontWeight: 600, mr: 1 }}>
-                  Phone
-                </Box>
-                {client.phone ?? "—"}
-              </Typography>
-              <Typography variant="body2" sx={{ overflowWrap: "anywhere" }}>
-                <Box component="span" sx={{ color: "text.secondary", fontWeight: 600, mr: 1 }}>
-                  Website
-                </Box>
-                {client.website ?? "—"}
-              </Typography>
-            </Stack>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" }, gap: 1 }}>
+              <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper" }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>Email</Typography>
+                <Typography variant="body2" noWrap>{client.email ?? "—"}</Typography>
+              </Box>
+              <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper" }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>Phone</Typography>
+                <Typography variant="body2" noWrap>{client.phone ?? "—"}</Typography>
+              </Box>
+              <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper", gridColumn: { xs: "auto", sm: "1 / -1" } }}>
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>Website</Typography>
+                <Typography variant="body2" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{client.website ?? "—"}</Typography>
+              </Box>
+            </Box>
           </Box>
           <Box
             sx={{
@@ -209,15 +226,35 @@ export function ClientDetail() {
               Address
             </Typography>
             {client.address ? (
-              <Stack spacing={0.75}>
-                <Typography variant="body2">{client.address.city}</Typography>
-                <Typography variant="body2">
-                  {client.address.state}, {client.address.country}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {client.address.postalCode}
-                </Typography>
-              </Stack>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" },
+                  columnGap: 2,
+                  rowGap: 0.5,
+                }}
+              >
+                <Box sx={{ gridColumn: { xs: "auto", sm: "1 / -1" }, p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper", minWidth: 0 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>Street</Typography>
+                  <Typography variant="body2" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{client.address.street}</Typography>
+                </Box>
+                <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper", minWidth: 0 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>City</Typography>
+                  <Typography variant="body2" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{client.address.city}</Typography>
+                </Box>
+                <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper", minWidth: 0 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>State</Typography>
+                  <Typography variant="body2" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{client.address.state}</Typography>
+                </Box>
+                <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper", minWidth: 0 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>Country</Typography>
+                  <Typography variant="body2" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{client.address.country}</Typography>
+                </Box>
+                <Box sx={{ p: 1, borderRadius: 1.5, border: "1px solid", borderColor: "divider", backgroundColor: "background.paper", minWidth: 0 }}>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: "block", fontWeight: 600 }}>Postal Code</Typography>
+                  <Typography variant="body2" noWrap sx={{ overflow: "hidden", textOverflow: "ellipsis" }}>{client.address.postalCode}</Typography>
+                </Box>
+              </Box>
             ) : (
               <Typography variant="body2" color="text.secondary">
                 No address available.
@@ -225,7 +262,8 @@ export function ClientDetail() {
             )}
           </Box>
         </Stack>
-        <Divider sx={{ my: 1 }} />
+        ) : null}
+        {showClientDetails ? <Divider sx={{ my: 1 }} /> : null}
       </Paper>
       <Paper
         elevation={1}
@@ -233,6 +271,10 @@ export function ClientDetail() {
           flex: 1,
           p: 1.5,
           pt: 1.75,
+          borderTopLeftRadius: 0,
+          borderTopRightRadius: 0,
+          borderBottomLeftRadius: "12px",
+          borderBottomRightRadius: "12px",
           display: "flex",
           flexDirection: "column",
           minHeight: 0,
