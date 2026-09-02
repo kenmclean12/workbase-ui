@@ -206,14 +206,17 @@ export function UserDetail() {
                     <ListItem
                       key={entry.id}
                       disableGutters
-                      sx={{
+                      sx={(theme) => ({
                         display: "block",
                         px: 1.5,
                         py: 1.25,
                         border: "1px solid",
                         borderColor: "divider",
                         borderRadius: 1,
-                        backgroundColor: "rgba(15, 23, 42, 0.02)",
+                        backgroundColor:
+                          theme.palette.mode === "dark"
+                            ? "#111827"
+                            : "rgba(15, 23, 42, 0.02)",
                         cursor: request ? "pointer" : "default",
                         transition: "border-color 0.2s ease, box-shadow 0.2s ease",
                         ...(request
@@ -224,7 +227,7 @@ export function UserDetail() {
                               },
                             }
                           : {}),
-                      }}
+                      })}
                       onClick={() => request && setSelectedRequest(request)}
                     >
                       <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ minWidth: 0, mb: 1.25 }}>
@@ -263,7 +266,7 @@ export function UserDetail() {
                               : "divider",
                           backgroundColor:
                             theme.palette.mode === "dark"
-                              ? "#111827"
+                              ? "background.paper"
                               : "rgba(148, 163, 184, 0.06)",
                           minWidth: 0,
                         })}
@@ -302,7 +305,7 @@ export function UserDetail() {
                             borderRadius: 1,
                             backgroundColor:
                               theme.palette.mode === "dark"
-                                ? "#111827"
+                                ? "background.paper"
                                 : "rgba(148, 163, 184, 0.06)",
                             border:
                               theme.palette.mode === "dark"
