@@ -378,8 +378,17 @@ export function RequestDetailDialog({
           </Stack>
         </Stack>
       </DialogTitle>
-      <DialogContent dividers sx={{ overflowY: "auto", flex: 1 }}>
-        <Stack spacing={2}>
+      <DialogContent
+        dividers
+        sx={{
+          overflow: "hidden",
+          flex: 1,
+          minHeight: 0,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
           <Tabs
             value={activeTab}
             onChange={(_, newValue) => setActiveTab(newValue)}
@@ -400,8 +409,8 @@ export function RequestDetailDialog({
           </Tabs>
 
           {activeTab === 0 ? (
-            <Stack spacing={2}>
-              <Stack spacing={2}>
+            <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
+              <Stack spacing={2} sx={{ flex: 1, minHeight: 0 }}>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                   <Box
                     sx={(theme) => ({
