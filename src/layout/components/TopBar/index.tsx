@@ -11,6 +11,7 @@ import {
 import { AppBar, Box, Button, Toolbar, Typography, useTheme } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { IS_CLIENT_USER } from "../../../config/appMode";
+import { AddClientButton } from "../../../components/AddClientButton";
 import { styles } from "./styles";
 
 const pageConfig = [
@@ -48,6 +49,7 @@ export function TopBar() {
         </Box>
 
         <Box sx={styles.right}>
+          {!IS_CLIENT_USER && location.pathname === "/clients" ? <AddClientButton /> : null}
           {IS_CLIENT_USER && location.pathname.startsWith("/requests") ? (
             <Button variant="contained" size="small" startIcon={<Add />} onClick={() => undefined}>
               Create
