@@ -250,7 +250,15 @@ export function UserDetail() {
                           </Typography>
                         </Stack>
                       </Stack>
-                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center">
+                      <Box sx={{ mt: 1, minWidth: 0 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
+                          Request
+                        </Typography>
+                        <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
+                          {request?.title ?? `Request #${entry.requestId}`}
+                        </Typography>
+                      </Box>
+                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ mt: 1 }}>
                         <Box sx={{ minWidth: 0 }}>
                           <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
                             Action
@@ -263,14 +271,6 @@ export function UserDetail() {
                           {new Date(entry.createdAt).toLocaleString()}
                         </Typography>
                       </Stack>
-                      <Box sx={{ mt: 1, minWidth: 0 }}>
-                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
-                          Request
-                        </Typography>
-                        <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
-                          {request?.title ?? `Request #${entry.requestId}`}
-                        </Typography>
-                      </Box>
                       {entry.details ? (
                         <Box sx={{ mt: 0.75 }}>
                           <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
