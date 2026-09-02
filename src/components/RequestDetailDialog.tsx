@@ -890,7 +890,13 @@ export function RequestDetailDialog({
                   size="small"
                   startIcon={<Add fontSize="small" />}
                   onClick={(event) => openNoteEditor(event)}
-                  sx={{ minWidth: 0, px: 1.5 }}
+                  sx={{
+                    minWidth: 0,
+                    minHeight: 28,
+                    px: 1,
+                    py: 0.25,
+                    ".MuiButton-startIcon": { mr: 0.5 },
+                  }}
                 >
                   Add
                 </Button>

@@ -1,8 +1,9 @@
 import { Box, Chip, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { useMemo, useState } from "react";
+import { IS_CLIENT_USER, TEMPORARY_CLIENT_ID } from "../../config/appMode";
 import { RequestDetailDialog } from "../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../components/RequestKanbanCard";
-import { useRequestsGetAll } from "../../hooks/request";
+import { useRequestsGetAll, useRequestsGetByClient } from "../../hooks/request";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../types/request";
 
 const columns = [
@@ -12,7 +13,15 @@ const columns = [
 ] as const;
 
 export function RequestsPage() {
-  const { data: requests = [], isLoading } = useRequestsGetAll();
+  const { data: allRequests = [], isLoading: isAllRequestsLoading } = useRequestsGetAll({
+    enabled: !IS_CLIENT_USER,
+  });
+  const { data: clientRequests = [], isLoading: isClientRequestsLoading } = useRequestsGetByClient(
+    IS_CLIENT_USER ? TEMPORARY_CLIENT_ID : undefined,
+    { enabled: IS_CLIENT_USER },
+  );
+  const requests = IS_CLIENT_USER ? clientRequests : allRequests;
+  const isLoading = IS_CLIENT_USER ? isClientRequestsLoading : isAllRequestsLoading;
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
 
   const groupedRequests = useMemo(

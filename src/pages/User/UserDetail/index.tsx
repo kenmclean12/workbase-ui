@@ -15,8 +15,9 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
 import { useAuthContext } from "../../../context";
-import { useRequestsGetByUser, useUsersGetAll } from "../../../hooks";
+import { useRequestsGetByUser, useUserGetById, useUsersGetAll } from "../../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
+import { getUserRoleLabel } from "../../../types/user";
 import { styles } from "./styles";
 
 export function UserDetail() {
@@ -27,14 +28,20 @@ export function UserDetail() {
   const headerRef = useRef<HTMLDivElement | null>(null);
   const [showRoleChip, setShowRoleChip] = useState(true);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
-  const { data: users = [] } = useUsersGetAll();
+  const routeUserId = id ? Number(id) : undefined;
+  const { data: users = [], isLoading: isUsersLoading } = useUsersGetAll({
+    enabled: !routeUserId,
+  });
   const defaultUserId = currentUser?.id ?? users[0]?.id ?? 0;
   const resolvedId = location.pathname.includes("profile")
     ? Number(defaultUserId)
-    : Number(id ?? defaultUserId);
+    : Number(routeUserId ?? defaultUserId);
+  const { data: userById, isLoading: isUserLoading } = useUserGetById(routeUserId, {
+    enabled: !!routeUserId,
+  });
   const { data: assignedRequests = [] } = useRequestsGetByUser(resolvedId || undefined);
-  const user = users.find((item) => item.id === resolvedId) ?? currentUser ?? users[0] ?? null;
-  const isLoading = false;
+  const user = routeUserId ? userById ?? null : currentUser ?? users[0] ?? null;
+  const isLoading = routeUserId ? isUserLoading : isUsersLoading && !currentUser;
 
   const groupedRequests = useMemo(() => {
     return {
@@ -119,7 +126,7 @@ export function UserDetail() {
                   {user.firstName} {user.lastName}
                 </Typography>
                 <Chip
-                  label={user.role}
+                  label={getUserRoleLabel(user.role)}
                   size="small"
                   sx={{
                     ...styles.roleChip,

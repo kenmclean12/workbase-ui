@@ -36,8 +36,8 @@ export function RequestKanbanCard({ request, onClick }: Props) {
       sx={(theme) => ({
         borderRadius: 1.5,
         cursor: "pointer",
-        minHeight: 150,
-        maxHeight: 180,
+        minHeight: 140,
+        maxHeight: 170,
         height: "100%",
         display: "flex",
         flexDirection: "column",

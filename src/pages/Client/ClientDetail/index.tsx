@@ -2,9 +2,7 @@ import { ArrowBack } from "@mui/icons-material";
 import {
   Avatar,
   Box,
-  Button,
   Chip,
-  Dialog,
   IconButton,
   Paper,
   Stack,
@@ -14,20 +12,19 @@ import {
 } from "@mui/material";
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { IS_CLIENT_USER, TEMPORARY_CLIENT_ID } from "../../../config/appMode";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
-import { UsersList } from "../..//User/UserList";
 import { useClientGetById, useRequestsGetByClient } from "../../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
 
 export function ClientDetail() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const clientId = id ? Number(id) : undefined;
+  const clientId = id ? Number(id) : (IS_CLIENT_USER ? TEMPORARY_CLIENT_ID : undefined);
   const { data: client } = useClientGetById(clientId);
   const { data: requests = [] } = useRequestsGetByClient(clientId);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
-  const [isUsersModalOpen, setIsUsersModalOpen] = useState(false);
 
   const groupedRequests = useMemo(() => {
     return {
@@ -85,11 +82,13 @@ export function ClientDetail() {
             minWidth: 0,
           }}
         >
-          <Tooltip title="Back to clients">
-            <IconButton onClick={() => navigate("/clients")} size="small">
-              <ArrowBack fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          {!IS_CLIENT_USER && (
+            <Tooltip title="Back to clients">
+              <IconButton onClick={() => navigate("/clients")} size="small">
+                <ArrowBack fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
 
           <Box
             sx={{
@@ -154,71 +153,79 @@ export function ClientDetail() {
               </Typography>
             </Box>
           </Box>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => setIsUsersModalOpen(true)}
-          >
-            Users
-          </Button>
         </Box>
         <Divider sx={{ my: 1 }} />
-        <Stack direction="row" spacing={2} flexWrap="wrap">
-          <Box sx={{ minWidth: 240, flex: 1 }}>
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+          <Box
+            sx={{
+              minWidth: 0,
+              flex: 1,
+              p: 1.5,
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider",
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "action.hover" : "#f8fafc",
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
               Client Information
             </Typography>
-            <Typography variant="body2">
-              <strong>Email:</strong> {client.email ?? "—"}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Phone:</strong> {client.phone ?? "—"}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Website:</strong> {client.website ?? "—"}
-            </Typography>
+            <Stack spacing={0.75}>
+              <Typography variant="body2">
+                <Box component="span" sx={{ color: "text.secondary", fontWeight: 600, mr: 1 }}>
+                  Email
+                </Box>
+                {client.email ?? "—"}
+              </Typography>
+              <Typography variant="body2">
+                <Box component="span" sx={{ color: "text.secondary", fontWeight: 600, mr: 1 }}>
+                  Phone
+                </Box>
+                {client.phone ?? "—"}
+              </Typography>
+              <Typography variant="body2" sx={{ overflowWrap: "anywhere" }}>
+                <Box component="span" sx={{ color: "text.secondary", fontWeight: 600, mr: 1 }}>
+                  Website
+                </Box>
+                {client.website ?? "—"}
+              </Typography>
+            </Stack>
           </Box>
-          <Box sx={{ minWidth: 240, flex: 1 }}>
-            <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+          <Box
+            sx={{
+              minWidth: 0,
+              flex: 1,
+              p: 1.5,
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider",
+              backgroundColor: (theme) =>
+                theme.palette.mode === "dark" ? "action.hover" : "#f8fafc",
+            }}
+          >
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1 }}>
               Address
             </Typography>
             {client.address ? (
-              <Box>
+              <Stack spacing={0.75}>
                 <Typography variant="body2">{client.address.city}</Typography>
                 <Typography variant="body2">
                   {client.address.state}, {client.address.country}
                 </Typography>
-                <Typography variant="body2">
+                <Typography variant="body2" color="text.secondary">
                   {client.address.postalCode}
                 </Typography>
-              </Box>
+              </Stack>
             ) : (
-              <Typography variant="body2">No address available.</Typography>
+              <Typography variant="body2" color="text.secondary">
+                No address available.
+              </Typography>
             )}
           </Box>
         </Stack>
         <Divider sx={{ my: 1 }} />
       </Paper>
-      <Dialog
-        open={isUsersModalOpen}
-        onClose={() => setIsUsersModalOpen(false)}
-        fullWidth
-        maxWidth="lg"
-        PaperProps={{
-          sx: {
-            borderRadius: 3,
-            maxHeight: "82vh",
-            height: "auto",
-            overflow: "hidden",
-          },
-        }}
-      >
-        <UsersList
-          clientId={client.id}
-          onClose={() => setIsUsersModalOpen(false)}
-        />
-      </Dialog>
-
       <Paper
         elevation={1}
         sx={{

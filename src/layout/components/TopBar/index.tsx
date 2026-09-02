@@ -1,17 +1,19 @@
 import {
   BarChart,
   Business,
+  Add,
   Home,
   People,
   Person,
   RequestPage,
   Work,
 } from "@mui/icons-material";
-import { AppBar, Box, Toolbar, Typography, useTheme } from "@mui/material";
+import { AppBar, Box, Button, Toolbar, Typography, useTheme } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { styles } from "./styles";
 
 const pageConfig = [
+  { path: "/company", label: "Company", icon: <Business /> },
   { path: "/clients", label: "Clients", icon: <Business /> },
   { path: "/requests", label: "Requests", icon: <RequestPage /> },
   { path: "/jobs", label: "Tasks", icon: <Work /> },
@@ -44,7 +46,13 @@ export function TopBar() {
           </Typography>
         </Box>
 
-        <Box sx={styles.right} />
+        <Box sx={styles.right}>
+          {location.pathname.startsWith("/requests") ? (
+            <Button variant="contained" size="small" startIcon={<Add />} onClick={() => undefined}>
+              Create
+            </Button>
+          ) : null}
+        </Box>
       </Toolbar>
     </AppBar>
   );

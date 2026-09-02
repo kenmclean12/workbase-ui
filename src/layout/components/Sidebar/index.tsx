@@ -24,6 +24,7 @@ import { useState, type ReactNode } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAuthContext, useThemeContext } from "../../../context";
 import { useUsersGetAll } from "../../../hooks";
+import { IS_CLIENT_USER } from "../../../config/appMode";
 import { ProfileMenu } from "./ProfileMenu";
 import { styles } from "./styles";
 
@@ -57,7 +58,7 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
         </IconButton>
       </Box>
       <List sx={styles.list}>
-        {menuItems.map((item) => {
+        {(IS_CLIENT_USER ? clientMenuItems : internalMenuItems).map((item) => {
           const isActive = location.pathname.startsWith(item.path);
           const button = (
             <ListItemButton
@@ -147,10 +148,22 @@ type MenuItem = {
   icon: ReactNode;
 };
 
-const menuItems: MenuItem[] = [
+const internalMenuItems: MenuItem[] = [
   { key: "profile", label: "Profile", path: "/profile", icon: <Person /> },
   { key: "users", label: "Users", path: "/users", icon: <People /> },
   { key: "clients", label: "Clients", path: "/clients", icon: <Business /> },
+  {
+    key: "requests",
+    label: "Requests",
+    path: "/requests",
+    icon: <RequestPage />,
+  },
+];
+
+const clientMenuItems: MenuItem[] = [
+  { key: "profile", label: "Profile", path: "/profile", icon: <Person /> },
+  { key: "company", label: "Company", path: "/company", icon: <Business /> },
+  { key: "users", label: "Users", path: "/users", icon: <People /> },
   {
     key: "requests",
     label: "Requests",
