@@ -78,12 +78,9 @@ export function ClientDetail() {
         elevation={1}
         sx={{
           p: 1.5,
-          pb: 2.25,
-          mb: 0,
-          borderTopLeftRadius: "12px",
-          borderTopRightRadius: "12px",
-          borderBottomLeftRadius: 0,
-          borderBottomRightRadius: 0,
+          pb: 1.5,
+          mb: 0.75,
+          borderRadius: "12px",
           textAlign: "left",
         }}
       >
@@ -271,10 +268,7 @@ export function ClientDetail() {
           flex: 1,
           p: 1.5,
           pt: 1.75,
-          borderTopLeftRadius: 0,
-          borderTopRightRadius: 0,
-          borderBottomLeftRadius: "12px",
-          borderBottomRightRadius: "12px",
+          borderRadius: "12px",
           display: "flex",
           flexDirection: "column",
           minHeight: 0,
