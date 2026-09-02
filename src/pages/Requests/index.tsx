@@ -3,8 +3,7 @@ import { useMemo, useState } from "react";
 import { IS_CLIENT_USER } from "../../config/appMode";
 import { RequestDetailDialog } from "../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../components/RequestKanbanCard";
-import { useAuthContext } from "../../context";
-import { useRequestsGetAll, useRequestsGetByClient } from "../../hooks";
+import { useClientsGetAll, useRequestsGetAll, useRequestsGetByClient } from "../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../types/request";
 
 const columns = [
@@ -14,8 +13,8 @@ const columns = [
 ] as const;
 
 export function RequestsPage() {
-  const { user: currentUser } = useAuthContext();
-  const clientId = IS_CLIENT_USER ? currentUser?.clientId ?? undefined : undefined;
+  const { data: clients = [] } = useClientsGetAll({ enabled: IS_CLIENT_USER });
+  const clientId = IS_CLIENT_USER ? clients[0]?.id : undefined;
   const { data: allRequests = [], isLoading: isAllRequestsLoading } = useRequestsGetAll({
     enabled: !IS_CLIENT_USER,
   });
@@ -25,7 +24,7 @@ export function RequestsPage() {
   );
   const requests = IS_CLIENT_USER ? clientRequests : allRequests;
   const isLoading = IS_CLIENT_USER
-    ? !clientId || isClientRequestsLoading
+    ? clients.length === 0 || isClientRequestsLoading
     : isAllRequestsLoading;
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
 

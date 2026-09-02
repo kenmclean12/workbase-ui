@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { enqueueSnackbar } from "notistack";
 import { useAuthContext } from "../../context";
 import {
+  type RequestCreateDto,
   type RequestNoteResponseDto,
   type RequestResponseDto,
   type RequestStatus,
@@ -59,6 +61,36 @@ export function useRequestsGetByUser(
     queryFn: () => request<RequestResponseDto[]>(`/request/user/${userId}`),
     enabled: !!userId,
     ...options,
+  });
+}
+
+export function useRequestCreate(options?: { onSuccess?: () => void }) {
+  const qc = useQueryClient();
+  const { fetchWithAuth } = useAuthContext();
+
+  return useMutation({
+    mutationFn: async (dto: RequestCreateDto) => {
+      const response = await fetchWithAuth("/request/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dto),
+      });
+
+      const text = await response.text();
+      if (!response.ok) {
+        throw new Error(text || "Request creation failed");
+      }
+
+      return text ? (JSON.parse(text) as RequestResponseDto) : null;
+    },
+    onSuccess: async () => {
+      options?.onSuccess?.();
+      await qc.invalidateQueries({ queryKey: ["requests"] });
+      enqueueSnackbar("Request created successfully", { variant: "success" });
+    },
+    onError: (error: Error) => {
+      enqueueSnackbar(error.message, { variant: "error" });
+    },
   });
 }
 

@@ -15,15 +15,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { IS_CLIENT_USER } from "../../../config/appMode";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
-import { useAuthContext } from "../../../context";
-import { useClientGetById, useRequestsGetByClient } from "../../../hooks";
+import { useClientGetById, useClientsGetAll, useRequestsGetByClient } from "../../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
 
 export function ClientDetail() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
-  const { user: currentUser } = useAuthContext();
-  const clientId = id ? Number(id) : (IS_CLIENT_USER ? currentUser?.clientId ?? undefined : undefined);
+  const { data: clients = [] } = useClientsGetAll({ enabled: IS_CLIENT_USER && !id });
+  const clientId = id ? Number(id) : (IS_CLIENT_USER ? clients[0]?.id : undefined);
   const { data: client } = useClientGetById(clientId);
   const { data: requests = [] } = useRequestsGetByClient(clientId);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);

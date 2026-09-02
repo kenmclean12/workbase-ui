@@ -1,17 +1,17 @@
 import {
   BarChart,
   Business,
-  Add,
   Home,
   People,
   Person,
   RequestPage,
   Work,
 } from "@mui/icons-material";
-import { AppBar, Box, Button, Toolbar, Typography, useTheme } from "@mui/material";
+import { AppBar, Box, Toolbar, Typography, useTheme } from "@mui/material";
 import { useLocation } from "react-router-dom";
 import { IS_CLIENT_USER } from "../../../config/appMode";
 import { AddClientButton } from "../../../components/AddClientButton";
+import { AddRequestButton } from "../../../components/AddRequestButton";
 import { styles } from "./styles";
 
 const pageConfig = [
@@ -50,11 +50,7 @@ export function TopBar() {
 
         <Box sx={styles.right}>
           {!IS_CLIENT_USER && location.pathname === "/clients" ? <AddClientButton /> : null}
-          {IS_CLIENT_USER && location.pathname.startsWith("/requests") ? (
-            <Button variant="contained" size="small" startIcon={<Add />} onClick={() => undefined}>
-              Create
-            </Button>
-          ) : null}
+          {location.pathname.startsWith("/requests") ? <AddRequestButton /> : null}
         </Box>
       </Toolbar>
     </AppBar>

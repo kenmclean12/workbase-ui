@@ -37,7 +37,7 @@ export function RequestKanbanCard({ request, onClick }: Props) {
         borderRadius: 1.5,
         cursor: "pointer",
         minHeight: 140,
-        maxHeight: 170,
+        maxHeight: 160,
         height: "100%",
         display: "flex",
         flexDirection: "column",

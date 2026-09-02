@@ -2,7 +2,6 @@ import {
   ArrowDownward,
   ArrowRightAlt,
   ArrowUpward,
-  WarningAmber,
 } from "@mui/icons-material";
 import type { ClientResponseDto } from "./client";
 import type { UserResponseDto } from "./user";
@@ -19,11 +18,18 @@ export const RequestPriority = {
   LOW: 1,
   MEDIUM: 2,
   HIGH: 3,
-  CRITICAL: 4,
 } as const;
 
 export type RequestPriority =
   (typeof RequestPriority)[keyof typeof RequestPriority];
+
+export type RequestCreateDto = {
+  clientId: number;
+  createdByUserId: number;
+  title: string;
+  description: string;
+  priority?: RequestPriority;
+};
 
 export type RequestResponseDto = {
   id: number;
@@ -86,11 +92,5 @@ export const REQUEST_PRIORITY_META: Record<
     color: "#ef4444",
     textColor: "#ffffff",
     icon: ArrowUpward,
-  },
-  [RequestPriority.CRITICAL]: {
-    label: "Critical",
-    color: "#7c3aed",
-    textColor: "#ffffff",
-    icon: WarningAmber,
   },
 };

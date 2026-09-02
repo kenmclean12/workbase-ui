@@ -105,6 +105,15 @@ export function RequestDetailDialog({
     if (!request) return;
     if (nextStatus === status) return;
 
+    if (
+      nextStatus === RequestStatus.DONE &&
+      !window.confirm(
+        "Are you sure you want to move this request to Done? This cannot be reversed, and the client will be notified that this task has been completed.",
+      )
+    ) {
+      return;
+    }
+
     setStatus(nextStatus);
 
     const actingUserId = user?.id ?? users[0]?.id ?? request.createdByUserId;
