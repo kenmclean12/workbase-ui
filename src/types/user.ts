@@ -52,6 +52,13 @@ export interface UserUpdateDto {
   avatarUrl?: string | null;
 }
 
+export type UserInviteBulkCreateDto = {
+  emails: string[];
+  role?: number;
+  clientId?: number;
+  invitedByUserId: number;
+};
+
 export interface UserResponseDto {
   id: number;
   email: string;

@@ -4,6 +4,7 @@ import { useAuthContext } from "../../context";
 import type {
   PasswordResetDto,
   UserCreateDto,
+  UserInviteBulkCreateDto,
   UserResponseDto,
   UserUpdateDto,
 } from "../../types/user";
@@ -102,6 +103,34 @@ export function useUserCreate() {
       enqueueSnackbar(err.message, {
         variant: "error",
       });
+    },
+  });
+}
+
+export function useUserInviteCreate(options?: { onSuccess?: () => void }) {
+  const qc = useQueryClient();
+  const { fetchWithAuth } = useAuthContext();
+
+  return useMutation({
+    mutationFn: async (dto: UserInviteBulkCreateDto) => {
+      const response = await fetchWithAuth("/user-invites", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dto),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "User invite creation failed");
+      }
+    },
+    onSuccess: async () => {
+      options?.onSuccess?.();
+      await qc.invalidateQueries({ queryKey: ["users"] });
+      enqueueSnackbar("User invitations sent successfully", { variant: "success" });
+    },
+    onError: (error: Error) => {
+      enqueueSnackbar(error.message, { variant: "error" });
     },
   });
 }

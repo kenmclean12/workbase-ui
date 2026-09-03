@@ -12,6 +12,7 @@ import { useLocation } from "react-router-dom";
 import { IS_CLIENT_USER } from "../../../config/appMode";
 import { AddClientButton } from "../../../components/AddClientButton";
 import { AddRequestButton } from "../../../components/AddRequestButton";
+import { InviteUsersButton } from "../../../components/InviteUsersButton";
 import { styles } from "./styles";
 
 const pageConfig = [
@@ -51,6 +52,7 @@ export function TopBar() {
         <Box sx={styles.right}>
           {!IS_CLIENT_USER && location.pathname === "/clients" ? <AddClientButton /> : null}
           {location.pathname.startsWith("/requests") ? <AddRequestButton /> : null}
+          {location.pathname === "/users" ? <InviteUsersButton /> : null}
         </Box>
       </Toolbar>
     </AppBar>
