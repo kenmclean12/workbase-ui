@@ -246,10 +246,10 @@ export function RequestDetailDialog({
       fullWidth
       PaperProps={{
         sx: (theme) => ({
-          height: "80vh",
-          maxHeight: "80vh",
-          minHeight: "80vh",
-          width: "min(1200px, 92vw)",
+          height: "64vh",
+          maxHeight: "64vh",
+          minHeight: "64vh",
+          width: "min(1020px, 84vw)",
           display: "flex",
           flexDirection: "column",
           borderRadius: 3,

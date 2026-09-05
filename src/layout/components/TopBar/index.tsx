@@ -51,7 +51,7 @@ export function TopBar() {
 
         <Box sx={styles.right}>
           {!IS_CLIENT_USER && location.pathname === "/clients" ? <AddClientButton /> : null}
-          {location.pathname.startsWith("/requests") ? <AddRequestButton /> : null}
+          {IS_CLIENT_USER && location.pathname.startsWith("/requests") ? <AddRequestButton /> : null}
           {location.pathname === "/users" ? <InviteUsersButton /> : null}
         </Box>
       </Toolbar>
