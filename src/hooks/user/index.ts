@@ -27,12 +27,18 @@ async function request<T>(
 }
 
 export function useUserMe(options?: { enabled?: boolean }) {
-  const { fetchWithAuth } = useAuthContext();
+  const { fetchWithAuth, user } = useAuthContext();
 
   return useQuery<UserResponseDto>({
-    queryKey: ["user", "me"],
-    queryFn: () => request<UserResponseDto>(fetchWithAuth, `${BASE_URL}/me`),
     ...options,
+    // The service has no /user/me endpoint. AuthProvider resolves this user
+    // from the JWT `sub` claim; this hook refreshes that same user's record.
+    queryKey: ["user", user?.id],
+    queryFn: () => {
+      if (!user?.id) throw new Error("You are not signed in.");
+      return request<UserResponseDto>(fetchWithAuth, `${BASE_URL}/${user.id}`);
+    },
+    enabled: Boolean(user?.id) && (options?.enabled ?? true),
   });
 }
 

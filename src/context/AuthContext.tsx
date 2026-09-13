@@ -1,18 +1,7 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import {
-  authFetch,
-  loginRequest,
-  meRequest,
-  refreshRequest,
-  registerRequest,
-  type User,
+  authFetch, currentUserRequest, getTokenExpiryMs, loginRequest, logoutRequest, refreshRequest,
+  registerRequest, type RegisterPayload, type TokenResponse, type User,
 } from "../hooks";
 
 type AuthContextValue = {
@@ -20,31 +9,58 @@ type AuthContextValue = {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (p: {
-    email: string;
-    password: string;
-    firstName: string;
-    lastName: string;
-  }) => Promise<void>;
-  logout: () => void;
+  register: (payload: RegisterPayload) => Promise<void>;
+  logout: () => Promise<void>;
   fetchWithAuth: (path: string, config?: RequestInit) => Promise<Response>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+const REFRESH_EARLY_MS = 60_000;
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("accessToken"),
-  );
+  const [token, setToken] = useState<string | null>(() => localStorage.getItem("accessToken"));
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const refreshInFlight = useRef<Promise<string | null> | null>(null);
 
-  const logout = useCallback(() => {
+  const clearSession = useCallback(() => {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("refreshToken");
     setToken(null);
     setUser(null);
   }, []);
+
+  const storeTokens = useCallback((data: TokenResponse) => {
+    localStorage.setItem("accessToken", data.token);
+    localStorage.setItem("refreshToken", data.refreshToken);
+    setToken(data.token);
+    return data.token;
+  }, []);
+
+  const refresh = useCallback(async () => {
+    if (refreshInFlight.current) return refreshInFlight.current;
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) return null;
+
+    const operation = refreshRequest(refreshToken)
+      .then((data) => (data ? storeTokens(data) : null))
+      .catch(() => null)
+      .then((newToken) => {
+        if (!newToken) clearSession();
+        return newToken;
+      })
+      .finally(() => { refreshInFlight.current = null; });
+    refreshInFlight.current = operation;
+    return operation;
+  }, [clearSession, storeTokens]);
+
+  const logout = useCallback(async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    clearSession();
+    if (refreshToken) {
+      try { await logoutRequest(refreshToken); } catch { /* local logout still succeeds */ }
+    }
+  }, [clearSession]);
 
   const loadUser = useCallback(async () => {
     if (!token) {
@@ -54,80 +70,67 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const data = await meRequest(token);
-      setUser(data);
+      let activeToken = token;
+      const expiry = getTokenExpiryMs(activeToken);
+      if (!expiry || expiry - Date.now() <= REFRESH_EARLY_MS) {
+        const refreshed = await refresh();
+        if (!refreshed) return;
+        activeToken = refreshed;
+      }
+
+      try {
+        setUser(await currentUserRequest(activeToken));
+      } catch {
+        const refreshed = await refresh();
+        if (!refreshed) return;
+        setUser(await currentUserRequest(refreshed));
+      }
     } catch {
-      logout();
+      clearSession();
     } finally {
       setLoading(false);
     }
-  }, [token, logout]);
+  }, [clearSession, refresh, token]);
+
+  useEffect(() => { void loadUser(); }, [loadUser]);
 
   useEffect(() => {
-    void loadUser();
-  }, [loadUser]);
+    if (!token) return;
+    const expiry = getTokenExpiryMs(token);
+    const delay = Math.max((expiry ?? Date.now() + 25 * 60_000) - Date.now() - REFRESH_EARLY_MS, 0);
+    const timeout = window.setTimeout(() => void refresh(), delay);
+    return () => window.clearTimeout(timeout);
+  }, [refresh, token]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const data = await loginRequest(email, password);
+    storeTokens(await loginRequest(email, password));
+  }, [storeTokens]);
 
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
+  const register = useCallback(async (payload: RegisterPayload) => {
+    await registerRequest(payload);
+    await login(payload.email, payload.password);
+  }, [login]);
 
-    setToken(data.accessToken);
-  }, []);
+  const fetchWithAuth = useCallback(async (path: string, config: RequestInit = {}) => {
+    let activeToken = token ?? await refresh();
+    if (!activeToken) throw new Error("You are not signed in.");
 
-  const register = useCallback(
-    async (payload: any) => {
-      await registerRequest(payload);
-      await login(payload.email, payload.password);
-    },
-    [login],
-  );
-
-  const refresh = useCallback(async () => {
-    const refreshToken = localStorage.getItem("refreshToken");
-    if (!refreshToken) return null;
-
-    const data = await refreshRequest(refreshToken);
-    if (!data) {
-      logout();
-      return null;
+    const expiry = getTokenExpiryMs(activeToken);
+    if (!expiry || expiry - Date.now() <= REFRESH_EARLY_MS) {
+      activeToken = await refresh();
+      if (!activeToken) throw new Error("Your session has expired. Please sign in again.");
     }
 
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
+    const response = await authFetch(path, activeToken, config);
+    if (response.status !== 401) return response;
 
-    setToken(data.accessToken);
-    return data.accessToken;
-  }, [logout]);
+    activeToken = await refresh();
+    if (!activeToken) throw new Error("Your session has expired. Please sign in again.");
+    return authFetch(path, activeToken, config);
+  }, [refresh, token]);
 
-  const fetchWithAuth = useCallback(
-    async (path: string, config: RequestInit = {}) => {
-      const res = await authFetch(path, token!, config);
-
-      if (res.status !== 401) return res;
-
-      const newToken = await refresh();
-      if (!newToken) throw new Error("Unauthorized");
-
-      return authFetch(path, newToken, config);
-    },
-    [token, refresh],
-  );
-
-  const value = useMemo(
-    () => ({
-      token,
-      user,
-      loading,
-      login,
-      register,
-      logout,
-      fetchWithAuth,
-    }),
-    [token, user, loading, login, register, logout, fetchWithAuth],
-  );
-
+  const value = useMemo(() => ({ token, user, loading, login, register, logout, fetchWithAuth }),
+    [token, user, loading, login, register, logout, fetchWithAuth]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

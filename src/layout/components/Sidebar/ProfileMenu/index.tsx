@@ -27,9 +27,9 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
   const { themeMode, toggleTheme } = useThemeContext();
   const displayUser = user ?? users[0] ?? null;
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
     onClose();
+    await logout();
   };
 
   return (

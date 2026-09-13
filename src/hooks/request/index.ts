@@ -9,10 +9,12 @@ import {
 } from "../../types/request";
 import type { UserResponseDto } from "../../types/user";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:5223";
-
-async function request<T>(url: string, config?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE_URL}${url}`, config);
+async function request<T>(
+  fetchWithAuth: (path: string, config?: RequestInit) => Promise<Response>,
+  url: string,
+  config?: RequestInit,
+): Promise<T> {
+  const res = await fetchWithAuth(url, config);
 
   if (!res.ok) {
     const text = await res.text();
@@ -34,9 +36,10 @@ export type RequestHistoryEntryDto = {
 };
 
 export function useRequestsGetAll(options?: { enabled?: boolean }) {
+  const { fetchWithAuth } = useAuthContext();
   return useQuery<RequestResponseDto[]>({
     queryKey: ["requests"],
-    queryFn: () => request<RequestResponseDto[]>(`/request/`),
+    queryFn: () => request<RequestResponseDto[]>(fetchWithAuth, `/request/`),
     ...options,
   });
 }
@@ -45,9 +48,10 @@ export function useRequestsGetByClient(
   clientId?: number,
   options?: { enabled?: boolean },
 ) {
+  const { fetchWithAuth } = useAuthContext();
   return useQuery<RequestResponseDto[]>({
     queryKey: ["requests", "client", clientId],
-    queryFn: () => request<RequestResponseDto[]>(`/request/client/${clientId}`),
+    queryFn: () => request<RequestResponseDto[]>(fetchWithAuth, `/request/client/${clientId}`),
     enabled: !!clientId,
     ...options,
   });
@@ -57,9 +61,10 @@ export function useRequestsGetByUser(
   userId?: number,
   options?: { enabled?: boolean },
 ) {
+  const { fetchWithAuth } = useAuthContext();
   return useQuery<RequestResponseDto[]>({
     queryKey: ["requests", "user", userId],
-    queryFn: () => request<RequestResponseDto[]>(`/request/user/${userId}`),
+    queryFn: () => request<RequestResponseDto[]>(fetchWithAuth, `/request/user/${userId}`),
     enabled: !!userId,
     ...options,
   });
@@ -96,10 +101,11 @@ export function useRequestCreate(options?: { onSuccess?: () => void }) {
 }
 
 export function useRequestHistory(requestId?: number, options?: { enabled?: boolean }) {
+  const { fetchWithAuth } = useAuthContext();
   return useQuery<RequestHistoryEntryDto[]>({
     queryKey: ["request-history", requestId],
     queryFn: async () => {
-      const payload = await request<unknown>(`/request-history/request/${requestId}`);
+      const payload = await request<unknown>(fetchWithAuth, `/request-history/request/${requestId}`);
       return Array.isArray(payload) ? (payload as RequestHistoryEntryDto[]) : [];
     },
     enabled: !!requestId,
@@ -108,10 +114,11 @@ export function useRequestHistory(requestId?: number, options?: { enabled?: bool
 }
 
 export function useUserActivity(userId?: number, options?: { enabled?: boolean }) {
+  const { fetchWithAuth } = useAuthContext();
   return useQuery<RequestHistoryEntryDto[]>({
     queryKey: ["request-history", "user", userId],
     queryFn: async () => {
-      const payload = await request<unknown>(`/request-history/user/${userId}`);
+      const payload = await request<unknown>(fetchWithAuth, `/request-history/user/${userId}`);
       return Array.isArray(payload) ? (payload as RequestHistoryEntryDto[]) : [];
     },
     enabled: !!userId,
@@ -159,9 +166,10 @@ export function useRequestNotesGetByRequest(
   requestId?: number,
   options?: { enabled?: boolean },
 ) {
+  const { fetchWithAuth } = useAuthContext();
   return useQuery<RequestNoteResponseDto[]>({
     queryKey: ["request-notes", requestId],
-    queryFn: () => request<RequestNoteResponseDto[]>(`/request-note/request/${requestId}`),
+    queryFn: () => request<RequestNoteResponseDto[]>(fetchWithAuth, `/request-note/request/${requestId}`),
     enabled: !!requestId,
     ...options,
   });

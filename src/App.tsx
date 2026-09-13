@@ -1,15 +1,16 @@
 import { CssBaseline, ThemeProvider as MuiThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { SnackbarProvider } from "notistack";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import "./App.css";
 import { ThemeProvider, useThemeContext } from "./context";
 import { AuthProvider } from "./context/AuthContext";
 import AppLayout from "./layout";
+import ProtectedRoute from "./packages/ProtectedRoute";
 import {
   ClientDetail,
   ClientList,
   LoginPage,
-  MainPage,
   RegisterPage,
   RequestsPage,
   UserDetail,
@@ -25,17 +26,18 @@ function ThemedApp() {
     <QueryClientProvider client={queryClient}>
       <MuiThemeProvider theme={theme}>
         <CssBaseline />
-        <BrowserRouter>
+        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: "top", horizontal: "right" }}>
+          <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route
               path="/*"
               element={
-                // <ProtectedRoute>
+                <ProtectedRoute>
                   <AppLayout>
                     <Routes>
-                      <Route path="/" element={<MainPage />} />
+                      <Route path="/" element={<Navigate to="/profile" replace />} />
                       <Route path="/users" element={<UsersList />} />
                       <Route path="/company" element={<ClientDetail />} />
                       <Route path="/clients/:id/users" element={<UsersList />} />
@@ -46,11 +48,12 @@ function ThemedApp() {
                       <Route path="/clients/:id" element={<ClientDetail />} />
                     </Routes>
                   </AppLayout>
-                // </ProtectedRoute>
+                </ProtectedRoute>
               }
             />
           </Routes>
-        </BrowserRouter>
+          </BrowserRouter>
+        </SnackbarProvider>
       </MuiThemeProvider>
     </QueryClientProvider>
   );

@@ -1,7 +1,6 @@
 import {
   BarChart,
   Business,
-  Home,
   People,
   Person,
   RequestPage,
@@ -23,7 +22,6 @@ const pageConfig = [
   { path: "/users", label: "Users", icon: <People /> },
   { path: "/profile", label: "Profile", icon: <Person /> },
   { path: "/stats", label: "Stats", icon: <BarChart /> },
-  { path: "/", label: "Home", icon: <Home /> },
 ];
 
 export function TopBar() {
@@ -32,7 +30,7 @@ export function TopBar() {
   const location = useLocation();
   const currentPage =
     pageConfig.find((p) => location.pathname.startsWith(p.path)) ||
-    pageConfig[pageConfig.length - 1];
+    pageConfig.find((p) => p.path === "/profile")!;
 
   return (
     <AppBar

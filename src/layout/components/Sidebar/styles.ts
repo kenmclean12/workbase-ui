@@ -45,6 +45,17 @@ export const styles = {
     gap: 1,
   },
 
+  brandLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: 1,
+    color: "text.primary",
+    textDecoration: "none",
+    borderRadius: 1,
+    "&:hover": { color: "primary.main" },
+    "&:focus-visible": { outline: "2px solid", outlineColor: "primary.main", outlineOffset: 3 },
+  },
+
   brandText: {
     fontWeight: 700,
     fontSize: 18,

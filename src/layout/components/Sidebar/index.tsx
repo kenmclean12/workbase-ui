@@ -47,9 +47,16 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
       <Box sx={styles.brand}>
         {open && (
           <Box sx={styles.brandLeft}>
-            <BusinessCenter sx={{ fontSize: 24 }} />
-            <Box component="span" sx={styles.brandText}>
+            <Box
+              component={NavLink}
+              to="/profile"
+              aria-label="Go to profile"
+              sx={styles.brandLink}
+            >
+              <BusinessCenter sx={{ fontSize: 24 }} />
+              <Box component="span" sx={styles.brandText}>
               WorkBase
+              </Box>
             </Box>
           </Box>
         )}
