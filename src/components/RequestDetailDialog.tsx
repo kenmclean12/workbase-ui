@@ -246,9 +246,9 @@ export function RequestDetailDialog({
       fullWidth
       PaperProps={{
         sx: (theme) => ({
-          height: "64vh",
-          maxHeight: "64vh",
-          minHeight: "64vh",
+          height: "80vh",
+          maxHeight: "80vh",
+          minHeight: "70vh",
           width: "min(1020px, 84vw)",
           display: "flex",
           flexDirection: "column",
@@ -381,7 +381,7 @@ export function RequestDetailDialog({
       <DialogContent
         dividers
         sx={{
-          overflow: "hidden",
+          overflow: "auto",
           flex: 1,
           minHeight: 0,
           display: "flex",
