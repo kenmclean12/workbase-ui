@@ -22,29 +22,29 @@
 }
 
 /* =========================
-   DARK THEME (NAVY AMBIENT)
+   DARK THEME (CHARCOAL)
 ========================= */
 @media (prefers-color-scheme: dark) {
   :root {
     --text: #aab4c3;
     --text-h: #e6edf3;
 
-    --bg: #0b0f1a;
-    --bg-elevated: #111827;
-    --bg-hover: #1a2333;
+    --bg: #000000;
+    --bg-elevated: #1c1c1f;
+    --bg-hover: #27272a;
 
-    --border: #1f2937;
-    --border-soft: #273244;
+    --border: #303034;
+    --border-soft: #3f3f46;
 
-    --code-bg: #0f172a;
+    --code-bg: #242428;
 
     --accent: #3b82f6;
     --accent-soft: #60a5fa;
     --accent-bg: rgba(59, 130, 246, 0.12);
     --accent-border: rgba(59, 130, 246, 0.4);
 
-    --navy: #0f172a;
-    --navy-light: #1e293b;
+    --navy: #000000;
+    --navy-light: #1c1c1f;
 
     --shadow:
       rgba(0, 0, 0, 0.6) 0 10px 25px -5px, rgba(0, 0, 0, 0.4) 0 4px 10px -4px;
@@ -55,18 +55,7 @@
     font-family: var(--sans);
     color: var(--text);
 
-    background:
-      radial-gradient(
-        circle at 20% 20%,
-        rgba(59, 130, 246, 0.08),
-        transparent 40%
-      ),
-      radial-gradient(
-        circle at 80% 0%,
-        rgba(37, 99, 235, 0.06),
-        transparent 40%
-      ),
-      var(--bg);
+    background: var(--bg);
   }
 
   #root {

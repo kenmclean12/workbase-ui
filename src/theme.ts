@@ -159,14 +159,14 @@ const darkTheme = createTheme({
       dark: "#a855f7",
     },
     background: {
-      default: "#0f172a",
-      paper: "#1e293b",
+      default: "#000000",
+      paper: "#1c1c1f",
     },
     text: {
       primary: "#f1f5f9",
       secondary: "#94a3b8",
     },
-    divider: "#334155",
+    divider: "#343438",
     action: {
       active: "#60a5fa",
       hover: "rgba(96, 165, 250, 0.08)",
@@ -193,7 +193,7 @@ const darkTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: "#0f172a",
+          backgroundColor: "#000000",
           scrollBehavior: "smooth",
         },
       },
@@ -201,8 +201,8 @@ const darkTheme = createTheme({
     MuiDrawer: {
       styleOverrides: {
         paper: {
-          borderRight: "1px solid #334155",
-          backgroundColor: "#1e293b",
+          borderRight: "1px solid #343438",
+          backgroundColor: "#18181b",
         },
       },
     },
@@ -242,7 +242,7 @@ const darkTheme = createTheme({
     MuiAvatar: {
       styleOverrides: {
         root: {
-          backgroundColor: "#334155",
+          backgroundColor: "#303034",
           color: "#cbd5e1",
         },
       },
@@ -277,7 +277,7 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          backgroundColor: "#1e293b",
+          backgroundColor: "#1c1c1f",
           boxShadow:
             "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)",
         },

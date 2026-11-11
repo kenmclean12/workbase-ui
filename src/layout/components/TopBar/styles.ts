@@ -3,6 +3,7 @@ import type { Theme } from "@mui/material";
 export const styles = {
   appBar: (theme: Theme) => ({
     top: 0,
+    backgroundColor: "background.paper",
     borderBottom: "1px solid",
     borderColor: "divider",
     zIndex: theme.zIndex.drawer + 1,
@@ -24,12 +25,12 @@ export const styles = {
     minHeight: 0,
   },
 
-  title: (isDarkMode: boolean) => ({
+  title: {
     fontSize: "19px",
     fontWeight: 500,
     lineHeight: 1,
-    color: isDarkMode ? "white" : "black",
-  }),
+    color: "text.primary",
+  },
 
   right: {
     display: "flex",

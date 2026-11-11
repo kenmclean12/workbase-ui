@@ -261,11 +261,11 @@ export function RequestDetailDialog({
               : "rgba(148, 163, 184, 0.28)",
           boxShadow:
             theme.palette.mode === "dark"
-              ? "0 18px 45px rgba(15, 23, 42, 0.55)"
+              ? "0 18px 45px rgba(0, 0, 0, 0.55)"
               : "0 18px 45px rgba(15, 23, 42, 0.12)",
           background:
             theme.palette.mode === "dark"
-              ? "linear-gradient(180deg, rgba(15, 23, 42, 0.97) 0%, rgba(15, 23, 42, 0.92) 100%)"
+              ? "linear-gradient(180deg, rgba(28, 28, 31, 0.98) 0%, rgba(22, 22, 24, 0.96) 100%)"
               : "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(248,250,252,0.96) 100%)",
         }),
       }}
@@ -420,11 +420,11 @@ export function RequestDetailDialog({
                       border: "1px solid",
                       borderColor:
                         theme.palette.mode === "dark"
-                          ? "rgba(96, 165, 250, 0.28)"
+                          ? "rgba(255, 255, 255, 0.14)"
                           : "rgba(147, 197, 253, 0.7)",
                       bgcolor:
                         theme.palette.mode === "dark"
-                          ? "rgba(15, 23, 42, 0.18)"
+                          ? "rgba(255, 255, 255, 0.03)"
                           : "rgba(248, 250, 252, 0.96)",
                       boxShadow:
                         theme.palette.mode === "dark"
@@ -488,11 +488,11 @@ export function RequestDetailDialog({
                       border: "1px solid",
                       borderColor:
                         theme.palette.mode === "dark"
-                          ? "rgba(96, 165, 250, 0.38)"
+                          ? "rgba(255, 255, 255, 0.16)"
                           : "rgba(96, 165, 250, 0.35)",
                       bgcolor:
                         theme.palette.mode === "dark"
-                          ? "linear-gradient(180deg, rgba(30, 58, 138, 0.38) 0%, rgba(15, 23, 42, 0.22) 100%)"
+                          ? "linear-gradient(180deg, rgba(48, 48, 52, 0.8) 0%, rgba(28, 28, 31, 0.72) 100%)"
                           : "linear-gradient(180deg, rgba(239, 246, 255, 0.98) 0%, rgba(224, 242, 254, 0.86) 100%)",
                       boxShadow:
                         theme.palette.mode === "dark"
@@ -724,11 +724,11 @@ export function RequestDetailDialog({
                         border: "1px solid",
                         borderColor:
                           theme.palette.mode === "dark"
-                            ? "rgba(96, 165, 250, 0.25)"
+                            ? "rgba(255, 255, 255, 0.14)"
                             : "rgba(148, 163, 184, 0.38)",
                         bgcolor:
                           theme.palette.mode === "dark"
-                            ? "rgba(15, 23, 42, 0.2)"
+                            ? "rgba(255, 255, 255, 0.03)"
                             : "rgba(255, 255, 255, 0.9)",
                         boxShadow:
                           theme.palette.mode === "dark"
@@ -774,11 +774,11 @@ export function RequestDetailDialog({
                     border: "1px solid",
                     borderColor:
                       theme.palette.mode === "dark"
-                        ? "rgba(96, 165, 250, 0.25)"
+                        ? "rgba(255, 255, 255, 0.14)"
                         : "rgba(148, 163, 184, 0.32)",
                     bgcolor:
                       theme.palette.mode === "dark"
-                        ? "rgba(15, 23, 42, 0.2)"
+                        ? "rgba(255, 255, 255, 0.03)"
                         : "rgba(255, 255, 255, 0.9)",
                     boxShadow:
                       theme.palette.mode === "dark"

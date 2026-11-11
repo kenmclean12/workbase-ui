@@ -50,9 +50,9 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
               sx={{
                 ...styles.avatar,
                 bgcolor: (theme) =>
-                  theme.palette.mode === "dark" ? "#40444d" : "#d9e2eb",
+                  theme.palette.mode === "dark" ? "#303034" : "#d9e2eb",
                 color: (theme) =>
-                  theme.palette.mode === "dark" ? "#d1d5db" : "#637381",
+                  theme.palette.mode === "dark" ? "#e4e4e7" : "#637381",
               }}
             >
               {`${displayUser?.firstName?.[0] ?? ""}${displayUser?.lastName?.[0] ?? ""}`.toUpperCase() ||

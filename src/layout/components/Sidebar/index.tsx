@@ -104,8 +104,8 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
                 sx={{
                   width: 40,
                   height: 40,
-                  bgcolor: themeMode === "dark" ? "#40444d" : "#d9e2eb",
-                  color: themeMode === "dark" ? "#d1d5db" : "#637381",
+                  bgcolor: themeMode === "dark" ? "#303034" : "#d9e2eb",
+                  color: themeMode === "dark" ? "#e4e4e7" : "#637381",
                   fontWeight: 700,
                 }}
               >

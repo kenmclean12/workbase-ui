@@ -192,7 +192,7 @@ export function UserDetail() {
                 <Typography color="text.secondary">No activity found.</Typography>
               </Box>
             ) : (
-              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
                 {activityEntries.map((entry) => {
                   const request = entry.request;
                   const clientName = request?.client?.name ?? "Client unavailable";
@@ -208,145 +208,69 @@ export function UserDetail() {
                       disableGutters
                       sx={(theme) => ({
                         display: "block",
-                        px: 1.5,
-                        py: 1.25,
+                        px: 1.25,
+                        py: 1,
                         border: "1px solid",
                         borderColor: "divider",
-                        borderRadius: 1,
+                        borderLeft: request ? "3px solid" : "1px solid",
+                        borderLeftColor: request ? "primary.main" : "divider",
+                        borderRadius: 1.5,
                         backgroundColor:
                           theme.palette.mode === "dark"
-                            ? "#111827"
+                            ? "#000000"
                             : "rgba(15, 23, 42, 0.02)",
                         cursor: request ? "pointer" : "default",
-                        transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+                        transition: "border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease",
                         ...(request
                           ? {
                               "&:hover": {
                                 borderColor: "primary.main",
                                 boxShadow: 1,
+                                backgroundColor: theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.025)" : "action.hover",
                               },
                             }
                           : {}),
                       })}
                       onClick={() => request && setSelectedRequest(request)}
                     >
-                      <Stack direction="row" justifyContent="space-between" spacing={2} alignItems="center" sx={{ minWidth: 0, mb: 1.25 }}>
-                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+                      <Stack direction="row" justifyContent="space-between" spacing={1.5} alignItems="flex-start" sx={{ minWidth: 0 }}>
+                        <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
                           <Avatar
                             sx={{
-                              width: 32,
-                              height: 32,
-                              fontSize: "0.72rem",
-                              bgcolor: "transparent",
-                              color: "primary.main",
-                              border: "1px solid",
-                              borderColor: "primary.main",
+                              width: 28,
+                              height: 28,
+                              fontSize: "0.65rem",
+                              fontWeight: 800,
+                              bgcolor: "primary.main",
+                              color: "primary.contrastText",
+                              flexShrink: 0,
                             }}
                           >
                             {clientInitials}
                           </Avatar>
                           <Box sx={{ minWidth: 0 }}>
-                            <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
-                              {clientName}
+                            <Stack direction="row" spacing={0.75} alignItems="baseline" sx={{ minWidth: 0 }}>
+                              <Typography variant="caption" color="primary.main" noWrap sx={{ fontWeight: 800, flexShrink: 0 }}>
+                                {request ? `REQ-${request.id}` : "REQUEST"}
+                              </Typography>
+                              <Typography variant="body2" color="text.primary" noWrap sx={{ fontWeight: 700 }}>
+                                {request?.title ?? `Request #${entry.requestId}`}
+                              </Typography>
+                            </Stack>
+                            <Typography variant="caption" color="text.secondary" noWrap sx={{ display: "block", mt: 0.15 }}>
+                              {clientName} · {entry.action}
                             </Typography>
                           </Box>
                         </Stack>
-                        <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
-                          {new Date(entry.createdAt).toLocaleString()}
+                        <Typography variant="caption" color="text.disabled" noWrap sx={{ flexShrink: 0, pt: 0.25 }}>
+                          {new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(entry.createdAt))}
                         </Typography>
                       </Stack>
-                      <Box
-                        sx={(theme) => ({
-                          p: 1.25,
-                          borderRadius: 1.5,
-                          border: "1px solid",
-                          borderColor:
-                            theme.palette.mode === "dark"
-                              ? "rgba(255, 255, 255, 0.16)"
-                              : "divider",
-                          backgroundColor:
-                            theme.palette.mode === "dark"
-                              ? "background.paper"
-                              : "rgba(148, 163, 184, 0.06)",
-                          minWidth: 0,
-                        })}
-                      >
-                        <Typography
-                          variant="caption"
-                          sx={(theme) => ({
-                            display: "block",
-                            mb: 0.35,
-                            lineHeight: 1.2,
-                            color:
-                              theme.palette.mode === "dark"
-                                ? "rgba(255, 255, 255, 0.7)"
-                                : "text.secondary",
-                          })}
-                        >
-                          Request
+                      {entry.details ? (
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", ml: 4.5, mt: 0.75, overflowWrap: "anywhere", lineHeight: 1.45 }}>
+                          {entry.details}
                         </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={(theme) => ({
-                            color: theme.palette.mode === "dark" ? "#fff" : "text.primary",
-                          })}
-                          noWrap
-                        >
-                          {request?.title ?? `Request #${entry.requestId}`}
-                        </Typography>
-                      </Box>
-                      <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mt: 1 }}>
-                        <Box
-                          sx={(theme) => ({
-                            flex: 1,
-                            minWidth: 0,
-                            px: 1.25,
-                            py: 1,
-                            borderRadius: 1,
-                            backgroundColor:
-                              theme.palette.mode === "dark"
-                                ? "background.paper"
-                                : "rgba(148, 163, 184, 0.06)",
-                            border:
-                              theme.palette.mode === "dark"
-                                ? "1px solid rgba(255, 255, 255, 0.16)"
-                                : "none",
-                          })}
-                        >
-                          <Typography
-                            variant="caption"
-                            sx={(theme) => ({
-                              display: "block",
-                              lineHeight: 1.2,
-                              color:
-                                theme.palette.mode === "dark"
-                                  ? "rgba(255, 255, 255, 0.7)"
-                                  : "text.secondary",
-                            })}
-                          >
-                            Action
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={(theme) => ({
-                              color: theme.palette.mode === "dark" ? "#fff" : "text.primary",
-                            })}
-                            noWrap
-                          >
-                            {entry.action}
-                          </Typography>
-                        </Box>
-                        {entry.details ? (
-                          <Box sx={{ flex: 2, minWidth: 0, px: 1.25, py: 1, borderRadius: 1, backgroundColor: "rgba(148, 163, 184, 0.08)" }}>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: "block", lineHeight: 1.2 }}>
-                              Details
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary" sx={{ overflowWrap: "anywhere" }}>
-                              {entry.details}
-                            </Typography>
-                          </Box>
-                        ) : null}
-                      </Stack>
+                      ) : null}
                     </ListItem>
                   );
                 })}

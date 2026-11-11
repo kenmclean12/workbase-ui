@@ -26,7 +26,6 @@ const pageConfig = [
 
 export function TopBar() {
   const theme = useTheme();
-  const isDarkMode = theme.palette.mode === "dark";
   const location = useLocation();
   const currentPage =
     pageConfig.find((p) => location.pathname.startsWith(p.path)) ||
@@ -42,7 +41,7 @@ export function TopBar() {
       <Toolbar sx={styles.toolbar}>
         <Box sx={styles.left}>
           {currentPage.icon}
-          <Typography sx={styles.title(isDarkMode)}>
+          <Typography sx={styles.title}>
             {currentPage.label}
           </Typography>
         </Box>
