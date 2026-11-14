@@ -75,10 +75,10 @@ export function RegisterPage() {
 
         <Box component="form" onSubmit={handleSubmit} sx={styles.form} noValidate>
           <Box sx={styles.nameRow}>
-            <TextField label="First name" autoComplete="given-name" value={form.firstName} onChange={update("firstName")} fullWidth required disabled={submitting || !inviteIsValid} />
-            <TextField label="Last name" autoComplete="family-name" value={form.lastName} onChange={update("lastName")} fullWidth required disabled={submitting || !inviteIsValid} />
+            <TextField label="First name" autoComplete="given-name" value={form.firstName} onChange={update("firstName")} inputProps={{ maxLength: 25 }} fullWidth required disabled={submitting || !inviteIsValid} />
+            <TextField label="Last name" autoComplete="family-name" value={form.lastName} onChange={update("lastName")} inputProps={{ maxLength: 25 }} fullWidth required disabled={submitting || !inviteIsValid} />
           </Box>
-          <TextField label="Work email" type="email" autoComplete="email" value={form.email} onChange={update("email")} fullWidth required disabled={submitting || !inviteIsValid} />
+          <TextField label="Work email" type="email" autoComplete="email" value={form.email} onChange={update("email")} inputProps={{ maxLength: 50 }} fullWidth required disabled={submitting || !inviteIsValid} />
           <TextField
             label="Create password" type={showPassword ? "text" : "password"} autoComplete="new-password"
             helperText="Use at least 8 characters." value={form.password} onChange={update("password")}

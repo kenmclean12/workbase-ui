@@ -56,6 +56,7 @@ export function LoginPage() {
             label="Work email" type="email" autoComplete="email" autoFocus fullWidth required
             value={form.email}
             onChange={(event) => setForm((current) => ({ ...current, email: event.target.value }))}
+            inputProps={{ maxLength: 50 }}
             disabled={submitting}
           />
           <TextField

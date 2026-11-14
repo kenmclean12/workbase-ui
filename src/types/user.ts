@@ -33,6 +33,11 @@ export function getUserRoleLabel(role: string | number | null | undefined) {
     .replace(/\b\w/g, (match) => match.toUpperCase());
 }
 
+export function isAdminOrSuperAdmin(role: string | number | null | undefined) {
+  const normalizedRole = getUserRoleLabel(role).toUpperCase().replace(/\s/g, "");
+  return normalizedRole === "ADMIN" || normalizedRole === "SUPERADMIN";
+}
+
 export interface PasswordResetDto {
   oldPassword: string;
   newPassword: string;

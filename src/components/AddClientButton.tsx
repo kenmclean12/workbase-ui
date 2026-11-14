@@ -12,10 +12,13 @@ import {
   IconButton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useState, type FormEvent } from "react";
+import { useAuthContext } from "../context";
 import { useClientCreate } from "../hooks";
+import { isAdminOrSuperAdmin } from "../types/user";
 
 type FormValues = {
   name: string;
@@ -45,7 +48,23 @@ const initialValues: FormValues = {
   postalCode: "",
 };
 
+const maxLengths: Record<keyof FormValues, number> = {
+  name: 30,
+  initUserEmail: 50,
+  email: 50,
+  phone: 16,
+  website: 50,
+  description: 300,
+  street: 50,
+  city: 25,
+  state: 25,
+  country: 25,
+  postalCode: 25,
+};
+
 export function AddClientButton() {
+  const { user } = useAuthContext();
+  const canManageClients = isAdminOrSuperAdmin(user?.role);
   const [open, setOpen] = useState(false);
   const [includeAddress, setIncludeAddress] = useState(false);
   const [values, setValues] = useState(initialValues);
@@ -108,14 +127,28 @@ export function AddClientButton() {
       helperText={submitted && required && !values[name].trim() ? "Required" : undefined}
       multiline={multiline}
       minRows={multiline ? 3 : undefined}
+      inputProps={{ maxLength: maxLengths[name] }}
     />
   );
 
   return (
     <>
-      <Button variant="contained" size="small" startIcon={<Add />} onClick={() => setOpen(true)}>
-        Add Client
-      </Button>
+      <Tooltip
+        title={canManageClients ? "" : "Only admins and super admins can create clients."}
+        disableHoverListener={canManageClients}
+      >
+        <span>
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={<Add />}
+            onClick={() => setOpen(true)}
+            disabled={!canManageClients}
+          >
+            Add Client
+          </Button>
+        </span>
+      </Tooltip>
       <Dialog open={open} onClose={close} fullWidth maxWidth="md">
         <DialogTitle sx={{ pr: 6, pb: 1, color: "text.primary", fontWeight: 700 }}>
           Add Client

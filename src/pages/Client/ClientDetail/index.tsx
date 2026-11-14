@@ -17,11 +17,15 @@ import { IS_CLIENT_USER } from "../../../config/appMode";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
 import { useClientGetById, useClientsGetAll, useRequestsGetByClient } from "../../../hooks";
+import { useAuthContext } from "../../../context";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
+import { isAdminOrSuperAdmin } from "../../../types/user";
 
 export function ClientDetail() {
   const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
+  const { user: currentUser } = useAuthContext();
+  const canEditClients = isAdminOrSuperAdmin(currentUser?.role);
   const { data: clients = [] } = useClientsGetAll({ enabled: IS_CLIENT_USER && !id });
   const clientId = id ? Number(id) : (IS_CLIENT_USER ? clients[0]?.id : undefined);
   const { data: client } = useClientGetById(clientId);
@@ -274,11 +278,15 @@ export function ClientDetail() {
         open={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
       />
-      <ClientDetailsDialog
-        client={client}
-        open={isClientDetailsOpen}
-        onClose={() => setIsClientDetailsOpen(false)}
-      />
+      {isClientDetailsOpen ? (
+        <ClientDetailsDialog
+          key={client.id}
+          client={client}
+          open
+          canEdit={canEditClients}
+          onClose={() => setIsClientDetailsOpen(false)}
+        />
+      ) : null}
     </Box>
   );
 }

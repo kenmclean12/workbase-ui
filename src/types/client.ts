@@ -16,6 +16,14 @@ export type ClientCreateDto = {
   description?: string;
 };
 
+export type ClientUpdateDto = {
+  name?: string;
+  email?: string;
+  phone?: string;
+  website?: string;
+  description?: string;
+};
+
 export type ClientResponseDto = {
   id: number;
   createdAt: string;

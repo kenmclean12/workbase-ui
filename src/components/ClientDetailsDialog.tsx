@@ -10,28 +10,64 @@ import {
   IconButton,
   Stack,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import type { ClientResponseDto } from "../types/client";
+import { useState, type FormEvent } from "react";
+import { useClientUpdate } from "../hooks";
+import type { ClientResponseDto, ClientUpdateDto } from "../types/client";
+
+type ClientFormValues = {
+  name: string;
+  email: string;
+  phone: string;
+  website: string;
+  description: string;
+};
 
 interface ClientDetailsDialogProps {
   client: ClientResponseDto;
   open: boolean;
+  canEdit: boolean;
   onClose: () => void;
 }
 
-const readOnlyField = (
+const getClientFormValues = (client: ClientResponseDto): ClientFormValues => ({
+  name: client.name,
+  email: client.email ?? "",
+  phone: client.phone ?? "",
+  website: client.website ?? "",
+  description: client.description ?? "",
+});
+
+const clientField = (
   label: string,
-  value: string | null | undefined,
+  value: string,
+  maxLength: number,
+  canEdit: boolean,
+  onChange: (value: string) => void,
   multiline = false,
 ) => (
   <TextField
     fullWidth
     size="small"
     label={label}
-    value={value?.trim() || "Not provided"}
+    value={value}
+    onChange={(event) => onChange(event.target.value)}
+    placeholder={value ? undefined : "Not provided"}
     multiline={multiline}
     minRows={multiline ? 2 : undefined}
+    inputProps={{ maxLength, readOnly: !canEdit }}
+  />
+);
+
+const addressField = (label: string, value: string | undefined) => (
+  <TextField
+    fullWidth
+    size="small"
+    label={label}
+    value={value ?? ""}
+    placeholder={value ? undefined : "Not provided"}
     inputProps={{ readOnly: true }}
   />
 );
@@ -39,8 +75,28 @@ const readOnlyField = (
 export function ClientDetailsDialog({
   client,
   open,
+  canEdit,
   onClose,
 }: ClientDetailsDialogProps) {
+  const originalValues = getClientFormValues(client);
+  const [values, setValues] = useState(originalValues);
+  const updateClient = useClientUpdate(client.id, { onSuccess: onClose });
+  const updateValue = (field: keyof ClientFormValues, value: string) => {
+    setValues((current) => ({ ...current, [field]: value }));
+  };
+  const hasChanges = (Object.keys(originalValues) as Array<keyof ClientFormValues>)
+    .some((field) => values[field] !== originalValues[field]);
+
+  const submit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const update: ClientUpdateDto = {};
+    for (const field of Object.keys(originalValues) as Array<keyof ClientFormValues>) {
+      if (values[field] !== originalValues[field]) update[field] = values[field];
+    }
+
+    if (Object.keys(update).length) updateClient.mutate(update);
+  };
+
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
       <DialogTitle sx={{ pr: 6, pb: 1, color: "text.primary", fontWeight: 700 }}>
@@ -53,7 +109,7 @@ export function ClientDetailsDialog({
               Details
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              {client.name}
+              {canEdit ? "Update client information" : client.name}
             </Typography>
           </Box>
         </Stack>
@@ -65,51 +121,72 @@ export function ClientDetailsDialog({
           <Close />
         </IconButton>
       </DialogTitle>
-      <DialogContent dividers>
-        <Stack spacing={3}>
-          <Box>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
-              <BusinessOutlined fontSize="small" color="action" />
-              <Typography variant="overline" color="text.secondary" fontWeight={700}>
-                Client information
-              </Typography>
-            </Stack>
-            <Stack spacing={1.5}>
-              {readOnlyField("Company name", client.name)}
-              {readOnlyField("Description", client.description, true)}
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-                {readOnlyField("Email", client.email)}
-                {readOnlyField("Phone", client.phone)}
+      <Box component="form" onSubmit={submit}>
+        <DialogContent dividers>
+          <Stack spacing={3}>
+            <Box>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                <BusinessOutlined fontSize="small" color="action" />
+                <Typography variant="overline" color="text.secondary" fontWeight={700}>
+                  Client information
+                </Typography>
               </Stack>
-              {readOnlyField("Website", client.website)}
-            </Stack>
-          </Box>
-          <Box>
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
-              <LocationOnOutlined fontSize="small" color="action" />
-              <Typography variant="overline" color="text.secondary" fontWeight={700}>
-                Address
-              </Typography>
-            </Stack>
-            <Stack spacing={1.5}>
-              {readOnlyField("Street", client.address?.street)}
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-                {readOnlyField("City", client.address?.city)}
-                {readOnlyField("State / province", client.address?.state)}
+              <Stack spacing={1.5}>
+                {clientField("Company name", values.name, 30, canEdit, (value) => updateValue("name", value))}
+                {clientField("Description", values.description, 300, canEdit, (value) => updateValue("description", value), true)}
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                  {clientField("Email", values.email, 50, canEdit, (value) => updateValue("email", value))}
+                  {clientField("Phone", values.phone, 16, canEdit, (value) => updateValue("phone", value))}
+                </Stack>
+                {clientField("Website", values.website, 50, canEdit, (value) => updateValue("website", value))}
               </Stack>
-              <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
-                {readOnlyField("Country", client.address?.country)}
-                {readOnlyField("Postal code", client.address?.postalCode)}
+            </Box>
+            <Box>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1.5 }}>
+                <LocationOnOutlined fontSize="small" color="action" />
+                <Typography variant="overline" color="text.secondary" fontWeight={700}>
+                  Address
+                </Typography>
               </Stack>
-            </Stack>
-          </Box>
-        </Stack>
-      </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
-        <Button onClick={onClose} variant="contained">
-          Close
-        </Button>
-      </DialogActions>
+              {canEdit ? (
+                <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1.5 }}>
+                  Address editing is not supported yet.
+                </Typography>
+              ) : null}
+              <Stack spacing={1.5}>
+                {addressField("Street", client.address?.street)}
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                  {addressField("City", client.address?.city)}
+                  {addressField("State / province", client.address?.state)}
+                </Stack>
+                <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                  {addressField("Country", client.address?.country)}
+                  {addressField("Postal code", client.address?.postalCode)}
+                </Stack>
+              </Stack>
+            </Box>
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, py: 2 }}>
+          <Button onClick={onClose} disabled={updateClient.isPending}>
+            Cancel
+          </Button>
+          <Tooltip
+            title={canEdit ? "" : "Only admins and super admins can update clients."}
+            disableHoverListener={canEdit}
+          >
+            <span>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!canEdit || !hasChanges || updateClient.isPending}
+              >
+                {updateClient.isPending ? "Saving..." : "Save changes"}
+              </Button>
+            </span>
+          </Tooltip>
+        </DialogActions>
+      </Box>
     </Dialog>
   );
 }

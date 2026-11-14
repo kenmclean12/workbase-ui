@@ -155,23 +155,23 @@ export function UserDetail() {
                     display: showRoleChip ? "inline-flex" : "none",
                   }}
                 />
+                {canEditUser ? (
+                  <Tooltip title="Edit user">
+                    <IconButton
+                      aria-label="Edit user"
+                      size="small"
+                      onClick={() => setIsEditOpen(true)}
+                      sx={{ flexShrink: 0 }}
+                    >
+                      <EditOutlined fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                ) : null}
               </Stack>
               <Typography sx={styles.emailText} variant="body2">
                 {user.email}
               </Typography>
             </Box>
-            {canEditUser ? (
-              <Tooltip title="Edit user">
-                <IconButton
-                  aria-label="Edit user"
-                  size="small"
-                  onClick={() => setIsEditOpen(true)}
-                  sx={{ flexShrink: 0 }}
-                >
-                  <EditOutlined fontSize="small" />
-                </IconButton>
-              </Tooltip>
-            ) : null}
           </Box>
           <ButtonGroup size="small" variant="outlined" sx={{ flexShrink: 0, ml: "auto" }}>
             <Button

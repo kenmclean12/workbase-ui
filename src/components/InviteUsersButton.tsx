@@ -26,6 +26,8 @@ const roles = [
   { value: 3, label: "Admin" },
 ];
 
+const MAX_EMAIL_LENGTH = 50;
+
 export function InviteUsersButton() {
   const { user } = useAuthContext();
   const { data: users = [] } = useUsersGetAll();
@@ -47,9 +49,22 @@ export function InviteUsersButton() {
     .split(/\r?\n/)
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
-  const validEmails = emails.filter((email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
-  const hasInvalidEmail = emails.some((email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
-  const hasErrors = emails.length === 0 || hasInvalidEmail || !inviter?.id || (IS_CLIENT_USER && !user?.clientId);
+  const validEmails = emails.filter(
+    (email) =>
+      email.length <= MAX_EMAIL_LENGTH &&
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+  );
+  const invalidEmails = emails.filter(
+    (email) => !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
+  );
+  const hasInvalidEmail = invalidEmails.length > 0;
+  const hasTooLongEmail = emails.some((email) => email.length > MAX_EMAIL_LENGTH);
+  const hasErrors =
+    emails.length === 0 ||
+    hasInvalidEmail ||
+    hasTooLongEmail ||
+    !inviter?.id ||
+    (IS_CLIENT_USER && !user?.clientId);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -99,9 +114,23 @@ export function InviteUsersButton() {
                   label="User emails"
                   placeholder={"name@company.com\nanother@company.com"}
                   value={emailText}
-                  onChange={(event) => setEmailText(event.target.value)}
-                  error={submitted && (emails.length === 0 || hasInvalidEmail)}
-                  helperText={submitted && emails.length === 0 ? "Add at least one email address." : submitted && hasInvalidEmail ? "Check that every email address is valid." : "Enter one email address per line."}
+                  onChange={(event) => {
+                    const limitedEmails = event.target.value
+                      .split(/\r?\n/)
+                      .map((email) => email.slice(0, MAX_EMAIL_LENGTH))
+                      .join("\n");
+                    setEmailText(limitedEmails);
+                  }}
+                  error={submitted && (emails.length === 0 || hasInvalidEmail || hasTooLongEmail)}
+                  helperText={
+                    submitted && emails.length === 0
+                      ? "Add at least one email address."
+                      : submitted && hasTooLongEmail
+                        ? "Each email address must be 50 characters or fewer."
+                        : submitted && hasInvalidEmail
+                          ? `Invalid email address${invalidEmails.length > 1 ? "es" : ""}: ${invalidEmails.join(", ")}. Use the format name@example.com.`
+                          : "Enter one email address per line (50 characters max each)."
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -138,9 +167,7 @@ export function InviteUsersButton() {
               variant="contained"
               disabled={
                 inviteUsers.isPending ||
-                !inviter ||
-                validEmails.length === 0 ||
-                hasInvalidEmail
+                !inviter
               }
             >
               {inviteUsers.isPending ? "Sending..." : "Send Invites"}
