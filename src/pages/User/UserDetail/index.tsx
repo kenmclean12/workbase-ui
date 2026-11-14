@@ -19,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
+import { RequestColumnEmptyState } from "../../../components/RequestColumnEmptyState";
 import { UserUpdateDialog } from "../../../components/UserUpdateDialog";
 import { useAuthContext } from "../../../context";
 import { useRequestsGetByUser, useUserActivity, useUserGetById, useUsersGetAll } from "../../../hooks";
@@ -345,13 +346,22 @@ export function UserDetail() {
                   <Chip
                     label={groupedRequests[status]?.length ?? 0}
                     size="small"
-                    sx={{
-                      backgroundColor: REQUEST_STATUS_META[status].color,
-                      color: "#fff",
+                    sx={(theme) => ({
+                      backgroundColor:
+                        theme.palette.mode === "dark"
+                          ? "transparent"
+                          : REQUEST_STATUS_META[status].color,
+                      color:
+                        theme.palette.mode === "dark"
+                          ? REQUEST_STATUS_META[status].color
+                          : "#fff",
                       fontWeight: 700,
-                      border: "none",
+                      border:
+                        theme.palette.mode === "dark"
+                          ? `1px solid ${REQUEST_STATUS_META[status].color}`
+                          : "none",
                       height: 22,
-                    }}
+                    })}
                   />
                 </Stack>
               </Box>
@@ -368,18 +378,7 @@ export function UserDetail() {
                 }}
               >
                 {(groupedRequests[status] ?? []).length === 0 ? (
-                  <Box
-                    sx={{
-                      border: "1px dashed",
-                      borderColor: "divider",
-                      borderRadius: 2,
-                      p: 2,
-                      textAlign: "center",
-                      color: "text.secondary",
-                    }}
-                  >
-                    No {REQUEST_STATUS_META[status].label.toLowerCase()} requests
-                  </Box>
+                  <RequestColumnEmptyState statusLabel={REQUEST_STATUS_META[status].label} />
                 ) : (
                   (groupedRequests[status] ?? []).map((request) => (
                     <RequestKanbanCard
