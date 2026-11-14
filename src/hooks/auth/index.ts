@@ -7,7 +7,7 @@ export type User = {
   lastName: string;
   avatarUrl?: string | null;
   createdAt?: string;
-  role?: string;
+  role?: string | number;
   clientId?: number | null;
 };
 

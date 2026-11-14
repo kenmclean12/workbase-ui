@@ -1,4 +1,4 @@
-import { ArrowBack } from "@mui/icons-material";
+import { ArrowBack, EditOutlined } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -19,6 +19,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { RequestDetailDialog } from "../../../components/RequestDetailDialog";
 import { RequestKanbanCard } from "../../../components/RequestKanbanCard";
+import { UserUpdateDialog } from "../../../components/UserUpdateDialog";
 import { useAuthContext } from "../../../context";
 import { useRequestsGetByUser, useUserActivity, useUserGetById, useUsersGetAll } from "../../../hooks";
 import { REQUEST_STATUS_META, RequestStatus, type RequestResponseDto } from "../../../types/request";
@@ -34,6 +35,7 @@ export function UserDetail() {
   const [showRoleChip, setShowRoleChip] = useState(true);
   const [showActivity, setShowActivity] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<RequestResponseDto | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   const routeUserId = id ? Number(id) : undefined;
   const { data: users = [], isLoading: isUsersLoading } = useUsersGetAll({
     enabled: !routeUserId,
@@ -42,17 +44,26 @@ export function UserDetail() {
   const resolvedId = location.pathname.includes("profile")
     ? Number(defaultUserId)
     : Number(routeUserId ?? defaultUserId);
-  const { data: userById, isLoading: isUserLoading } = useUserGetById(routeUserId, {
-    enabled: !!routeUserId,
+  const { data: userById, isLoading: isUserLoading } = useUserGetById(resolvedId, {
+    enabled: !!resolvedId,
   });
-  const user = routeUserId ? userById ?? null : currentUser ?? users[0] ?? null;
+  const user = userById ?? (routeUserId ? null : currentUser ?? users[0] ?? null);
   const targetUserId = user?.id ?? resolvedId;
   const { data: assignedRequests = [] } = useRequestsGetByUser(targetUserId || undefined);
   const { data: activityEntries = [], isLoading: isActivityLoading } = useUserActivity(
     targetUserId || undefined,
     { enabled: showActivity },
   );
-  const isLoading = routeUserId ? isUserLoading : isUsersLoading && !currentUser;
+  const isLoading = resolvedId ? isUserLoading : isUsersLoading && !currentUser;
+  const isOwnProfile = currentUser?.id === user?.id;
+  const currentUserRole = getUserRoleLabel(currentUser?.role).toUpperCase().replace(/\s/g, "");
+  const isReadOnlyUser = currentUserRole === "READONLY";
+  const canManageUsers =
+    currentUserRole === "MANAGER" ||
+    currentUserRole === "ADMIN" ||
+    currentUserRole === "SUPERADMIN";
+  const canEditUser = !isReadOnlyUser && (isOwnProfile || canManageUsers);
+  const canChangeRole = canManageUsers && !isOwnProfile;
 
   const groupedRequests = useMemo(() => {
     return {
@@ -149,6 +160,18 @@ export function UserDetail() {
                 {user.email}
               </Typography>
             </Box>
+            {canEditUser ? (
+              <Tooltip title="Edit user">
+                <IconButton
+                  aria-label="Edit user"
+                  size="small"
+                  onClick={() => setIsEditOpen(true)}
+                  sx={{ flexShrink: 0 }}
+                >
+                  <EditOutlined fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            ) : null}
           </Box>
           <ButtonGroup size="small" variant="outlined" sx={{ flexShrink: 0, ml: "auto" }}>
             <Button
@@ -377,6 +400,14 @@ export function UserDetail() {
         open={Boolean(selectedRequest)}
         onClose={() => setSelectedRequest(null)}
       />
+      {isEditOpen ? (
+        <UserUpdateDialog
+          user={user}
+          open
+          canChangeRole={canChangeRole}
+          onClose={() => setIsEditOpen(false)}
+        />
+      ) : null}
     </Box>
   );
 }

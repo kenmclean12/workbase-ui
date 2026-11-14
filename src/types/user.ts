@@ -1,6 +1,7 @@
 export const Role = {
   SUPERADMIN: "SUPERADMIN",
   ADMIN: "ADMIN",
+  MANAGER: "MANAGER",
   STANDARD: "STANDARD",
   READONLY: "READONLY",
 } as const;
@@ -10,12 +11,14 @@ export type Role = (typeof Role)[keyof typeof Role];
 export const USER_ROLE_LABELS: Record<string, string> = {
   [Role.SUPERADMIN]: "Super Admin",
   [Role.ADMIN]: "Admin",
+  [Role.MANAGER]: "Manager",
   [Role.STANDARD]: "Standard",
   [Role.READONLY]: "Read Only",
   "4": "Super Admin",
   "3": "Admin",
   "2": "Standard",
   "1": "Read Only",
+  "5": "Manager",
 };
 
 export function getUserRoleLabel(role: string | number | null | undefined) {
@@ -48,7 +51,7 @@ export interface UserUpdateDto {
   email?: string;
   firstName?: string;
   lastName?: string;
-  role?: Role;
+  role?: number;
   avatarUrl?: string | null;
 }
 
@@ -66,5 +69,5 @@ export interface UserResponseDto {
   lastName: string;
   avatarUrl: string | null;
   createdAt: string;
-  role: Role;
+  role: Role | number;
 }

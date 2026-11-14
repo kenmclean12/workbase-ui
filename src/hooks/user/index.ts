@@ -146,14 +146,22 @@ export function useUserUpdate(id: number) {
   const { fetchWithAuth } = useAuthContext();
 
   return useMutation({
-    mutationFn: (dto: UserUpdateDto) =>
-      request<UserResponseDto>(fetchWithAuth, `${BASE_URL}/${id}`, {
+    mutationFn: async (dto: UserUpdateDto) => {
+      const response = await fetchWithAuth(`${BASE_URL}/${id}`, {
         method: "PATCH",
         body: JSON.stringify(dto),
-      }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["users"] });
-      qc.invalidateQueries({ queryKey: ["user", id] });
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || "User update failed");
+      }
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ["users"] }),
+        qc.invalidateQueries({ queryKey: ["user", id] }),
+      ]);
       enqueueSnackbar("User updated successfully", {
         variant: "success",
       });

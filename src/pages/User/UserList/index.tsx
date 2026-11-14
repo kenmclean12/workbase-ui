@@ -183,6 +183,7 @@ const roleOptions: Array<Role | "All"> = [
   "All",
   Role.SUPERADMIN,
   Role.ADMIN,
+  Role.MANAGER,
   Role.STANDARD,
   Role.READONLY,
 ];
