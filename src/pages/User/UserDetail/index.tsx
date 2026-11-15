@@ -238,7 +238,7 @@ export function UserDetail() {
             User Activity
           </Typography>
           <Divider sx={{ mb: 1.5 }} />
-          <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
+          <Box sx={{ flex: 1, minHeight: 0, overflowY: "auto", display: "flex", flexDirection: "column" }}>
             {isActivityLoading ? (
               <Box sx={styles.loadingContainer}>
                 <CircularProgress />
@@ -248,7 +248,7 @@ export function UserDetail() {
                 <Typography color="text.secondary">No activity found.</Typography>
               </Box>
             ) : (
-              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
+              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 1.25, flex: 1, minHeight: "100%" }}>
                 {activityEntries.map((entry) => {
                   const request = entry.request;
                   const clientName = request?.client?.name ?? "Client unavailable";
@@ -263,12 +263,16 @@ export function UserDetail() {
                       key={entry.id}
                       disableGutters
                       sx={(theme) => ({
-                        display: "block",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: entry.details ? "space-between" : "center",
+                        flex: "0 0 auto",
+                        minHeight: 80,
                         px: 1.25,
-                        py: 1.5,
+                        py: 1.25,
                         border: "1px solid",
                         borderColor: "divider",
-                        borderLeft: request ? "3px solid" : "1px solid",
+                        borderLeft: request ? "2px solid" : "1px solid",
                         borderLeftColor: request ? "primary.main" : "divider",
                         borderRadius: 1.5,
                         backgroundColor:
@@ -289,7 +293,7 @@ export function UserDetail() {
                       })}
                       onClick={() => request && setSelectedRequest(request)}
                     >
-                      <Stack direction="row" justifyContent="space-between" spacing={1.5} alignItems="flex-start" sx={{ minWidth: 0 }}>
+                      <Stack direction="row" justifyContent="space-between" spacing={1.5} alignItems="center" sx={{ minWidth: 0, width: "100%" }}>
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
                           <Avatar
                             sx={{
@@ -297,8 +301,10 @@ export function UserDetail() {
                               height: 32,
                               fontSize: "0.65rem",
                               fontWeight: 800,
-                              bgcolor: "primary.main",
-                              color: "primary.contrastText",
+                              bgcolor: "transparent",
+                              color: "primary.main",
+                              border: "1px solid",
+                              borderColor: "primary.main",
                               flexShrink: 0,
                             }}
                           >

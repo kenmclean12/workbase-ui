@@ -89,6 +89,8 @@ export function ClientList() {
         display: "flex",
         flexDirection: "column",
         overflow: "hidden",
+        border: "1px solid",
+        borderColor: "divider",
       }}
     >
       <Stack direction="row" spacing={2} sx={{ mb: 2 }}>

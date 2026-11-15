@@ -87,6 +87,8 @@ export function ClientDetail() {
           mb: 0.75,
           borderRadius: "12px",
           textAlign: "left",
+          border: "1px solid",
+          borderColor: "divider",
         }}
       >
         <Box
@@ -198,6 +200,8 @@ export function ClientDetail() {
           display: "flex",
           flexDirection: "column",
           minHeight: 0,
+          border: "1px solid",
+          borderColor: "divider",
         }}
       >
         <Typography variant="h6" component="h3" gutterBottom>

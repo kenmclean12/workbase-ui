@@ -5,9 +5,11 @@ export const styles = {
     display: "flex",
     flexDirection: "column",
     overflow: "hidden",
+    border: "1px solid",
+    borderColor: "divider",
   },
   filters: {
-    mt: 1.5,
+    mt: 0,
     mb: 2,
     gap: 1.5,
   },

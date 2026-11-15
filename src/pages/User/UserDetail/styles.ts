@@ -18,6 +18,8 @@ export const styles = {
     p: 1.5,
     mb: 0.75,
     textAlign: "left",
+    border: "1px solid",
+    borderColor: "divider",
   },
 
   headerRow: {
@@ -95,6 +97,8 @@ export const styles = {
   contentPaper: {
     p: 2,
     mt: 0,
+    border: "1px solid",
+    borderColor: "divider",
   },
 
   tableEmptyRow: {
