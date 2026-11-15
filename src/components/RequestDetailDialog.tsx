@@ -18,6 +18,7 @@ import {
   Tab,
   Tabs,
   TextField,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import {
@@ -328,16 +329,23 @@ export function RequestDetailDialog({
                 bgcolor: "rgba(148, 163, 184, 0.04)",
               }}
             >
-              <Typography
-                variant="h6"
-                sx={{
-                  fontWeight: 700,
-                  lineHeight: 1.3,
-                  color: "text.primary",
-                }}
-              >
-                {request.title}
-              </Typography>
+              <Tooltip title={request.title} placement="top">
+                <Typography
+                  variant="h6"
+                  noWrap
+                  sx={{
+                    width: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    fontWeight: 700,
+                    lineHeight: 1.3,
+                    color: "text.primary",
+                  }}
+                >
+                  {request.title}
+                </Typography>
+              </Tooltip>
             </Box>
           </Stack>
 
