@@ -140,14 +140,16 @@ export function UserDetail() {
             </Avatar>
             <Box sx={styles.infoContainer}>
               <Stack sx={styles.nameRow}>
-                <Typography
-                  sx={styles.nameText}
-                  color="text.primary"
-                  variant="h6"
-                  component="h2"
-                >
-                  {user.firstName} {user.lastName}
-                </Typography>
+                <Tooltip title={`${user.firstName} ${user.lastName}`} placement="top">
+                  <Typography
+                    sx={styles.nameText}
+                    color="text.primary"
+                    variant="h6"
+                    component="h2"
+                  >
+                    {user.firstName} {user.lastName}
+                  </Typography>
+                </Tooltip>
                 <Chip
                   label={getUserRoleLabel(user.role)}
                   size="small"
@@ -169,12 +171,42 @@ export function UserDetail() {
                   </Tooltip>
                 ) : null}
               </Stack>
-              <Typography sx={styles.emailText} variant="body2">
-                {user.email}
-              </Typography>
+              <Tooltip title={user.email} placement="top">
+                <Typography sx={styles.emailText} variant="body2">
+                  {user.email}
+                </Typography>
+              </Tooltip>
             </Box>
           </Box>
-          <ButtonGroup size="small" variant="outlined" sx={{ flexShrink: 0, ml: "auto" }}>
+          <ButtonGroup
+            size="small"
+            variant="outlined"
+            sx={(theme) => ({
+              flexShrink: 0,
+              ml: "auto",
+              ...(theme.palette.mode === "dark"
+                ? {
+                    "& .MuiButton-contained": {
+                      backgroundColor: "rgba(255, 255, 255, 0.08)",
+                      color: "primary.light",
+                      boxShadow: "none",
+                      "&:hover": {
+                        backgroundColor: "rgba(255, 255, 255, 0.14)",
+                        boxShadow: "none",
+                      },
+                    },
+                    "& .MuiButton-outlined": {
+                      color: "text.secondary",
+                      borderColor: "divider",
+                      "&:hover": {
+                        backgroundColor: "action.hover",
+                        borderColor: "text.secondary",
+                      },
+                    },
+                  }
+                : {}),
+            })}
+          >
             <Button
               variant={!showActivity ? "contained" : "outlined"}
               onClick={() => setShowActivity(false)}
@@ -216,7 +248,7 @@ export function UserDetail() {
                 <Typography color="text.secondary">No activity found.</Typography>
               </Box>
             ) : (
-              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+              <List disablePadding sx={{ display: "flex", flexDirection: "column", gap: 1.25 }}>
                 {activityEntries.map((entry) => {
                   const request = entry.request;
                   const clientName = request?.client?.name ?? "Client unavailable";
@@ -233,7 +265,7 @@ export function UserDetail() {
                       sx={(theme) => ({
                         display: "block",
                         px: 1.25,
-                        py: 1,
+                        py: 1.5,
                         border: "1px solid",
                         borderColor: "divider",
                         borderLeft: request ? "3px solid" : "1px solid",
@@ -242,7 +274,7 @@ export function UserDetail() {
                         backgroundColor:
                           theme.palette.mode === "dark"
                             ? "#000000"
-                            : "rgba(15, 23, 42, 0.02)",
+                            : "rgba(37, 99, 235, 0.02)",
                         cursor: request ? "pointer" : "default",
                         transition: "border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease",
                         ...(request
@@ -261,8 +293,8 @@ export function UserDetail() {
                         <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
                           <Avatar
                             sx={{
-                              width: 28,
-                              height: 28,
+                              width: 32,
+                              height: 32,
                               fontSize: "0.65rem",
                               fontWeight: 800,
                               bgcolor: "primary.main",
@@ -291,7 +323,7 @@ export function UserDetail() {
                         </Typography>
                       </Stack>
                       {entry.details ? (
-                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", ml: 4.5, mt: 0.75, overflowWrap: "anywhere", lineHeight: 1.45 }}>
+                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", ml: 5, mt: 1, overflowWrap: "anywhere", lineHeight: 1.5 }}>
                           {entry.details}
                         </Typography>
                       ) : null}
@@ -346,22 +378,14 @@ export function UserDetail() {
                   <Chip
                     label={groupedRequests[status]?.length ?? 0}
                     size="small"
-                    sx={(theme) => ({
-                      backgroundColor:
-                        theme.palette.mode === "dark"
-                          ? "transparent"
-                          : REQUEST_STATUS_META[status].color,
-                      color:
-                        theme.palette.mode === "dark"
-                          ? REQUEST_STATUS_META[status].color
-                          : "#fff",
+                    variant="outlined"
+                    sx={{
+                      backgroundColor: "transparent",
+                      color: REQUEST_STATUS_META[status].color,
                       fontWeight: 700,
-                      border:
-                        theme.palette.mode === "dark"
-                          ? `1px solid ${REQUEST_STATUS_META[status].color}`
-                          : "none",
+                      border: `1px solid ${REQUEST_STATUS_META[status].color}`,
                       height: 22,
-                    })}
+                    }}
                   />
                 </Stack>
               </Box>

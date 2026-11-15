@@ -82,22 +82,14 @@ export function RequestsPage() {
                 <Chip
                   label={groupedRequests[column.key]?.length ?? 0}
                   size="small"
-                  sx={(theme) => ({
-                    backgroundColor:
-                      theme.palette.mode === "dark"
-                        ? "transparent"
-                        : REQUEST_STATUS_META[column.key].color,
-                    color:
-                      theme.palette.mode === "dark"
-                        ? REQUEST_STATUS_META[column.key].color
-                        : "#fff",
+                  variant="outlined"
+                  sx={{
+                    backgroundColor: "transparent",
+                    color: REQUEST_STATUS_META[column.key].color,
                     fontWeight: 700,
-                    border:
-                      theme.palette.mode === "dark"
-                        ? `1px solid ${REQUEST_STATUS_META[column.key].color}`
-                        : "none",
+                    border: `1px solid ${REQUEST_STATUS_META[column.key].color}`,
                     height: 22,
-                  })}
+                  }}
                 />
               </Stack>
             </Box>

@@ -29,20 +29,23 @@ export const styles = {
 
   textContainer: {
     minWidth: 0,
+    flex: 1,
+    textAlign: "left",
   },
 
   name: {
+    display: "block",
+    width: "100%",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    maxWidth: 140,
   },
 
   email: {
+    width: "100%",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
-    maxWidth: 140,
     display: "block",
   },
 

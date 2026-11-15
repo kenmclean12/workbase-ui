@@ -131,43 +131,50 @@ export function ClientDetail() {
                 textAlign: "left",
                 gap: 0.25,
                 minWidth: 0,
-                flex: 1,
+                flex: "1 1 0%",
                 overflow: "hidden",
-                width: "100%",
+                width: 0,
               }}
             >
-              <Typography
-                variant="h6"
-                component="h2"
-                noWrap
-                color="text.primary"
-                sx={{
-                  fontWeight: 600,
-                  minWidth: 0,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  display: "block",
-                }}
-              >
-                {client.name}
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                noWrap
-                sx={{
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  minWidth: 0,
-                  flex: 1,
-                  width: "100%",
-                  display: "block",
-                }}
-              >
-                {client.email ?? "No contact info"}
-              </Typography>
+              <Tooltip title={client.name} placement="top">
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  noWrap
+                  color="text.primary"
+                  sx={{
+                    fontWeight: 600,
+                    minWidth: 0,
+                    width: "100%",
+                    maxWidth: "100%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    display: "block",
+                  }}
+                >
+                  {client.name}
+                </Typography>
+              </Tooltip>
+              <Tooltip title={client.email ?? "No contact info"} placement="top">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  noWrap
+                  sx={{
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                    minWidth: 0,
+                    flex: "1 1 0%",
+                    width: "100%",
+                    maxWidth: "100%",
+                    display: "block",
+                  }}
+                >
+                  {client.email ?? "No contact info"}
+                </Typography>
+              </Tooltip>
             </Box>
           </Box>
           <Button
@@ -225,22 +232,14 @@ export function ClientDetail() {
                   <Chip
                     label={groupedRequests[status]?.length ?? 0}
                     size="small"
-                    sx={(theme) => ({
-                      backgroundColor:
-                        theme.palette.mode === "dark"
-                          ? "transparent"
-                          : REQUEST_STATUS_META[status].color,
-                      color:
-                        theme.palette.mode === "dark"
-                          ? REQUEST_STATUS_META[status].color
-                          : "#fff",
+                    variant="outlined"
+                    sx={{
+                      backgroundColor: "transparent",
+                      color: REQUEST_STATUS_META[status].color,
                       fontWeight: 700,
-                      border:
-                        theme.palette.mode === "dark"
-                          ? `1px solid ${REQUEST_STATUS_META[status].color}`
-                          : "none",
+                      border: `1px solid ${REQUEST_STATUS_META[status].color}`,
                       height: 22,
-                    })}
+                    }}
                   />
                 </Stack>
               </Box>

@@ -9,6 +9,7 @@ import {
   MenuItem,
   Stack,
   Switch,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useAuthContext, useThemeContext } from "../../../../context";
@@ -60,16 +61,20 @@ export function ProfileMenu({ anchorEl, open, onClose }: Props) {
             </Avatar>
           )}
           <Box sx={styles.textContainer}>
-            <Typography variant="subtitle2" fontWeight={600} sx={styles.name}>
-              {displayUser?.firstName ?? ""} {displayUser?.lastName ?? ""}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={styles.email}
-            >
-              {displayUser?.email ?? ""}
-            </Typography>
+            <Tooltip title={`${displayUser?.firstName ?? ""} ${displayUser?.lastName ?? ""}`} placement="top">
+              <Typography variant="subtitle2" fontWeight={600} sx={styles.name}>
+                {displayUser?.firstName ?? ""} {displayUser?.lastName ?? ""}
+              </Typography>
+            </Tooltip>
+            <Tooltip title={displayUser?.email ?? ""} placement="top">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={styles.email}
+              >
+                {displayUser?.email ?? ""}
+              </Typography>
+            </Tooltip>
           </Box>
         </Box>
       </Box>

@@ -96,14 +96,15 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
           <IconButton
             size="small"
             onClick={(event) => setAnchorEl(event.currentTarget)}
+            sx={{ p: 0.5, flexShrink: 0 }}
           >
             {displayUser?.avatarUrl ? (
-              <Avatar sx={{ width: 40, height: 40 }} src={displayUser.avatarUrl} />
+              <Avatar sx={{ width: 36, height: 36 }} src={displayUser.avatarUrl} />
             ) : (
               <Avatar
                 sx={{
-                  width: 40,
-                  height: 40,
+                  width: 36,
+                  height: 36,
                   bgcolor: themeMode === "dark" ? "#303034" : "#d9e2eb",
                   color: themeMode === "dark" ? "#e4e4e7" : "#637381",
                   fontWeight: 700,
@@ -119,22 +120,26 @@ export function Sidebar({ open, onToggle, disabled = false }: Props) {
           </IconButton>
           {open && (
             <Box sx={styles.userInfo}>
-              <Typography
-                variant="body2"
-                fontWeight={600}
-                noWrap
-                sx={styles.userName}
-              >
-                {displayUser.firstName} {displayUser.lastName}
-              </Typography>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                noWrap
-                sx={styles.userEmail}
-              >
-                {displayUser.email}
-              </Typography>
+              <Tooltip title={`${displayUser.firstName} ${displayUser.lastName}`} placement="top">
+                <Typography
+                  variant="body2"
+                  fontWeight={600}
+                  noWrap
+                  sx={styles.userName}
+                >
+                  {displayUser.firstName} {displayUser.lastName}
+                </Typography>
+              </Tooltip>
+              <Tooltip title={displayUser.email} placement="top">
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  noWrap
+                  sx={styles.userEmail}
+                >
+                  {displayUser.email}
+                </Typography>
+              </Tooltip>
             </Box>
           )}
         </Box>

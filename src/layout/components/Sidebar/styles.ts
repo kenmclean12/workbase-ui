@@ -93,22 +93,27 @@ export const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: open ? "flex-start" : "center",
-    gap: open ? 2 : 0,
+    gap: open ? 1.5 : 0,
   }),
 
   userInfo: {
     overflow: "hidden",
     flex: 1,
     minWidth: 0,
+    textAlign: "left",
   },
 
   userName: {
+    display: "block",
+    width: "100%",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
   },
 
   userEmail: {
+    display: "block",
+    width: "100%",
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
