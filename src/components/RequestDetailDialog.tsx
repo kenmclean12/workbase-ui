@@ -297,10 +297,10 @@ export function RequestDetailDialog({
                   height: 28,
                   fontSize: "0.75rem",
                   fontWeight: 700,
-                  bgcolor: "#2563eb !important",
-                  color: "#fff !important",
+                  bgcolor: "transparent",
+                  color: "primary.main",
                   border: "1px solid",
-                  borderColor: "#2563eb",
+                  borderColor: "primary.main",
                 }}
               >
                 {clientInitials}
@@ -451,8 +451,10 @@ export function RequestDetailDialog({
                             width: 34,
                             height: 34,
                             fontSize: "0.8rem",
-                            bgcolor: "#2563eb !important",
-                            color: "#fff !important",
+                            bgcolor: "transparent",
+                            color: "primary.main",
+                            border: "1px solid",
+                            borderColor: "primary.main",
                           }}
                         >
                           {createdByUser.firstName?.[0] ?? ""}
@@ -582,8 +584,10 @@ export function RequestDetailDialog({
                                 width: 22,
                                 height: 22,
                                 fontSize: "0.68rem",
-                                bgcolor: "#2563eb !important",
-                                color: "#fff !important",
+                                bgcolor: "transparent",
+                                color: "primary.main",
+                                border: "1px solid",
+                                borderColor: "primary.main",
                               }}
                             >
                               {selectedAssignee.firstName?.[0] ?? ""}
@@ -687,8 +691,10 @@ export function RequestDetailDialog({
                                   width: 30,
                                   height: 30,
                                   fontSize: "0.76rem",
-                                  bgcolor: "#2563eb !important",
-                                  color: "#fff !important",
+                                  bgcolor: "transparent",
+                                  color: "primary.main",
+                                  border: "1px solid",
+                                  borderColor: "primary.main",
                                 }}
                               >
                                 {userOption.firstName?.[0] ?? ""}
@@ -858,8 +864,10 @@ export function RequestDetailDialog({
                               width: 28,
                               height: 28,
                               fontSize: "0.72rem",
-                              bgcolor: "#2563eb !important",
-                              color: "#fff !important",
+                              bgcolor: "transparent",
+                              color: "primary.main",
+                              border: "1px solid",
+                              borderColor: "primary.main",
                             }}
                           >
                             {(entry.user?.firstName?.[0] ?? "U") + (entry.user?.lastName?.[0] ?? "")}
@@ -1014,8 +1022,10 @@ export function RequestDetailDialog({
                                 width: 28,
                                 height: 28,
                                 fontSize: "0.72rem",
-                                bgcolor: "#2563eb !important",
-                                color: "#fff !important",
+                                bgcolor: "transparent",
+                                color: "primary.main",
+                                border: "1px solid",
+                                borderColor: "primary.main",
                               }}
                             >
                               {noteAuthor ? `${noteAuthor.firstName?.[0] ?? ""}${noteAuthor.lastName?.[0] ?? ""}` : "U"}

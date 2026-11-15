@@ -67,7 +67,18 @@ export function RequestKanbanCard({ request, onClick }: Props) {
           <Stack spacing={1.25} sx={{ width: "100%", justifyContent: "space-between" }}>
             <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1}>
               <Stack direction="row" alignItems="center" spacing={0.75} minWidth={0}>
-                <Avatar sx={{ width: 24, height: 24, fontSize: "0.65rem", fontWeight: 800, bgcolor: "primary.main", color: "primary.contrastText" }}>
+                <Avatar
+                  sx={{
+                    width: 24,
+                    height: 24,
+                    fontSize: "0.65rem",
+                    fontWeight: 800,
+                    bgcolor: "transparent",
+                    color: "primary.main",
+                    border: "1px solid",
+                    borderColor: "primary.main",
+                  }}
+                >
                   {getInitials(clientName)}
                 </Avatar>
                 <Box sx={{ minWidth: 0 }}>
